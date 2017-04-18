@@ -1,4 +1,5 @@
 # vux
+妙寄公众号
 
 > A Vue.js project
 
