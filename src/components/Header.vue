@@ -66,9 +66,9 @@ export default {
   .header {
     display: flex;
     align-items: center;
-    background-color: @dark-blue;
+    background-color: @header-dark;
     padding: 0 .2rem;
-    height: 8vh;
+    height: 7vh;
     &-hide {
       display: none;
     }

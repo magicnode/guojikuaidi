@@ -136,6 +136,7 @@ export default {
 
 .usercenter {
   overflow: hidden;
+  padding-bottom: 11vh;
   &-info {
     padding: 1rem;
     background: @dark-yellow;
@@ -232,6 +233,7 @@ export default {
     &-box {
       padding-top: 1rem;
       min-width: 33.33%;
+      width: 33.33%;
       box-sizing: border-box;
       background: #fff;
       border-right: 1px solid #F1F1F1;

@@ -72,7 +72,7 @@ export default {
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
 footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   background: white;

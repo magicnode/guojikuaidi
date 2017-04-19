@@ -35,3 +35,11 @@
 .show-important {
 	display: block!important;
 }
+
+.clearfixed {
+	&:after {
+		content: '';
+		display: block;
+		clear: both;
+	}
+}

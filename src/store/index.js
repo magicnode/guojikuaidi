@@ -8,7 +8,9 @@ const store = new Vuex.Store({
   },
   state: {
     title: '妙寄',
-    isLoading: false
+    isLoading: false,
+    isJump: false,
+    jumpSrc: 'http://112.74.34.241:3000/pics/random?show=1'
   },
   actions: {
   },
@@ -20,6 +22,12 @@ const store = new Vuex.Store({
     },
     updateLoadingStatus (state, payload) {
       state.isLoading = payload.isLoading
+    },
+    updateJumpStatus (state, payload) {
+      state.isJump = payload.isJump
+    },
+    updateJumpSrc (state, payload) {
+      state.jumpSrc = payload.jumpSrc
     }
   }
 })

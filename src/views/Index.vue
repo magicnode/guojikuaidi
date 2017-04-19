@@ -1,11 +1,19 @@
 <template>
   <div class="index">
     <div class="index-header flex">
-      <div class="index-header-box" v-for="item in header">
+      <div class="index-header-box" v-for="item in header" :key="item.name" @click="goPath(item.path)">
         <img :src="item.src" alt="">
         <p>{{item.name}}</p>
       </div>
     </div>
+
+    <div class="index-func flex">
+      <div class="index-func-box" v-for="item in func">
+        <img :src="item.src" alt="">
+        <p>{{item.name}}</p>
+      </div>
+    </div>
+
   </div>
 </template>
 <script>
@@ -18,48 +26,58 @@ export default {
     return {
       header: [{
         src: require('../assets/images/home_miaoji_03.png'),
-        name: '签收'
+        name: '签收',
+        path: 'Sign'
       }, {
         src: require('../assets/images/home_miaoji_05.png'),
-        name: '收件'
+        name: '收件',
+        path: 'PickUp'
       }, {
         src: require('../assets/images/home_miaoji_07.png'),
-        name: '寄件'
+        name: '寄件',
+        path: 'Send'
       }, {
         src: require('../assets/images/home_miaoji_09.png'),
-        name: '我的微商'
+        name: '我的微商',
+        path: 'WeShop'
       }],
-      orderfunc: [{
-        src: require('../assets/images/min_ico__33.png'),
-        name: '支付绑定'
+      func: [{
+        src: require('../assets/images/home_miaoji_19.png'),
+        name: '我的账户'
       }, {
-        src: require('../assets/images/min_ico__36.png'),
-        name: '地址管理'
+        src: require('../assets/images/home_miaoji_16.png'),
+        name: '快递信息'
       }, {
-        src: require('../assets/images/min_ico__39.png'),
-        name: '账单记录'
+        src: require('../assets/images/home_miaoji_22.png'),
+        name: '账单查询'
       }, {
-        src: require('../assets/images/min_ico__45.png'),
-        name: '我的红包'
+        src: require('../assets/images/home_miaoji_25.png'),
+        name: '实名认证'
       }, {
-        src: require('../assets/images/min_ico__48.png'),
-        name: '我的好友'
+        src: require('../assets/images/home_miaoji_31.png'),
+        name: '锦囊赚钱'
       }, {
-        src: require('../assets/images/min_ico__51.png'),
-        name: '我的保险'
+        src: require('../assets/images/home_miaoji_22.png'),
+        name: '保险服务'
       }, {
-        src: require('../assets/images/min_ico__57.png'),
-        name: '推荐反现'
+        src: require('../assets/images/home_miaoji_34.png'),
+        name: '福利兑换'
       }, {
-        src: require('../assets/images/min_ico__59.png'),
-        name: '咨询投诉'
+        src: require('../assets/images/home_miaoji_37.png'),
+        name: '好友寄件'
       }, {
-        src: require('../assets/images/min_ico__61.png'),
+        src: require('../assets/images/home_miaoji_44.png'),
         name: '客服中心'
+      }, {
+        src: require('../assets/images/home_miaoji_46.png'),
+        name: '快递投诉'
       }]
     }
   },
   methods: {
+    goPath (name) {
+      this.$router.push({name})
+    }
   }
 }
 </script>
@@ -77,7 +95,7 @@ export default {
     padding: 1rem 0;
     border-top: 0.05rem solid #000;
     width: 100%;
-    background-color: #393a3f;
+    background-color: @header-dark;
     justify-content: space-around;
     &-box {
       flex: 1;
@@ -89,7 +107,28 @@ export default {
         font-size: 1.4rem;
       }
     }
-  
+  }
+
+  &-func {
+    flex-wrap: wrap;
+    border-top: 1px solid #F1F1F1;
+    &-box {
+      padding-top: 1rem;
+      min-width: 25%;
+      width: 25%;
+      box-sizing: border-box;
+      background: #fff;
+      border-right: 1px solid #F1F1F1;
+      &:after {
+        padding-top: 1rem;
+        display: block;
+        content: '';
+        border-bottom: 1px solid #F1F1F1;
+      }
+      img {
+        width: 36%;
+      }
+    }
   }
 }
 

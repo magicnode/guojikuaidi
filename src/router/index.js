@@ -31,5 +31,9 @@ export default new Router({
     path: '/address',
     name: 'Address',
     component: require('@/views/Address')
+  }, {
+    path: '/pickup/detail',
+    name: 'PickUpDetail',
+    component: require('@/views/PickUpDetail')
   }]
 })
