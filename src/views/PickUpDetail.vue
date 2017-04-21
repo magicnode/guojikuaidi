@@ -17,7 +17,7 @@
 <script>
 
 export default {
-  name: 'pickup',
+  name: 'pickupdetail',
   created () {
   },
   data () {

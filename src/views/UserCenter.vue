@@ -42,7 +42,7 @@
     </transition>
 
     <div class="usercenter-orderfunc flex">
-      <div class="usercenter-orderfunc-box" v-for="item in orderfunc">
+      <div class="usercenter-orderfunc-box" v-for="item in orderfunc" @click="goPath(item.path)">
         <img :src="item.src" alt="">
         <p>{{item.name}}</p>
       </div>
@@ -88,7 +88,8 @@ export default {
         name: '支付绑定'
       }, {
         src: require('../assets/images/min_ico__36.png'),
-        name: '地址管理'
+        name: '地址管理',
+        path: '/address'
       }, {
         src: require('../assets/images/min_ico__39.png'),
         name: '账单记录'
@@ -114,6 +115,9 @@ export default {
     }
   },
   methods: {
+    goPath (path) {
+      this.$router.push({path})
+    }
   }
 }
 </script>
@@ -127,7 +131,7 @@ export default {
 }
 
 .usercenter-padding {
-  padding: .6rem 1rem;
+  padding: 1rem;
 }
 
 .arrow-top {
@@ -189,17 +193,21 @@ export default {
     background: #fff;
     margin-top: 1rem;
     &-title {
+      font-size: 1.2rem;
       img {
         width: 20%;
-        vertical-align: middle;
+        vertical-align: bottom;
+        *vertical-align: middle;
         margin-right: 1rem;
       }
     }
 
     &-icon {
+      width: 4rem;
+      text-align: right;
       transition: all .4s;
       img {
-        width: 70%;
+        width: 1.4rem;
         vertical-align: middle;
       }
     }
@@ -214,6 +222,7 @@ export default {
       box-sizing: border-box;
       background: #fff;
       border-right: 1px solid #F1F1F1;
+      font-size: 1.2rem;
       &:after {
         padding-top: 1rem;
         display: block;

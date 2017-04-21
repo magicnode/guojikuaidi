@@ -6,7 +6,7 @@
         <p>{{ item.name }}</p>
       </li>
     </ul>
-    <div class="footer-send">
+    <div class="footer-send" @click.stop="goPath('/send')">
       <img :src="send.icon" :alt="send.name">
     </div>
   </footer>

@@ -2,7 +2,7 @@
   <div id="app">
     <router-view></router-view>
     <transition name="pic">
-      <img class="loading-img" v-show="isJump" :src="jumpSrc" alt="" @click="goTop">
+      <img class="loading-img" v-show="isJump" :src="jumpSrc" alt="">
     </transition>
     <loading v-model="isLoading"></loading>
   </div>
@@ -25,9 +25,6 @@ export default {
     })
   },
   methods: {
-    goTop () {
-      this.$router.push({path: '/'})
-    }
   }
 }
 </script>

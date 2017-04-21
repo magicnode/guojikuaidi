@@ -21,10 +21,10 @@ Vue.component('cell', Cell)
 Vue.component('mj-header', Header)
 
 router.beforeEach(function (to, from, next) {
-  let jumpSrc = 'http://112.74.34.241:3000/pics/random?show=1'
-  const timestamp = new Date().getTime()
-  jumpSrc = jumpSrc + '&timestamp=' + timestamp
-  store.commit('updateJumpSrc', {jumpSrc})
+  // let jumpSrc = 'http://112.74.34.241:3000/pics/random?show=1'
+  // const timestamp = new Date().getTime()
+  // jumpSrc = jumpSrc + '&timestamp=' + timestamp
+  // store.commit('updateJumpSrc', {jumpSrc})
   store.commit('updateLoadingStatus', {isLoading: true})
   store.commit('updateJumpStatus', {isJump: false})
   if (to.path === '/') {
@@ -37,7 +37,7 @@ router.afterEach((to, from) => {
   store.commit('updateLoadingStatus', {isLoading: false})
   setTimeout(function () {
     store.commit('updateJumpStatus', {isJump: false})
-  }, 100)
+  }, 500)
 })
 
 /* eslint-disable no-new */

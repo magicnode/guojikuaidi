@@ -32,8 +32,28 @@ export default new Router({
     name: 'Address',
     component: require('@/views/Address')
   }, {
+    path: '/address/add',
+    name: 'AddAddress',
+    component: require('@/views/AddAddress')
+  }, {
     path: '/pickup/detail',
     name: 'PickUpDetail',
     component: require('@/views/PickUpDetail')
+  }, {
+    path: '/send/detail',
+    name: 'SendDetail',
+    component: require('@/views/SendDetail')
+  }, {
+    path: '/send/qr',
+    name: 'SendQr',
+    component: require('@/views/SendQr')
+  }, {
+    path: '/send/end',
+    name: 'SendEnd',
+    component: require('@/views/SendEnd')
+  }, {
+    path: '/user/package',
+    name: 'Package',
+    component: require('@/views/Package')
   }]
 })
