@@ -55,5 +55,9 @@ export default new Router({
     path: '/user/package',
     name: 'Package',
     component: require('@/views/Package')
+  }, {
+    path: '/smslogin',
+    name: 'SmsLogin',
+    component: require('@/views/SmsLogin')
   }]
 })

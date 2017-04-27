@@ -2,49 +2,28 @@
   <div class="address">
     <mj-header title="地址管理"></mj-header>
     <div class="address-container">
-      <div class="address-container-add flex" @click="goPath('/address/add')">
-        <div>
-          <img src="../assets/images/add_ico_add.png" class="">
-          <span>添加地址</span>
-        </div>
-        <div>
-          <img src="../assets/images/add_ico_arr.png" class="">
-        </div>
+      <div class="address-container-tab">
+        <tab active-color='#ff750f'>
+          <tab-item selected @on-item-click="changeShow('send')">寄件地址</tab-item>
+          <tab-item @on-item-click="changeShow('pickup')">收件地址</tab-item>
+        </tab>
       </div>
 
       <div class="address-container-list">
-        <p class="address-container-list__intro">寄件地址:</p>
-        <div class="address-container-list__item">
+        <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.name">
           <div class="flex address-container-list__item--info">
             <div>
-              <p>张子锐 15751158939</p>
-              <p class="location">上海市上海市长宁区绥宁路998</p>
+              <p>{{item.name}} {{item.phone}}</p>
+              <p class="location" style="font-size:1.4rem;">{{item.province + item.city + ' ' + item.district + item.address}}</p>
             </div>
-           <img src="../assets/images/add_ico_del.png" alt="">
+           <img src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
           </div>
           <div class="flex address-container-list__item--func flex">
-            <span class="is-default">
+            <span class="is-default" v-show="item.checked == 1">
               <img src="../assets/images/sen_btn_che.png" alt="">
               <span>默认地址</span>
             </span>
-            <span class="edit">
-              <img src="../assets/images/add_ico_cha.png" alt="">
-              <span>编辑</span>
-            </span>
-          </div>
-        </div>
-
-        <p class="address-container-list__intro">收件地址:</p>
-        <div class="address-container-list__item">
-          <div class="flex address-container-list__item--info">
-            <div>
-              <p>吴聪 1561565156</p>
-              <p class="location">上海市上海市长宁区绥宁路156</p>
-            </div>
-           <img src="../assets/images/add_ico_del.png" alt="">
-          </div>
-          <div class="flex address-container-list__item--func flex">
-            <span class="not-default">
+            <span class="not-default" v-show="item.checked == 2">
               <img src="../assets/images/add_ico_nor.png" alt="">
               <span>默认地址</span>
             </span>
@@ -54,23 +33,65 @@
             </span>
           </div>
         </div>
+
+        <div class="address-container-add" @click="goPath('/address/add', {type: addressType})">
+          <p>新增地址</p>
+        </div>
       </div>
+
     </div>
   </div>
 </template>
 <script>
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'address',
   created () {
+    this.changeAddress()
   },
   data () {
     return {
+      addressType: 'send'
     }
   },
+  computed: {
+    ...mapGetters({
+      userId: 'getUserId',
+      data: 'getAddress',
+      send: 'getsendAddress',
+      pickup: 'getpickupAddress'
+    })
+  },
   methods: {
-    goPath (path) {
-      this.$router.push({path})
+    goPath (path, query) {
+      this.$router.push({path, query})
+    },
+    changeShow (type) {
+      this.addressType = type
+    },
+    ...mapActions([
+      'changeAddress',
+      'delAddress'
+    ]),
+    deleteItem (id) {
+      console.log('id', id)
+      // 显示
+      const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
+      this.$vux.confirm.show({
+        // 组件除show外的属性
+        title: '确定删除这一地址吗?',
+        onCancel () {
+          console.log(_this)
+        },
+        onConfirm () {
+          _this.delAddress({id})
+          // 显示
+          _this.$vux.toast.show({
+            text: '删除成功'
+          })
+        }
+      })
     }
   }
 }
@@ -84,30 +105,13 @@ export default {
   background-color: @bg-grey;
   &-container {
     &-add {
-      justify-content: space-between;
-      background: white;
-      padding: 1rem;
-      div {
-        flex: 1;
-        img {
-          vertical-align: middle;
-        }
-        &:first-child {
-          text-align: left;
-          span {
-            padding-left: .6rem;
-            font-size: 1.6rem;
-          }
-          img {
-            width: 3rem;
-          }
-        }
-        &:last-child {
-          text-align: right;
-          img {
-            width: 1rem;
-          }
-        }
+      padding: 1rem 3rem;
+      p {
+        font-size: 1.6rem;
+        padding: .7rem;
+        color: white;
+        background: @dark-yellow;
+        border-radius: 6px;
       }
     }
 
@@ -131,6 +135,7 @@ export default {
           .padding;
           .location {
             color: #999;
+            font-size: 1.4rem;
           }
           p {
             text-align: left;

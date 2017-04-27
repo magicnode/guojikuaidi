@@ -1,23 +1,19 @@
 <template>
   <footer>
     <ul>
-      <li v-for="item in foot" @click="goPath(item.path)" :class="item.class">
+      <li v-for="item in foot" @click="goPath(item.path)">
         <img :src="item.icon" :alt="item.name">
         <p>{{ item.name }}</p>
       </li>
     </ul>
-    <div class="footer-send" @click.stop="goPath('/send')">
-      <img :src="send.icon" :alt="send.name">
-    </div>
   </footer>
 </template>
 
 <script>
-import homePng from '../assets/images/home_miaoji_54_nor.png'
 import searchPng from '../assets/images/home_miaoji_57.png'
 import msgPng from '../assets/images/home_miaoji_60.png'
 import minePng from '../assets/images/home_miaoji_63.png'
-import sendPng from '../assets/images/wode_52.png'
+// import sendPng from '../assets/images/wode_52.png'
 
 export default {
   name: 'footer',
@@ -30,32 +26,18 @@ export default {
   data () {
     return {
       foot: [{
-        name: '妙寄',
-        path: '/index',
-        icon: homePng,
-        class: 'fl'
+        name: '收件',
+        path: '/pickup',
+        icon: searchPng
       }, {
-        name: '查询',
-        path: '/index',
-        icon: searchPng,
-        class: 'fl'
+        name: '寄件',
+        path: '/send',
+        icon: msgPng
       }, {
         name: '我的',
         path: '/usercenter',
-        icon: minePng,
-        class: 'fr'
-      }, {
-        name: '消息',
-        path: '/index',
-        icon: msgPng,
-        class: 'fr'
-      }],
-      send: {
-        name: '寄件',
-        path: '/index',
-        icon: sendPng,
-        class: ''
-      }
+        icon: minePng
+      }]
     }
   },
   created () {
@@ -76,27 +58,11 @@ footer {
   bottom: 0;
   width: 100%;
   background: white;
-  .clear {
-    content: '';
-    clear: both;
-  }
-  .fl {
-    float: left;
-    &:after {
-      .clear;
-    }
-  }
-  .fr {
-    float: right;
-    &:after {
-      .clear;
-    }
-  }
   ul {
     width: 100%;
     overflow: hidden;
-    padding-top: 0.05rem;
-    padding-bottom: 0.05rem;
+    padding: 1rem 0;
+    display: flex;
     li {
       width: 17%;
       padding: 0.1rem;

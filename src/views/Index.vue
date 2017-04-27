@@ -13,7 +13,6 @@
         <p>{{item.name}}</p>
       </div>
     </div>
-
   </div>
 </template>
 <script>

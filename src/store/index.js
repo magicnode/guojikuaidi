@@ -1,10 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import * as address from './modules/address'
+import * as user from './modules/user'
+
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
+    address,
+    user
   },
   state: {
     title: '妙寄',

@@ -6,7 +6,7 @@
       <div :class="{'header-hide': isIndex}" class="header-left" @click="goBack">
         <slot name="left"></slot>
       </div>
-      <div class="header-title" @click.stop="goIndex">{{title}}</div>
+      <div class="header-title">{{title}}</div>
       <div class="header-right">        
       </div>
     </div>

@@ -3,21 +3,23 @@
     <mj-header title="添加地址"></mj-header>
     <div class="addaddress-container">
       <group>
-         <x-input title="真实姓名" v-model="name" placeholder="请填写您的真实姓名"></x-input>
-         <x-input title="联系方式" v-model="lianxi" placeholder="请输入手机号"></x-input>
-         <x-address class="quyu" title="所在地区" v-model="value" :list="addressData" placeholder="请选择省市区"></x-address>
-         <x-input title="详细地址" v-model="detail" placeholder="请详细到门牌号"></x-input>
-         <div class="g-radio">
-           <label><input type="radio" name="type" value="">寄件地址</label>
-           <label><input type="radio" name="type" value="">收件地址</label>
-         </div>
+         <x-input title="姓名" v-model="name" placeholder="请填写您的真实姓名"></x-input>
+         <x-input title="电话" v-model="mobile" placeholder="请输入手机号"></x-input>
+         <x-address class="quyu" title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
+         <x-input title="地址" v-model="address" placeholder="请详细到门牌号"></x-input>
+       </group>
+       <group>
          <x-switch title="设为默认地址" v-model="value"></x-switch>
        </group>
+       <div class="addaddress-container-add">
+         <p @click.stop="saveAddress">保存</p>
+       </div>
     </div>
   </div>
 </template>
 <script>
-import { XInput, XSwitch, XAddress, ChinaAddressV3Data, Radio } from 'vux'
+import { XInput, XSwitch, XAddress, ChinaAddressV3Data, Radio, Value2nameFilter as value2name } from 'vux'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'addaddress',
@@ -32,16 +34,26 @@ export default {
   data () {
     return {
       addressData: ChinaAddressV3Data,
-      value: false,
       name: '',
-      lianxi: '',
-      quyu: [],
-      code: '',
-      detail: '',
-      radioData: [ '寄件地址', '收件地址' ]
+      mobile: '',
+      location: [],
+      address: '',
+      value: false
     }
   },
   methods: {
+    ...mapActions([
+      'addAddress'
+    ]),
+    saveAddress () {
+      const rel = value2name(this.location, ChinaAddressV3Data).split(' ')
+      console.log('as', rel)
+      const checked = this.value ? 1 : 2
+      let {type} = this.$route.query
+      type = type === 'pickup' ? 2 : 1
+      this.addAddress({address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
+      this.$router.go(-1)
+    }
   }
 }
 </script>
@@ -53,13 +65,30 @@ export default {
   min-height: 100vh;
   background-color: @bg-grey;
   &-container {
+    .weui-cell__bd.weui-cell__primary {
+      input {
+        text-align: right;
+      }
+    }
     .quyu {
       .weui-label {
-        width: 5em;
+        text-align: left;
+        padding-left: .6rem;
       }
       .vux-popup-picker-select {
-        color: #999;
-        text-align: left!important;
+        color: #666;
+      }
+    }
+
+    &-add {
+      margin-top: 10rem;
+      padding: 1rem 3rem;
+      p {
+        font-size: 1.6rem;
+        padding: .7rem;
+        color: white;
+        background: @dark-yellow;
+        border-radius: 6px;
       }
     }
 
