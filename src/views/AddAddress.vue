@@ -3,10 +3,10 @@
     <mj-header title="添加地址"></mj-header>
     <div class="addaddress-container">
       <group>
-         <x-input title="姓名" v-model="name" placeholder="请填写您的真实姓名"></x-input>
-         <x-input title="电话" v-model="mobile" placeholder="请输入手机号"></x-input>
+         <x-input title="姓名" v-model="name" placeholder="请填写您的真实姓名" required></x-input>
+         <x-input title="电话" v-model="mobile" placeholder="请输入手机号" required is-type='be2333'></x-input>
          <x-address class="quyu" title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
-         <x-input title="地址" v-model="address" placeholder="请详细到门牌号"></x-input>
+         <x-input title="地址" v-model="address" placeholder="请详细到门牌号" required></x-input>
        </group>
        <group>
          <x-switch title="设为默认地址" v-model="value"></x-switch>
@@ -45,12 +45,29 @@ export default {
     ...mapActions([
       'addAddress'
     ]),
+    checkMobile (num) {
+      const reg = /^1[3|4|5|8][0-9]\d{4,8}$/
+      return reg.test(num)
+    },
     saveAddress () {
       const rel = value2name(this.location, ChinaAddressV3Data).split(' ')
-      console.log('as', rel)
       const checked = this.value ? 1 : 2
       let {type} = this.$route.query
       type = type === 'pickup' ? 2 : 1
+      if (!this.name || !this.mobile || !this.address || !this.location) {
+        this.$vux.toast.show({
+          text: '请将信息填写完整',
+          type: 'warn'
+        })
+        return
+      }
+      if (!this.checkMobile(this.mobile)) {
+        this.$vux.toast.show({
+          text: '手机号格式不对，请重新填写',
+          type: 'warn'
+        })
+        return
+      }
       this.addAddress({address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
       this.$router.go(-1)
     }
