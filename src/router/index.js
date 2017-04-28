@@ -36,6 +36,10 @@ export default new Router({
     name: 'AddAddress',
     component: require('@/views/AddAddress')
   }, {
+    path: '/address/edit',
+    name: 'EditAddress',
+    component: require('@/views/EditAddress')
+  }, {
     path: '/pickup/detail',
     name: 'PickUpDetail',
     component: require('@/views/PickUpDetail')

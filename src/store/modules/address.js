@@ -85,6 +85,20 @@ export const actions = {
     .catch(err => {
       console.error(err)
     })
+  },
+  eidtAddress ({dispatch}, {id, address, province, city, district, mobile, name, checked = 2, userId = local.userId, addressType = 1}) {
+    instance.get(addressApi.update, {
+      params: {id, address, province, city, district, mobile, name, checked, userId, addressType}
+    })
+    .then((res) => {
+      console.log('res url', res.request.responseURL)
+      if (res.status === 200) {
+        dispatch('changeAddress')
+      }
+    })
+    .catch(err => {
+      console.error(err)
+    })
   }
 }
 

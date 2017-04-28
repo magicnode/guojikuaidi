@@ -1,18 +1,18 @@
 <template>
   <div class="addaddress">
-    <mj-header title="添加地址"></mj-header>
+    <mj-header title="编辑地址"></mj-header>
     <div class="addaddress-container">
       <group>
          <x-input title="姓名" v-model="name" placeholder="请填写您的真实姓名" required></x-input>
          <x-input title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
-         <x-address class="quyu" title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
+         <x-address class="quyu" required title="地区" raw-value v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
          <x-input title="地址" v-model="address" placeholder="请详细到门牌号" required></x-input>
        </group>
        <group>
          <x-switch title="设为默认地址" v-model="value"></x-switch>
        </group>
        <div class="addaddress-container-add">
-         <p @click.stop="saveAddress">保存</p>
+         <p @click.stop="confirm">确定</p>
        </div>
     </div>
   </div>
@@ -22,7 +22,7 @@ import { XInput, XSwitch, XAddress, ChinaAddressV3Data, Radio, Value2nameFilter 
 import { mapActions } from 'vuex'
 
 export default {
-  name: 'addaddress',
+  name: 'editaddress',
   components: {
     XInput,
     XSwitch,
@@ -30,10 +30,21 @@ export default {
     Radio
   },
   created () {
+    const query = this.$route.query
+    console.log('query', query)
+    this.id = query.id
+    this.name = query.name
+    this.mobile = query.mobile
+    this.address = query.address
+    this.location = [query.province, query.city, query.district]
+    if (query.checked === 1) {
+      this.value = true
+    }
   },
   data () {
     return {
       addressData: ChinaAddressV3Data,
+      id: '',
       name: '',
       mobile: '',
       location: [],
@@ -43,13 +54,13 @@ export default {
   },
   methods: {
     ...mapActions([
-      'addAddress'
+      'eidtAddress'
     ]),
     checkMobile (num) {
       const reg = /^1[3|4|5|8][0-9]\d{4,8}$/
       return reg.test(num)
     },
-    saveAddress () {
+    confirm () {
       const rel = value2name(this.location, ChinaAddressV3Data).split(' ')
       const checked = this.value ? 1 : 2
       let {type} = this.$route.query
@@ -68,7 +79,7 @@ export default {
         })
         return
       }
-      this.addAddress({address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
+      this.eidtAddress({id: this.id, address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
       this.$router.go(-1)
     }
   }

@@ -13,7 +13,7 @@
         <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.name">
           <div class="flex address-container-list__item--info">
             <div>
-              <p>{{item.name}} {{item.phone}}</p>
+              <p>{{item.name}} <strong>{{item.mobile}}</strong></p>
               <p class="location" style="font-size:1.4rem;">{{item.province + item.city + ' ' + item.district + item.address}}</p>
             </div>
            <img src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
@@ -23,11 +23,11 @@
               <img src="../assets/images/sen_btn_che.png" alt="">
               <span>默认地址</span>
             </span>
-            <span class="not-default" v-show="item.checked == 2">
+            <span class="not-default" v-show="item.checked == 2" @click.stop="changeChecked(item.id, item.checked)">
               <img src="../assets/images/add_ico_nor.png" alt="">
               <span>默认地址</span>
             </span>
-            <span class="edit">
+            <span class="edit" @click="goPath('/address/edit', item)">
               <img src="../assets/images/add_ico_cha.png" alt="">
               <span>编辑</span>
             </span>
@@ -92,6 +92,12 @@ export default {
           })
         }
       })
+    },
+    changeChecked (id, checked) {
+      if (checked == 1) {
+        return
+      }
+      
     }
   }
 }
