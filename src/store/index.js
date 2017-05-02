@@ -1,21 +1,28 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import * as address from './modules/address'
 import * as user from './modules/user'
+import * as send from './modules/send'
+import * as address from './modules/address'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
-    address,
-    user
+    user,
+    send,
+    address
   },
   state: {
     title: '妙寄',
     isLoading: false,
     isJump: false,
-    jumpSrc: 'http://112.74.34.241:3000/pics/random?show=1'
+    jumpSrc: 'http://112.74.34.241:3000/pics/random?show=1',
+    toast: {
+      show: false,
+      type: 'success',
+      info: 'show'
+    }
   },
   actions: {
   },

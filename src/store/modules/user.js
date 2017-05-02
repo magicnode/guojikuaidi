@@ -9,7 +9,7 @@ export const getters = {
   getUserId: state => {
     let userId = state.userId
     if (!userId) {
-      userId = window.localStorage.userId ? window.localStorage.userId : null
+      userId = window.localStorage.userId ? window.localStorage.userId : 1
     }
     return userId
   }

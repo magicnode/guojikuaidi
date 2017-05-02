@@ -8,5 +8,9 @@ export const address = {
   add: url + 'insertAddress',
   update: url + 'updateAddress',
   delete: url + 'deleteAddress',
-  check: url + 'check'
+  checked: url + 'checked'
+}
+
+export const send = {
+  index: url + 'findSend'
 }

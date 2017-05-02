@@ -27,25 +27,14 @@
 
       <div class="send-container-select">
         <group>
-          <selector placeholder="请选择快递品牌" v-model="express" title="快递品牌" name="district" :options="list" @on-change="onChange"></selector>
+          <selector placeholder="请选择快递品牌" v-model="express" title="营业厅" name="district" :options="list" @on-change="onChange"></selector>
+          <selector placeholder="请选择快递品牌"  v-model="express" title="快递品牌" name="district" :options="list" @on-change="onChange"></selector>
+          <selector placeholder="请选择快递品牌" v-model="express" title="物品描述" name="district" :options="list" @on-change="onChange"></selector>
+          <selector placeholder="请选择快递品牌" v-model="express" title="备注" name="district" :options="list" @on-change="onChange"></selector>
         </group>
       </div>
-
-      <div class="send-container-detail">
-        <div>
-          <label><span>物品描述:</span><input type="text" name="intro" value=""></label>
-        </div>
-        <div>
-          <label><span>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:</span><textarea name=""></textarea></label>
-        </div>
-      </div>
-
-      <div class="send-container-hall flex">
-        <p>营业厅: 长宁区分部</p>
-        <img src="../assets/images/add_ico_add.png"alt="">
-      </div>
-
-      <div class="send-container-count">
+      
+<!--       <div class="send-container-count">
         <div class="send-container-count__title flex">
           <p>运价计算</p>
           <button type="" @click="goPath('/send/detail')">寄件列表</button>
@@ -58,9 +47,8 @@
           <p>=</p>
           <input type="text" name="" disabled>
         </div>
-
-        <button type="submit" class="btn-sub">提交</button>
-      </div>
+      </div> -->
+      <button type="submit" class="btn-sub">提交</button>
 
     </div>
   </div>

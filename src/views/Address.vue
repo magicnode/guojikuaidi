@@ -19,13 +19,13 @@
            <img src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
           </div>
           <div class="flex address-container-list__item--func flex">
-            <span class="is-default" v-show="item.checked == 1">
+            <span class="is-default" v-show="item.checked == 1" @click.stop="changeChecked(item.id, item.checked)">
               <img src="../assets/images/sen_btn_che.png" alt="">
               <span>默认地址</span>
             </span>
             <span class="not-default" v-show="item.checked == 2" @click.stop="changeChecked(item.id, item.checked)">
               <img src="../assets/images/add_ico_nor.png" alt="">
-              <span>默认地址</span>
+              <span>设为默认</span>
             </span>
             <span class="edit" @click="goPath('/address/edit', item)">
               <img src="../assets/images/add_ico_cha.png" alt="">
@@ -49,6 +49,9 @@ export default {
   name: 'address',
   created () {
     this.changeAddress()
+    if (this.result['type'] === 'warn') {
+      this.showToast()
+    }
   },
   data () {
     return {
@@ -59,20 +62,28 @@ export default {
     ...mapGetters({
       userId: 'getUserId',
       data: 'getAddress',
-      send: 'getsendAddress',
-      pickup: 'getpickupAddress'
+      result: 'getAddressResult'
     })
   },
   methods: {
     goPath (path, query) {
       this.$router.push({path, query})
     },
+    showToast () {
+      if (this.result['show'] === true) {
+        this.$vux.toast.show({
+          text: this.result['info'],
+          type: this.result['type']
+        })
+      }
+    },
     changeShow (type) {
       this.addressType = type
     },
     ...mapActions([
       'changeAddress',
-      'delAddress'
+      'delAddress',
+      'checkedAddress'
     ]),
     deleteItem (id) {
       console.log('id', id)
@@ -94,10 +105,26 @@ export default {
       })
     },
     changeChecked (id, checked) {
-      if (checked == 1) {
-        return
+      // if (checked === 1) {
+      //   return
+      // }
+      const _this = this
+      let type = 1
+      if (this.addressType !== 'send') {
+        type = 2
       }
-      
+      this.$vux.confirm.show({
+        // 组件除show外的属性
+        title: '确定将这一地址设置为默认地址吗?',
+        onCancel () {
+          console.log(_this)
+        },
+        onConfirm () {
+          _this.checkedAddress({id, addressType: type})
+          // 显示
+          _this.showToast()
+        }
+      })
     }
   }
 }

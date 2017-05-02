@@ -14,6 +14,10 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'app',
+  data () {
+    return {
+    }
+  },
   components: {
     Loading
   },
@@ -39,7 +43,7 @@ html,body{
 }
 
 body {
-  background-color: #fbf9fe;
+  background-color: #efeff4;
 }
 
 @media screen and (min-width:321px) and (max-width:375px){html{font-size:10px}}

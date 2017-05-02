@@ -63,8 +63,7 @@ export default {
     confirm () {
       const rel = value2name(this.location, ChinaAddressV3Data).split(' ')
       const checked = this.value ? 1 : 2
-      let {type} = this.$route.query
-      type = type === 'pickup' ? 2 : 1
+      let {addressType} = this.$route.query
       if (!this.name || !this.mobile || !this.address || !this.location) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
@@ -79,7 +78,7 @@ export default {
         })
         return
       }
-      this.eidtAddress({id: this.id, address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
+      this.eidtAddress({id: this.id, address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType})
       this.$router.go(-1)
     }
   }
