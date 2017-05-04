@@ -5,7 +5,7 @@
       <div class="address-container-tab">
         <tab active-color='#ff750f'>
           <tab-item selected @on-item-click="changeShow('send')">待寄件</tab-item>
-          <tab-item @on-item-click="changeShow('pickup')">收件地址</tab-item>
+          <tab-item @on-item-click="changeShow('pickup')">已寄件</tab-item>
         </tab>
       </div>
       <div class="senddetail-cell">

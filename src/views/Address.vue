@@ -4,22 +4,22 @@
     <div class="address-container">
       <div class="address-container-tab">
         <tab active-color='#ff750f'>
-          <tab-item selected @on-item-click="changeShow('send')">寄件地址</tab-item>
-          <tab-item @on-item-click="changeShow('pickup')">收件地址</tab-item>
+          <tab-item :selected="addressType ==='send'" @on-item-click="changeShow('send')">寄件地址</tab-item>
+          <tab-item :selected="addressType === 'pickup'" @on-item-click="changeShow('pickup')">收件地址</tab-item>
         </tab>
       </div>
-
+      <p v-if="pick" style="text-align: left;font-size: 1.4rem;padding: 0.5rem;padding-bottom: 0;">点击手机号或姓名处选择地址</p>
       <div class="address-container-list">
-        <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.name">
+        <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id">
           <div class="flex address-container-list__item--info">
-            <div>
+            <div @click="selectAddress(item.id)">
               <p>{{item.name}} <strong>{{item.mobile}}</strong></p>
               <p class="location" style="font-size:1.4rem;">{{item.province + item.city + ' ' + item.district + item.address}}</p>
             </div>
            <img src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
           </div>
           <div class="flex address-container-list__item--func flex">
-            <span class="is-default" v-show="item.checked == 1" @click.stop="changeChecked(item.id, item.checked)">
+            <span class="is-default" v-show="item.checked == 1">
               <img src="../assets/images/sen_btn_che.png" alt="">
               <span>默认地址</span>
             </span>
@@ -52,10 +52,14 @@ export default {
     if (this.result['type'] === 'warn') {
       this.showToast()
     }
+    const {type, pick} = this.$route.query
+    this.addressType = type || 'send'
+    this.pick = pick === '1'
   },
   data () {
     return {
-      addressType: 'send'
+      addressType: 'send',
+      pick: false
     }
   },
   computed: {
@@ -77,13 +81,23 @@ export default {
         })
       }
     },
+    selectAddress (id) {
+      if (!this.pick) return
+      if (this.addressType === 'send') {
+        this.selectSendAddress({sendAddressId: id})
+      } else {
+        this.selectPickUpAddress({receiptAddressId: id})
+      }
+    },
     changeShow (type) {
       this.addressType = type
     },
     ...mapActions([
       'changeAddress',
       'delAddress',
-      'checkedAddress'
+      'checkedAddress',
+      'selectSendAddress',
+      'selectPickUpAddress'
     ]),
     deleteItem (id) {
       console.log('id', id)
@@ -105,9 +119,9 @@ export default {
       })
     },
     changeChecked (id, checked) {
-      // if (checked === 1) {
-      //   return
-      // }
+      if (checked === 1) {
+        return
+      }
       const _this = this
       let type = 1
       if (this.addressType !== 'send') {

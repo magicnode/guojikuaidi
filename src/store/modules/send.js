@@ -13,13 +13,25 @@ export const state = {
   data: {},
   query: {
   },
+  add: {
+    brand: '',
+    describe: '',
+    note: '',
+    office: '',
+    order: '',
+    receiptAddressId: '',
+    sendAddressId: '',
+    sum: '',
+    type: ''
+  },
   switchtype: 'wait'
 }
 
 // getters
 export const getters = {
   getSend: state => state.data,
-  getSendSwitch: state => state.switchtype
+  getSendSwitch: state => state.switchtype,
+  getSendAdd: state => state.add
 }
 
 // actions
@@ -58,6 +70,12 @@ export const actions = {
     .catch(err => {
       console.error(err)
     })
+  },
+  selectSendAddress ({ commit }, { sendAddressId }) {
+    commit(types.SET_SEND_ADD, {sendAddressId})
+  },
+  selectPickUpAddress ({ commit }, {receiptAddressId}) {
+    commit(types.SET_SEND_ADD, {receiptAddressId})
   }
 }
 
@@ -67,5 +85,18 @@ export const mutations = {
   },
   [types.SET_SEND_SWITCH] (state, {switchtype}) {
     state.switch = switchtype
+  },
+  [types.SET_SEND_ADD] (state, {
+     brand = state.add.brand,
+     describe = state.add.describe,
+     note = state.add.note,
+     office = state.add.office,
+     order = state.add.order,
+     receiptAddressId = state.add.receiptAddressId,
+     sendAddressId = state.add.sendAddressId,
+     sum = state.add.sum,
+     type = state.add.type }) {
+    console.log('state', state.add)
+    state.add = { brand, describe, note, office, order, receiptAddressId, sendAddressId, sum, type }
   }
 }
