@@ -22,7 +22,8 @@ const store = new Vuex.Store({
       show: false,
       type: 'success',
       info: 'show'
-    }
+    },
+    brand: []
   },
   actions: {
   },

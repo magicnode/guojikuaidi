@@ -8,9 +8,11 @@ export const address = {
   add: url + 'insertAddress',
   update: url + 'updateAddress',
   delete: url + 'deleteAddress',
-  checked: url + 'checked'
+  checked: url + 'checked',
+  default: url + 'GETADDRESSDEFAULT'
 }
 
 export const send = {
-  index: url + 'findSend'
+  index: url + 'findSend',
+  create: url + 'insertSend'
 }

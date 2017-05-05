@@ -63,5 +63,9 @@ export default new Router({
     path: '/smslogin',
     name: 'SmsLogin',
     component: require('@/views/SmsLogin')
+  }, {
+    path: '/hallmap',
+    name: 'HallMap',
+    component: require('@/views/HallMap')
   }]
 })

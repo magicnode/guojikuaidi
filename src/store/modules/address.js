@@ -14,6 +14,7 @@ export const state = {
   query: {
   },
   result: {
+    show: false,
     type: 'success',
     info: '成功'
   }

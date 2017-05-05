@@ -73,6 +73,9 @@ footer {
       margin: 0 auto;
       text-decoration: none;
       display: block;
+      p {
+        font-size: 1.4rem;
+      }
       img {
         width: 33%;
         max-height: 3rem;

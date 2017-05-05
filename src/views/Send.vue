@@ -7,8 +7,8 @@
           <span class="bgblue">寄</span>
         </div>
         <div class="send-container-address__info">
-          <p>张师傅 <strong>15751158939</strong></p>
-          <p>长in过去14 号 奥施康定</p>
+          <p>{{sendAddress['name']}} <strong>{{sendAddress['mobile']}}</strong></p>
+          <p>{{sendAddress['address']}}</p>
         </div>
         <div class="send-container-address__link">
           <router-link to="/address?type=send&pick=1">
@@ -21,8 +21,8 @@
           <span class="bgyellow">收</span>
         </div>
         <div class="send-container-address__info">
-          <p>atom <strong>15751158939</strong></p>
-          <p>长in过去14 号 奥施康定</p>
+          <p>{{pickupAddress['name']}} <strong>{{pickupAddress['mobile']}}</strong></p>
+          <p>{{pickupAddress['address']}}</p>
         </div>
         <div class="send-container-address__link">
           <router-link to="/address?type=pickup&pick=1">
@@ -49,7 +49,7 @@
       </div>
       
       <div class="" style="padding:2rem;"> 
-        <button type="submit" class="btn-sub">提交</button>
+        <button type="submit" class="btn-sub" @click="submitSend">提交</button>
       </div>
 
     </div>
@@ -57,7 +57,7 @@
 </template>
 <script>
 import { Selector, XInput } from 'vux'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'send',
@@ -66,11 +66,17 @@ export default {
     XInput
   },
   created () {
+    if (!this.sendAddress['id'] && !this.pickupAddress['id']) {
+      this.setDefaultAddress()
+    }
   },
   computed: {
     ...mapGetters({
       address: 'getAddress',
-      sendadd: 'getSendAdd'
+      sendadd: 'getSendAdd',
+      sendAddress: 'getSendAddress',
+      pickupAddress: 'getPickupAddress',
+      result: 'getSendResult'
     })
   },
   data () {
@@ -90,11 +96,42 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'setDefaultAddress',
+      'createSend'
+    ]),
+    showToast () {
+      if (this.result['show'] === true) {
+        this.$vux.toast.show({
+          text: this.result['info'],
+          type: this.result['type']
+        })
+      }
+    },
     onChange (val) {
       console.log(val)
     },
     goPath (path) {
       this.$router.push({path})
+    },
+    submitSend () {
+      console.log('express', this.sendAddress)
+      console.log('pickupddress', this.pickupAddress)
+      this.createSend({
+        brand: this.express,
+        describe: this.describe,
+        note: this.label,
+        office: 'asd',
+        order: '1234654',
+        receiptAddressId: this.pickupAddress['id'],
+        sendAddressId: this.sendAddress['id'],
+        sum: '12563',
+        type: '212'
+      })
+      const _this = this
+      setTimeout(function () {
+        _this.showToast()
+      }, 800)
     }
   }
 }
@@ -135,11 +172,12 @@ export default {
       }
       &__info {
         padding-left:1rem;
-        flex: 4;
+        flex: 3;
         text-align: left;
         p {
+          max-width: 14rem;
+          white-space: pre-wrap;
           font-size: 1.6rem;
-          white-space: nowrap;
         }
       }
       &__link {

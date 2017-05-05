@@ -12,7 +12,7 @@
       <div class="address-container-list">
         <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id">
           <div class="flex address-container-list__item--info">
-            <div @click="selectAddress(item.id)">
+            <div @click="selectAddress(item)">
               <p>{{item.name}} <strong>{{item.mobile}}</strong></p>
               <p class="location" style="font-size:1.4rem;">{{item.province + item.city + ' ' + item.district + item.address}}</p>
             </div>
@@ -81,13 +81,18 @@ export default {
         })
       }
     },
-    selectAddress (id) {
+    selectAddress (item) {
       if (!this.pick) return
+      console.log('item', item)
       if (this.addressType === 'send') {
-        this.selectSendAddress({sendAddressId: id})
+        this.setSendAddress({sendAddress: item})
       } else {
-        this.selectPickUpAddress({receiptAddressId: id})
+        this.setPickupAddress({pickupAddress: item})
       }
+      this.$vux.toast.show({
+        text: '选择地址成功',
+        type: 'success'
+      })
     },
     changeShow (type) {
       this.addressType = type
@@ -96,8 +101,8 @@ export default {
       'changeAddress',
       'delAddress',
       'checkedAddress',
-      'selectSendAddress',
-      'selectPickUpAddress'
+      'setSendAddress',
+      'setPickupAddress'
     ]),
     deleteItem (id) {
       console.log('id', id)

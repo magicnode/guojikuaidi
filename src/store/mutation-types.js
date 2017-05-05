@@ -9,3 +9,7 @@ export const SET_SEND = 'SET_SEND'
 export const SET_SEND_SWITCH = 'SET_SEND_SWITCH'
 
 export const SET_SEND_ADD = 'SET_SEND_ADD'
+
+export const SET_SEND_RES = 'SET_SEND_RES'
+
+export const SET_SEND_DEFAULTADDRESS = 'SET_SEND_DEFAULTADDRESS'
