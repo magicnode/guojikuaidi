@@ -15,7 +15,7 @@ export default {
   mounted () {
     let mapObj = new window.AMap.Map('iCenter', {
       resizeEnable: true,
-      zoom: 15
+      zoom: 14
     })
     mapObj.plugin('AMap.Geolocation', function () {
       let geolocation = new window.AMap.Geolocation({
@@ -33,9 +33,24 @@ export default {
         zoomToAccuracy: false
       })
       mapObj.addControl(geolocation)
+      // let bounds = mapObj.getBounds()
+      // alert(bounds)
+      // let marker1 = new window.AMap.Marker({
+      //   position: bounds[0],
+      //   offset: new window.AMap.Pixel(-17, -42),
+      //   draggable: true
+      // })
+      // marker1.setMap(mapObj)
+      // let marker2 = new window.AMap.Marker({
+      //   position: bounds[1],
+      //   offset: new window.AMap.Pixel(17, 42),
+      //   draggable: true
+      // })
+      // marker2.setMap(mapObj)
+      geolocation.getCurrentPosition()
       window.AMap.event.addListener(geolocation, 'complete', function (data) {
-        alert(data.position)
-        const bounds = mapObj.getBounds()
+        let bounds = mapObj.getBounds()
+        // alert(bounds + ';;;;;' + bounds.getSouthWest() + ';;;' + bounds.getNorthEast())
         let marker1 = new window.AMap.Marker({
           position: bounds[0],
           offset: new window.AMap.Pixel(-17, -42),
@@ -44,7 +59,7 @@ export default {
         marker1.setMap(mapObj)
         let marker2 = new window.AMap.Marker({
           position: bounds[1],
-          offset: new window.AMap.Pixel(-17, -42),
+          offset: new window.AMap.Pixel(17, 42),
           draggable: true
         })
         marker2.setMap(mapObj)

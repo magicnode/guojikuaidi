@@ -4,37 +4,27 @@
     <div class="senddetail-container">
       <div class="address-container-tab">
         <tab active-color='#ff750f'>
-          <tab-item selected @on-item-click="changeShow('send')">待寄件</tab-item>
-          <tab-item @on-item-click="changeShow('pickup')">已寄件</tab-item>
+          <tab-item selected @on-item-click="changeShow('wait')">待寄件</tab-item>
+          <tab-item @on-item-click="changeShow('ready')">已寄件</tab-item>
         </tab>
       </div>
-      <div class="senddetail-cell">
-<!--         <div class="senddetail-cell-detail" @click="goPath" v-for="item in data[switchtype]" :key="item.id">
-          <p class="">
-            <span class="senddetail-cell-detail__title">营业厅:</span>
-              {{item.office}}
-            <span class="wait-senddetail clearfixed">等待取件</span>
-          </p>
-          <p><span class="senddetail-cell-detail__title">手机号:</span>金刚大剧院</p>
-          <p>上海 闵行 七宝镇 信隆路1212号</p>
-          <p class="time">2017-4-10</p>
-        </div> -->
-        <div class="senddetail-cell-detail">
+      <div class="senddetail-cell" v-show="show === 'wait'">
+        <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
           <div class="senddetail-cell-detail--box border-bottom-grey">
-            <span class="senddetail-cell-detail__title">营业厅: asdasd <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
-            <span class="wait-senddetail clearfixed">等待取件</span>
+            <span class="senddetail-cell-detail__title">营业厅: {{item.office}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
+            <span class="wait-senddetail clearfixed">{{item.type + '状态'}}</span>
           </div>
-          <div class="senddetail-cell-detail--box flex border-bottom-grey">
+          <div class="senddetail-cell-detail--box flex border-bottom-grey" @click="goPath">
             <div class="send-icon">
               收
             </div>
             <div>
-              <p>atom  15751158939</p>
-              <p>shanghai changning uqdnj </p>
+              <p>atom  {{item.receiptAddress.mobile}}</p>
+              <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
             </div>
           </div>
           <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-            <p class="time">2017-4-10  14:00</p>
+            <p class="time">{{item.createTime}}</p>
             <div>
               <button type="" class="cancle-btn">取消订单</button>
               <button type="" class="gosend-btn">去寄件</button>
@@ -42,23 +32,31 @@
           </div>
         </div>
       </div>
-
-<!--       <div class="senddetail-cell">
-        <p class="senddetail-cell-status">已寄件:</p>
-        <div class="senddetail-cell-detail">
-          <p><span>单号:</span>8455415245555 <span class="already-senddetail clearfixed">已经签收</span></p>
-          <p><span>营业厅:</span>金刚大剧院</p>
-          <p>上海 闵行 七宝镇 信隆路1212号</p>
-          <p class="time">2017-4-10</p>
+      <!-- 已寄件 -->
+      <div class="senddetail-cell" v-show="show === 'ready'">
+        <div class="senddetail-cell-detail" v-for="item in data['ready']" :key="item.id">
+          <div class="senddetail-cell-detail--box border-bottom-grey">
+            <span class="senddetail-cell-detail__title">{{item.brand + ' '}}订单号: {{item.order}}</span>
+            <span class="wait-senddetail clearfixed">{{item.type + '状态'}}</span>
+          </div>
+          <div class="senddetail-cell-detail--box flex border-bottom-grey" @click="goPath">
+            <div class="send-icon">
+              收
+            </div>
+            <div>
+              <p>atom  {{item.receiptAddress.mobile}}</p>
+              <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
+            </div>
+          </div>
+          <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
+            <p class="time">{{item.createTime}}</p>
+            <span class="sum-money">{{'￥' + item.sum}}</span>
+            <div>
+              <button type="" class="cancle-btn">查看订单</button>
+            </div>
+          </div>
         </div>
-
-        <div class="senddetail-cell-detail">
-          <p><span>单号:</span>8455415245555 <span class="already-senddetail clearfixed">已经签收</span></p>
-          <p><span>营业厅:</span>金刚大剧院</p>
-          <p>上海 闵行 七宝镇 信隆路1212号</p>
-          <p class="time">2017-4-10</p>
-        </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -68,8 +66,10 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'senddetail',
   created () {
-    this.setSend()
-    console.log('data waite', this.data)
+    if (!this.data.init) {
+      this.initSendList()
+    }
+    console.log('data', this.data)
   },
   computed: {
     ...mapGetters({
@@ -79,12 +79,26 @@ export default {
   },
   data () {
     return {
+      show: 'wait'
     }
   },
   methods: {
     ...mapActions([
       'setSend'
     ]),
+    changeShow (type) {
+      this.show = type
+    },
+    showToast (data) {
+      this.$vux.toast.show({
+        text: data.text || '出错啦',
+        type: data.type || 'warn'
+      })
+    },
+    async initSendList () {
+      const result = await this.setSend()
+      this.showToast(result)
+    },
     goPath () {
       this.$router.push({path: 'qr'})
     }
@@ -101,7 +115,7 @@ export default {
 
 
 .border-bottom-grey {
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid #ececec;
 }
 .send-icon {
   border-radius: 50%;
@@ -113,6 +127,11 @@ export default {
   font-size: 1.3rem;
   line-height: 3rem;
   text-align: center;
+}
+
+.sum-money {
+ font-size: 1.4rem;
+ color: @dark-yellow;
 }
 
 .cancle-btn {

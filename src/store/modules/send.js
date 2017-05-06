@@ -10,7 +10,11 @@ let instance = axios.create({
 })
 
 export const state = {
-  data: {},
+  data: {
+    init: false,
+    wait: [],
+    data: []
+  },
   query: {
   },
   add: {
@@ -54,40 +58,44 @@ export const getters = {
 
 // actions
 export const actions = {
-  setSend ({ commit }) {
-    instance.get(sendApi.index, {
-      params: {userId: local.userId}
-    })
-    .then((res) => {
-      console.log('data rs', res.request.responseURL)
+  async setSend ({ commit }) {
+    try {
+      const res = await instance.get(sendApi.index, {
+        params: {userId: local.userId}
+      })
       if (res.status === 200) {
-        let data = res.data
+        let resdata = res.data
+        let data = {}
         let wait = []
         let ready = []
-        for (let i = 0, len = data.length; i < len; i++) {
-          let item = data[i]
+        for (let i = 0, len = resdata.length; i < len; i++) {
+          let item = resdata[i]
           if (item.type === 4) {
             ready.push(item)
           } else {
             wait.push(item)
           }
         }
-        // pickup = pickup.sort((v1, v2) => {
-        //   return v1.checked - v2.checked
-        // })
-        // send = send.sort((v1, v2) => {
-        //   return v1.checked - v2.checked
-        // })
         data.wait = wait
         data.ready = ready
-        console.log('data', data)
-        console.log('data wait', data.wait)
+        data.init = true
         commit(types.SET_SEND, {data})
+        return {
+          text: '获取寄件列表成功',
+          type: 'success'
+        }
       }
-    })
-    .catch(err => {
+      return {
+        text: '获取寄件列表失败',
+        type: 'warn'
+      }
+    } catch (err) {
       console.error(err)
-    })
+      return {
+        text: '获取寄件列表失败',
+        type: 'warn'
+      }
+    }
   },
   selectSendAddress ({ commit }, { sendAddressId }) {
     commit(types.SET_SEND_ADD, {sendAddressId})
@@ -138,11 +146,14 @@ export const actions = {
       })
       if (res.data) {
         commit(types.SET_SEND_RES, {show: true, type: 'success', info: '寄件成功'})
+        return true
       } else {
         commit(types.SET_SEND_RES, {show: true, type: 'warn', info: '寄件失败'})
+        return false
       }
     } catch (err) {
       console.log(err)
+      return true
     }
   }
 }

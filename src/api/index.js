@@ -16,3 +16,7 @@ export const send = {
   index: url + 'findSend',
   create: url + 'insertSend'
 }
+
+export const brand = {
+  index: url + 'allbrand'
+}

@@ -33,8 +33,8 @@
 
       <div class="send-container-select">
         <group>
-          <cell title="营业厅" disabled is-link></cell>
-          <selector placeholder="请选择快递品牌"  v-model="express" title="快递品牌" name="district" :options="list" @on-change="onChange"></selector>
+          <cell title="营业厅" disabled is-link link="/hallmap"></cell>
+          <selector placeholder="请选择快递品牌"  v-model="express" title="快递品牌" name="district" :options="brand" @on-change="onChange"></selector>
           <x-input title="物品描述" :max="max" placeholder="请输入物品描述" v-model="goodslabel"></x-input>
           <x-input title="备注" :max="max" placeholder="请输入备注" v-model="label"></x-input>
         </group>
@@ -66,12 +66,16 @@ export default {
     XInput
   },
   created () {
+    if (this.brand.length <= 0) {
+      this.initBrand()
+    }
     if (!this.sendAddress['id'] && !this.pickupAddress['id']) {
       this.setDefaultAddress()
     }
   },
   computed: {
     ...mapGetters({
+      brand: 'getAllBrand',
       address: 'getAddress',
       sendadd: 'getSendAdd',
       sendAddress: 'getSendAddress',
@@ -85,28 +89,26 @@ export default {
       express: '',
       businesshall: '',
       goodslabel: '',
-      label: '',
-      list: [
-        '顺丰',
-        '韵达',
-        '申通',
-        '中通',
-        '铁通'
-      ]
+      label: ''
     }
   },
   methods: {
     ...mapActions([
       'setDefaultAddress',
-      'createSend'
+      'createSend',
+      'setAllBrand'
     ]),
-    showToast () {
-      if (this.result['show'] === true) {
-        this.$vux.toast.show({
-          text: this.result['info'],
-          type: this.result['type']
-        })
+    async initBrand () {
+      const result = await this.setAllBrand()
+      if (result.type !== 'success') {
+        this.showToast({text: result.text, type: result.type})
       }
+    },
+    showToast ({text, type}) {
+      this.$vux.toast.show({
+        text,
+        type
+      })
     },
     onChange (val) {
       console.log(val)
@@ -114,24 +116,25 @@ export default {
     goPath (path) {
       this.$router.push({path})
     },
-    submitSend () {
-      console.log('express', this.sendAddress)
-      console.log('pickupddress', this.pickupAddress)
-      this.createSend({
+    async submitSend () {
+      const result = await this.createSend({
         brand: this.express,
         describe: this.describe,
         note: this.label,
-        office: 'asd',
-        order: '1234654',
+        office: '长宁路99号',
+        order: '1235489',
         receiptAddressId: this.pickupAddress['id'],
         sendAddressId: this.sendAddress['id'],
-        sum: '12563',
-        type: '212'
+        sum: '999',
+        type: '4'
       })
-      const _this = this
-      setTimeout(function () {
-        _this.showToast()
-      }, 800)
+      if (result) {
+        this.showToast({text: '寄件成功'})
+        return
+      } else {
+        this.showToast({text: '寄件失败', type: 'warn'})
+        return
+      }
     }
   }
 }
@@ -164,7 +167,9 @@ export default {
         flex: 1;
         span {
           font-size: 1.8rem;
-          padding: .8rem;
+          width: 4rem;
+          height: 4rem;
+          line-height: 4rem;
           display: block;
           border-radius: 50%;
           color: white;
