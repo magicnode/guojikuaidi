@@ -20,3 +20,7 @@ export const send = {
 export const brand = {
   index: url + 'allbrand'
 }
+
+export const site = {
+  location: url + 'COORDINATES'
+}

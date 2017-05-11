@@ -15,3 +15,7 @@ export const SET_SEND_RES = 'SET_SEND_RES'
 export const SET_SEND_DEFAULTADDRESS = 'SET_SEND_DEFAULTADDRESS'
 
 export const SET_SITE = 'SET_SITE'
+
+export const SET_SITE_RECENT = 'SET_SITE_RECENT'
+
+export const SET_PICKUP = 'SET_PICKUP'

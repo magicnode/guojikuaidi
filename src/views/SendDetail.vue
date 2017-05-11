@@ -12,9 +12,9 @@
         <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
           <div class="senddetail-cell-detail--box border-bottom-grey">
             <span class="senddetail-cell-detail__title">营业厅: {{item.office}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
-            <span class="wait-senddetail clearfixed">{{item.type + '状态'}}</span>
+            <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
           </div>
-          <div class="senddetail-cell-detail--box flex border-bottom-grey" @click="goPath">
+          <div class="senddetail-cell-detail--box flex border-bottom-grey" >
             <div class="send-icon">
               收
             </div>
@@ -27,7 +27,7 @@
             <p class="time">{{item.createTime}}</p>
             <div>
               <button type="" class="cancle-btn">取消订单</button>
-              <button type="" class="gosend-btn">去寄件</button>
+              <button type="" class="gosend-btn" @click="goPath(item.id, 'wait')">去寄件</button>
             </div>
           </div>
         </div>
@@ -36,10 +36,10 @@
       <div class="senddetail-cell" v-show="show === 'ready'">
         <div class="senddetail-cell-detail" v-for="item in data['ready']" :key="item.id">
           <div class="senddetail-cell-detail--box border-bottom-grey">
-            <span class="senddetail-cell-detail__title">{{item.brand + ' '}}订单号: {{item.order}}</span>
-            <span class="wait-senddetail clearfixed">{{item.type + '状态'}}</span>
+            <span class="senddetail-cell-detail__title">{{item.brand + ' '}} {{item.order}}</span>
+            <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
           </div>
-          <div class="senddetail-cell-detail--box flex border-bottom-grey" @click="goPath">
+          <div class="senddetail-cell-detail--box flex border-bottom-grey">
             <div class="send-icon">
               收
             </div>
@@ -52,7 +52,7 @@
             <p class="time">{{item.createTime}}</p>
             <span class="sum-money">{{'￥' + item.sum}}</span>
             <div>
-              <button type="" class="cancle-btn">查看订单</button>
+              <button type="" class="cancle-btn" @click="goPath(item.id, 'ready')">查看订单</button>
             </div>
           </div>
         </div>
@@ -99,8 +99,8 @@ export default {
       const result = await this.setSend()
       this.showToast(result)
     },
-    goPath () {
-      this.$router.push({path: 'qr'})
+    goPath (id, type) {
+      this.$router.push({path: 'qr', query: {id, type}})
     }
   }
 }
@@ -136,7 +136,6 @@ export default {
 
 .cancle-btn {
   font-size: 1.4rem;
-  width: 7rem;
   height: 2.5rem;
   text-align: center;
   border: 1px solid #999;
@@ -145,11 +144,11 @@ export default {
   background: transparent;
   box-sizing: border-box;
   color: #999;
+  white-space: nowrap;
 }
 
 .gosend-btn {
   font-size: 1.4rem;
-  width: 7rem;
   height: 2.5rem;
   text-align: center;
   box-sizing: border-box;
@@ -158,6 +157,7 @@ export default {
   border-radius: 5px;
   background: @dark-yellow;
   color: white;
+  white-space: nowrap;
 }
 
 .senddetail {

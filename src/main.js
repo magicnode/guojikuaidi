@@ -7,6 +7,7 @@ import { WechatPlugin, Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin } f
 import router from './router'
 import store from './store'
 import App from './App'
+import * as filters from './filters'
 import Header from './components/Header.vue'
 import AxiosPlugin from './plugins/axios.js'
 
@@ -46,6 +47,10 @@ router.afterEach((to, from) => {
   // setTimeout(function () {
   //   store.commit('updateJumpStatus', {isJump: false})
   // }, 500)
+})
+
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
 })
 
 /* eslint-disable no-new */

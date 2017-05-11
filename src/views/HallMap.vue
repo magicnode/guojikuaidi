@@ -6,7 +6,13 @@
   </div>
 </template>
 <script>
-// import { mapGetters } from 'vuex'
+import axios from 'axios'
+import { mapGetters, mapActions } from 'vuex'
+import {site as siteApi} from '@/api'
+
+let instance = axios.create({
+  timeout: 2000
+})
 
 export default {
   name: 'send',
@@ -35,30 +41,39 @@ export default {
       })
       mapObj.addControl(geolocation)
       geolocation.getCurrentPosition()
-      // const _this = this
-      function getBounds () {
+      async function getBounds () {
         let bounds = mapObj.getBounds()
-        // alert(bounds)
-        let marker1 = new window.AMap.Marker({
-          position: bounds[0],
-          offset: new window.AMap.Pixel(-17, -42),
-          draggable: false,
-          content: '<h1>123</h1>'
+        let southwestOb = bounds.getSouthWest()
+        let southwest = []
+        southwest[0] = southwestOb.lng
+        southwest[1] = southwestOb.lat
+        let northeastOb = bounds.getNorthEast()
+        let northeast = []
+        northeast[0] = northeastOb.lng
+        northeast[1] = northeastOb.lat
+        const res = await instance.get(siteApi.location, {
+          params: {southwest: '[' + southwest.toString() + ']', northeast: '[' + northeast.toString() + ']'}
         })
-        marker1.setMap(mapObj)
-        let marker2 = new window.AMap.Marker({
-          position: bounds[1],
-          offset: new window.AMap.Pixel(17, 42),
-          draggable: false,
-          content: '<h1>456</h1>'
-        })
-        marker2.setMap(mapObj)
+        let data = res.data
+        for (let i = 0, len = data.length; i < len; i++) {
+          let info = data[i]
+          let marker = new window.AMap.Marker({
+            position: [info.longitude, info.latitude],
+            offset: new window.AMap.Pixel(-17, -42),
+            draggable: false
+          })
+          marker.setMap(mapObj)
+          window.AMap.event.addListener(marker, 'click', function (data) {
+            alert('asdsaasd')
+          })
+        }
       }
       window.AMap.event.addListener(geolocation, 'complete', function (data) {
         getBounds()
       })
       window.AMap.event.addListener(geolocation, 'error', function () {
-        alert('定位失败')
+        // alert('定位失败')
+        console.log('定位失败')
       })
       window.AMap.event.addListener(mapObj, 'dragend', function () {
         setTimeout(function () {
@@ -75,12 +90,19 @@ export default {
   created () {
   },
   computed: {
+    ...mapGetters({
+      site: 'getSite',
+      recent: 'getSiteRecent'
+    })
   },
   data () {
     return {
     }
   },
   methods: {
+    ...mapActions([
+      'addSite'
+    ])
   }
 }
 </script>

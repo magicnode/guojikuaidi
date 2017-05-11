@@ -67,5 +67,9 @@ export default new Router({
     path: '/hallmap',
     name: 'HallMap',
     component: require('@/views/HallMap')
+  }, {
+    path: '/login',
+    name: 'Login',
+    component: require('@/views/Login')
   }]
 })

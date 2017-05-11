@@ -10,26 +10,30 @@ let instance = axios.create({
 })
 
 export const state = {
-  data: []
+  data: [],
+  recent: []
 }
 
 // getters
 export const getters = {
-  getSite: state => state.data
+  getSite: state => state.data,
+  getSiteRecent: state => state.recent
 }
 
 // actions
 export const actions = {
   async addSite ({ commit }, {southwest, northeast}) {
     try {
-      const res = await instance.get(sendApi.index, {
+      const res = await instance.get(siteApi.location, {
         params: {southwest, northeast}
       })
       if (res.status === 200) {
+        console.log(`location data is ${resdata}`)
         let resdata = res.data
         let data = state.data.concat(resdata)
         data = Array.from(new Set(data))
         commit(types.SET_SITE, {data})
+        commit(types.SET_SITE_RECENT, {recent: resdata})
         return {
           text: '获取营业厅地址成功',
           type: 'success'
@@ -52,5 +56,8 @@ export const actions = {
 export const mutations = {
   [types.SET_SITE] (state, {data}) {
     state.data = data
+  },
+  [types.SET_SITE_RECENT] (state, {recent}) {
+    state.recent = recent
   }
 }
