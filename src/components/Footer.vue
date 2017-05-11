@@ -13,7 +13,6 @@
 import searchPng from '../assets/images/home_miaoji_57.png'
 import msgPng from '../assets/images/home_miaoji_60.png'
 import minePng from '../assets/images/home_miaoji_63.png'
-// import sendPng from '../assets/images/wode_52.png'
 
 export default {
   name: 'footer',

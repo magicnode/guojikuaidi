@@ -6,7 +6,7 @@ import * as types from '../mutation-types'
 
 let local = window.localStorage
 let instance = axios.create({
-  timeout: 2000
+  timeout: 3000
 })
 
 export const state = {
@@ -70,10 +70,10 @@ export const actions = {
         let ready = []
         for (let i = 0, len = resdata.length; i < len; i++) {
           let item = resdata[i]
-          if (item.type === 4) {
-            ready.push(item)
-          } else {
+          if (item.type === 1) {
             wait.push(item)
+          } else if (item.type !== 1 && item.type !== 5) {
+            ready.push(item)
           }
         }
         data.wait = wait
@@ -119,7 +119,7 @@ export const actions = {
   setPickupAddress ({commit}, {pickupAddress}) {
     commit(types.SET_SEND_DEFAULTADDRESS, {pickupAddress})
   },
-  async createSend ({commit}, {
+  async createSend ({dispatch, commit}, {
         brand = state.add.brand,
         describe = state.add.describe,
         note = state.add.note,
@@ -146,6 +146,7 @@ export const actions = {
       })
       if (res.data) {
         commit(types.SET_SEND_RES, {show: true, type: 'success', info: '寄件成功'})
+        await dispatch('setSend')
         return true
       } else {
         commit(types.SET_SEND_RES, {show: true, type: 'warn', info: '寄件失败'})
@@ -153,7 +154,44 @@ export const actions = {
       }
     } catch (err) {
       console.log(err)
-      return true
+      commit(types.SET_SEND_RES, {show: true, type: 'warn', info: '寄件失败'})
+      return false
+    }
+  },
+  async cancleSend ({ dispatch, commit }, { brand, describe, note, office, order, receiptAddressId, sendAddressId, sum, type }) {
+    try {
+      const res = await axios.get(sendApi.create, {
+        params: {
+          brand,
+          describe,
+          note,
+          office,
+          order,
+          receiptAddressId,
+          sendAddressId,
+          sum,
+          type: 5,
+          userId: local.userId
+        }
+      })
+      if (res.data) {
+        await dispatch('setSend')
+        return {
+          type: 'success',
+          text: '取消寄件成功'
+        }
+      } else {
+        return {
+          type: 'warn',
+          text: '取消寄件失败'
+        }
+      }
+    } catch (err) {
+      console.error(err)
+      return {
+        type: 'warn',
+        text: '取消寄件失败'
+      }
     }
   }
 }

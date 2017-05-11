@@ -5,6 +5,7 @@ import axios from 'axios'
 
 import * as user from './modules/user'
 import * as send from './modules/send'
+import * as pickup from './modules/pickup'
 import * as address from './modules/address'
 import {brand as brandApi} from '@/api'
 
@@ -19,6 +20,7 @@ const store = new Vuex.Store({
   modules: {
     user,
     send,
+    pickup,
     address
   },
   state: {

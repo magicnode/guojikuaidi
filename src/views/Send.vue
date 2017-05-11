@@ -33,10 +33,10 @@
 
       <div class="send-container-select">
         <group>
-          <cell title="营业厅" disabled is-link link="/hallmap"></cell>
-          <selector placeholder="请选择快递品牌"  v-model="express" title="快递品牌" name="district" :options="brand" @on-change="onChange"></selector>
-          <x-input title="物品描述" :max="max" placeholder="请输入物品描述" v-model="goodslabel"></x-input>
-          <x-input title="备注" :max="max" placeholder="请输入备注" v-model="label"></x-input>
+          <cell title="营业厅" disabled is-link link="/hallmap">{{office}}</cell>
+          <selector placeholder="请选择快递品牌"  v-model="sendadd.express" title="快递品牌" name="district" :options="brand" @on-change="onChange"></selector>
+          <x-input title="物品描述" :max="max" placeholder="请输入物品描述" v-model="describe"></x-input>
+          <x-input title="备注" :max="max" placeholder="请输入备注" v-model="note"></x-input>
         </group>
       </div>
 
@@ -66,6 +66,12 @@ export default {
     XInput
   },
   created () {
+    if (!this.openid) {
+      return this.$router.push({path: '/', query: {page: 2}})
+    }
+    let addressInfo = window.localStorage.getItem('addressInfo')
+    addressInfo = JSON.parse(addressInfo)
+    this.office = addressInfo.descript
     if (this.brand.length <= 0) {
       this.initBrand()
     }
@@ -80,16 +86,19 @@ export default {
       sendadd: 'getSendAdd',
       sendAddress: 'getSendAddress',
       pickupAddress: 'getPickupAddress',
-      result: 'getSendResult'
+      result: 'getSendResult',
+      openid: 'getOpenId'
     })
   },
   data () {
     return {
       max: 200,
-      express: '',
       businesshall: '',
       goodslabel: '',
-      label: ''
+      describe: '',
+      note: '',
+      label: '',
+      office: ''
     }
   },
   methods: {
@@ -111,28 +120,45 @@ export default {
       })
     },
     onChange (val) {
-      console.log(val)
+      console.log('val', val)
+      this.$store.commit('SET_SEND_ADD', {express: val})
     },
     goPath (path) {
       this.$router.push({path})
     },
     async submitSend () {
+      const timestamp = new Date().getTime()
+      let addressInfo = window.localStorage.getItem('addressInfo')
+      addressInfo = JSON.parse(addressInfo)
+      if (!this.sendadd.express) {
+        this.showToast({text: '请选择快递品牌', type: 'warn'})
+        return
+      }
+      if (!addressInfo.id) {
+        this.showToast({text: '请选择营业厅', type: 'warn'})
+        return
+      }
+      if (!this.describe) {
+        this.showToast({text: '请输入物品描述', type: 'warn'})
+        return
+      }
       const result = await this.createSend({
-        brand: this.express,
+        brand: this.sendadd.express,
         describe: this.describe,
         note: this.label,
-        office: '长宁路99号',
-        order: '1235489',
+        office: addressInfo.id,
+        order: timestamp,
         receiptAddressId: this.pickupAddress['id'],
         sendAddressId: this.sendAddress['id'],
-        sum: '999',
-        type: '4'
+        sum: Number(Math.random() * 100).toFixed(),
+        type: 1
       })
       if (result) {
-        this.showToast({text: '寄件成功'})
+        this.showToast({text: '提交成功'})
+        this.$router.push({path: '/send/detail'})
         return
       } else {
-        this.showToast({text: '寄件失败', type: 'warn'})
+        this.showToast({text: '提交失败', type: 'warn'})
         return
       }
     }

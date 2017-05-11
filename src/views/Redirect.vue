@@ -1,39 +1,75 @@
 <template>
-  <div id="app">
-    <router-view></router-view>
-    <transition name="pic">
-      <img class="loading-img" v-show="isJump" :src="jumpSrc" alt="">
-    </transition>
-    <loading v-model="isLoading"></loading>
+  <div class="redirect">
   </div>
 </template>
 
 <script>
-import { Loading } from 'vux'
 import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'app',
   async created () {
-    this.$vux.toast.show({
-      type: 'text',
-      width: '15rem',
-      time: '4000',
-      text: '这里是app。vue正在为您跳转，请稍候'
-    })
-    alert(this.openid)
-    // let {code, state, page} = this.$route.query
-    // const appid = 'wx543968867249e28d'
-    // const secret = 'efc582e21d07549a8bade66ceefdc312'
-    // if (process.env.NODE_ENV !== 'development') {
-    // }
+    if (!this.init) {
+      alert(1)
+      this.$store.commit('SET_USERINIT', {init: true})
+    } else {
+      let {code, state} = this.$route.query
+      const appid = 'wx543968867249e28d'
+      const secret = 'efc582e21d07549a8bade66ceefdc312'
+      // if (process.env.NODE_ENV !== 'development') {
+      // }
+      try {
+        // const fullPath = this.$route.fullPath
+        if (!code && !state) {
+          alert('fail')
+        } else {
+          const openidres = await this.setOpenid({appid, code, secret})
+          if (openidres.type !== 'success') {
+            this.$vux.toast.show({
+              type: 'warn',
+              text: '获取openid失败1，请从公众号重新点击进入',
+              width: '15rem'
+            })
+            return
+          }
+          // 通过openid获取用户信息
+          const userinfo = await this.setUserInfo({openid: this.openid})
+          if (userinfo.type === 'text') {
+            this.$router.push({path: '/bindphone'})
+            return
+          } else if (userinfo.type === 'warn') {
+            this.$vux.toast.show(userinfo)
+            return
+          }
+          alert('success')
+          // const _this = this
+          // switch (state) {
+          //   case 1:
+          //     _this.$router.push({path: '/pickup'})
+          //     break
+          //   case 2:
+          //     _this.$router.push({path: '/send'})
+          //     break
+          //   case 3:
+          //     _this.$router.push({path: '/usercenter'})
+          //     break
+          //   default:
+          //     break
+          // }
+        }
+      } catch (e) {
+        console.error(e)
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '未知错误发生了...我也很绝望...',
+          width: '15rem'
+        })
+      }
+    }
   },
   data () {
     return {
     }
-  },
-  components: {
-    Loading
   },
   computed: {
     ...mapState({
@@ -42,7 +78,8 @@ export default {
       jumpSrc: state => state.jumpSrc
     }),
     ...mapGetters({
-      'openid': 'getOpenId'
+      'openid': 'getOpenId',
+      'init': 'getUserInit'
     })
   },
   methods: {

@@ -1,5 +1,11 @@
 export const SET_USERID = 'SET_USERID'
 
+export const SET_USERINFO = 'SET_USERINFO'
+
+export const SET_USERINIT = 'SET_USERINIT'
+
+export const SET_SMSCODE = 'SET_SMSCODE'
+
 export const SET_ADDRESS = 'SET_ADDRESS'
 
 export const SET_ADDRESS_RES = 'SET_ADDRESS_RES'
@@ -18,4 +24,8 @@ export const SET_SITE = 'SET_SITE'
 
 export const SET_SITE_RECENT = 'SET_SITE_RECENT'
 
-export const SET_PICKUP = 'SET_PICKUP'
+export const SET_PICKUP_SIGN = 'SET_PICKUP_SIGN'
+
+export const SET_PICKUP_WAIT = 'SET_PICKUP_WAIT'
+
+export const SET_OPENID = 'SET_OPENID'

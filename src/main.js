@@ -33,12 +33,6 @@ router.beforeEach(function (to, from, next) {
   // store.commit('updateJumpSrc', {jumpSrc})
   // store.commit('updateLoadingStatus', {isLoading: true})
   // store.commit('updateJumpStatus', {isJump: false})
-  if (!store.state.user.userId && (to.path !== '/smslogin')) {
-    router.push({path: '/smslogin'})
-  }
-  if (store.state.user.userId && (to.path === '/')) {
-    router.push({path: '/index'})
-  }
   next()
 })
 

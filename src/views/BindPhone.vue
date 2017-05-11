@@ -21,54 +21,124 @@
            <img src="../assets/images/new/bin_ico_ver.png" alt="phone">
          </div>
          <div>
-           <input type="text" name="mobile" v-model="mobile" placeholder="输入验证码" />
+           <input type="text" name="mobile" v-model="code" placeholder="输入验证码" />
          </div>
        </div>
        <div class="check" style="padding-top: 2rem;">
-         <button class="button btn-login">登录</button>
+         <button class="button btn-login" @click="submitPhone">确定</button>
        </div>
      </div>
   </div>
 </template>
 <script>
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'login',
   created () {
   },
   data () {
-    // const AppId = 'wx543968867249e28d'
-    // const redirect_uri = 'http://www.mijihome.cn/wx/#/login'
-    // const state = 123
-    // const loginurl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + AppId + '&redirect_uri=' + redirect_uri + '&response_type=code&scope=snsapi_base&state='+ state +'#wechat_redirect'
-
-    // 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx543968867249e28d&redirect_uri=http://www.mijihome.cn/wx/#/login&response_type=code&scope=snsapi_base&state=1#wechat_redirect'
     return {
       mobile: '',
+      sendmobile: '',
       code: '',
       getting: false,
-      time: 60
+      time: 30
     }
   },
+  computed: {
+    ...mapGetters({
+      'openid': 'getOpenId',
+      'smscode': 'getSmsCode'
+    })
+  },
   methods: {
+    ...mapActions([
+      'setOpenid',
+      'smsSend',
+      'bindUser'
+    ]),
     setTime () {
       const _this = this
       const timeval = setInterval(function () {
-        if (_this.time === 0) {
+        if (_this.time === 1) {
           clearInterval(timeval)
           _this.getting = false
-          _this.time = 60
+          _this.time = 30
           return
         }
         _this.time--
       }, 1000)
     },
-    getCode () {
+    async getCode () {
+      const mb = this.mobile
+      if (!this.mobile) {
+        this.$vux.toast.show({
+          text: '手机号不能为空!',
+          type: 'warn',
+          width: '15rem'
+        })
+        return
+      }
+      const regphone = /^1[0-9]{10}$/
+      if (!regphone.test(this.mobile)) {
+        this.$vux.toast.show({
+          text: '请输入正确的手机号',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      }
+      if (!this.openid) {
+        this.$vux.toast.show({
+          text: '未知错误发生了...我也很绝望...',
+          type: 'text',
+          width: '20rem'
+        })
+        return
+      }
       this.getting = true
       this.setTime()
+      const res = await this.smsSend({
+        mobile: this.mobile,
+        openid: this.openid
+      })
+      this.$vux.toast.show(res)
+      if (res.type === 'success') {
+        this.sendmobile = mb
+      }
+      return
+    },
+    async submitPhone () {
+      if (this.code !== this.smscode) {
+        this.$vux.toast.show({
+          text: '验证码不匹配',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      }
+      if (!this.sendmobile) {
+        this.$vux.toast.show({
+          text: '手机号出错, 请重新输入',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      }
+      const bindres = await this.bindUser({
+        mobile: this.sendmobile,
+        openid: this.openid
+      })
+      this.$vux.toast.show(bindres)
+      if (bindres.type === 'success') {
+        this.$router.push({path: '/usercenter'})
+        return
+      }
     }
   }
 }
+
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
@@ -92,10 +162,11 @@ export default {
 
 .login {
   background: white;
+  height: 100vh;
+  *height: 62rem;
   &-container {
     padding: 2rem;
     .logo {
-
       img {
         width: 30%;
       }

@@ -26,6 +26,10 @@ export default new Router({
       path: '/pickup',
       name: 'PickUp',
       component: require('@/views/PickUp')
+    }, {
+      path: '/pickuptest',
+      name: 'PickUpTest',
+      component: require('@/views/PickUpTest')
     }]
   }, {
     path: '/address',
@@ -71,5 +75,13 @@ export default new Router({
     path: '/login',
     name: 'Login',
     component: require('@/views/Login')
+  }, {
+    path: '/bindphone',
+    name: 'BindPhone',
+    component: require('@/views/BindPhone')
+  }, {
+    path: '/redirect',
+    name: 'Redirect',
+    component: require('@/views/Redirect')
   }]
 })

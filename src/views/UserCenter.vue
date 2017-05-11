@@ -1,8 +1,8 @@
 <template>
   <div class="usercenter">
     <div class="usercenter-info"> 
-      <img src="../assets/images/min_ico_1.png">
-      <p>atom</p>
+      <img :src="user.headimgurl" :alt="user.nickname">
+      <p>{{user.nickname}}</p>
     </div>
 
     <div class="usercenter-orderfunc">
@@ -17,10 +17,20 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'usercenter',
   created () {
+    if (!this.openid) {
+      return this.$router.push({path: '/', query: {page: 3}})
+    }
+  },
+  computed: {
+    ...mapGetters({
+      user: 'getUserInfo',
+      openid: 'getOpenId'
+    })
   },
   data () {
     return {
@@ -43,7 +53,15 @@ export default {
   },
   methods: {
     goPath (path) {
+      if (!path) {
+        this.$vux.toast.show({
+          text: '暂未开放',
+          type: 'warn'
+        })
+        return
+      }
       this.$router.push({path})
+      return
     }
   }
 }
@@ -79,7 +97,7 @@ export default {
     justify-content: center;
     align-items: center;
     img {
-      width: 7rem;
+      width: 6rem;
       border-radius: 50%;
     }
     p {
@@ -107,7 +125,7 @@ export default {
     border-top: 1px solid #F1F1F1;
     &-box {
       justify-content: space-between;
-      padding: .6rem 0;
+      padding: .8rem 0;
       padding-left: 1rem;
       box-sizing: border-box;
       background: #fff;

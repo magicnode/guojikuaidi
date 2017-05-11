@@ -1,87 +1,103 @@
-import {send as sendApi, address as addressApi} from '@/api'
+import {pickup as pickupApi} from '@/api'
 import axios from 'axios'
-import window from 'window'
 
 import * as types from '../mutation-types'
 
-let local = window.localStorage
 let instance = axios.create({
-  timeout: 2000
+  timeout: 3000
 })
 
 export const state = {
-  data: {
-  }
+  sign: [],
+  wait: [],
+  signquery: {
+    page: 1,
+    row: 5
+  },
+  waitquery: {
+    page: 1,
+    row: 5
+  },
+  switchtype: 'wait'
 }
 
 // getters
 export const getters = {
-  getPickUp: state => state.data
+  getPickUpSign: state => state.sign,
+  getPickUpWait: state => state.wait,
+  getPickUpSignQuery: state => state.signquery,
+  getPickUpWaitQuery: state => state.waitquery,
+  getPickUpType: state => state.switchtype
 }
 
 // actions
 export const actions = {
-  async setPickUp ({ commit }) {
+  async addPickUpSign ({ commit }, {mobile, page, rows}) {
     try {
-      const res = await instance.get(sendApi.index, {
-        params: {userId: local.userId}
+      const res = await instance.get(pickupApi.sign, {
+        params: {
+          mobile, page, rows
+        }
       })
       if (res.status === 200) {
         let resdata = res.data
-        let data = {}
-        let wait = []
-        let ready = []
-        for (let i = 0, len = resdata.length; i < len; i++) {
-          let item = resdata[i]
-          if (item.type === 4) {
-            ready.push(item)
-          } else {
-            wait.push(item)
-          }
-        }
-        data.wait = wait
-        data.ready = ready
-        data.init = true
-        commit(types.SET_SEND, {data})
+        let sign = state.sign
+        sign = sign.concat(resdata)
+        sign = Array.from(new Set(sign))
+        commit(types.SET_PICKUP_SIGN, {sign})
         return {
-          text: '获取寄件列表成功',
+          text: '获取已签收寄件成功',
           type: 'success'
         }
       }
       return {
-        text: '获取寄件列表失败',
+        text: '获取已签收寄件成功失败',
         type: 'warn'
       }
     } catch (err) {
       console.error(err)
       return {
-        text: '获取寄件列表失败',
+        text: '获取已签收寄件成功失败',
         type: 'warn'
       }
     }
   },
-  async addPickUp ({commit}, {mobile, page, rows}) {
+  async addPickUpWait ({ commit }, {mobile, page, rows}) {
     try {
-      const res = await axios.get(sendApi.create, {
-        params: {
-        }
+      const res = await instance.get(pickupApi.wait, {
+        params: { mobile, page, rows }
       })
-      if (res.data) {
-        commit(types.SET_SEND_RES, {show: true, type: 'success', info: '寄件成功'})
-        return true
-      } else {
-        commit(types.SET_SEND_RES, {show: true, type: 'warn', info: '寄件失败'})
-        return false
+      if (res.status === 200) {
+        let resdata = res.data
+        let wait = state.wait
+        wait = wait.concat(resdata)
+        wait = Array.from(new Set(wait))
+        commit(types.SET_PICKUP_WAIT, {wait})
+        console.log('state wait', state.wait)
+        return {
+          text: '获取未签收寄件成功',
+          type: 'success'
+        }
+      }
+      return {
+        text: '获取未签收寄件成功失败',
+        type: 'warn'
       }
     } catch (err) {
-      console.log(err)
-      return true
+      console.error(err)
+      return {
+        text: '获取已签收寄件成功失败',
+        type: 'warn'
+      }
     }
   }
 }
 
 export const mutations = {
-  [types.SET_PICKUP] (state, {data}) {
-    state.data = data
+  [types.SET_PICKUP_SIGN] (state, {sign}) {
+    state.sign = sign
+  },
+  [types.SET_PICKUP_WAIT] (state, {wait}) {
+    state.wait = wait
   }
 }

@@ -1,59 +1,77 @@
 <template>
   <div class="senddetail">
-    <mj-header title="寄件列表"></mj-header>
+    <mj-header title="取件列表"></mj-header>
     <div class="senddetail-container">
       <div class="address-container-tab">
         <tab active-color='#ff750f'>
           <tab-item selected @on-item-click="changeShow('wait')">待取件</tab-item>
-          <tab-item @on-item-click="changeShow('ready')">已完成</tab-item>
+          <tab-item @on-item-click="changeShow('sign')">已完成</tab-item>
         </tab>
       </div>
       <div class="senddetail-cell" v-show="show === 'wait'">
-        <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
-          <div class="senddetail-cell-detail--box border-bottom-grey">
-            <span class="senddetail-cell-detail__title">营业厅: {{item.office}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
-            <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
-          </div>
-          <div class="senddetail-cell-detail--box flex border-bottom-grey" >
-            <div class="send-icon">
-              收
-            </div>
-            <div>
-              <p>atom  {{item.receiptAddress.mobile}}</p>
-              <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
-            </div>
-          </div>
-          <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-            <p class="time">{{item.createTime}}</p>
-            <div>
-              <button type="" class="gosend-btn" @click="goPath(item.id, 'wait')">去取件</button>
-            </div>
-          </div>
+        <div>
+          <divider>下拉刷新、上拉加载</divider>
+           <scroller lock-x scrollbar-y use-pullup use-pulldown height="200vh" @on-pullup-loading="loadMoreSign" @on-pulldown-loading="refreshSign" v-model="signstatus" ref="scroller">
+             <div class="box2">
+               <h1 v-show="wait.length === 0">没有代取件数据</h1>
+               <div class="senddetail-cell-detail" v-for="item in wait" :key="item.createTime">
+                   <div class="senddetail-cell-detail--box border-bottom-grey">
+                     <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
+                     <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
+                   </div>
+                   <div class="senddetail-cell-detail--box flex border-bottom-grey" >
+                     <div>
+                       <p>营业厅：  {{item.descript}}</p>
+                       <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
+                       <p>电话： {{item.mobile}} </p>
+                     </div>
+                   </div>
+                   <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
+                     <p class="time">{{item.createTime | formatedatestamp}}</p>
+                     <div>
+                       <button type="" class="gosend-btn" @click="goPath(item.id, 'wait')">去取件</button>
+                     </div>
+                   </div>
+               </div>
+             </div>
+             <!--pullup slot-->
+             <div slot="pullup" class="xs-plugin-pullup-container xs-plugin-pullup-up" style="position: absolute; width: 100%; height: 40px; bottom: -40px; text-align: center;">
+               <span></span>
+               <span v-show="signstatus.pullupStatus === 'loading'"><spinner type="ios-small"></spinner></span>
+             </div>
+           </scroller>
         </div>
       </div>
       <!-- 已寄件 -->
-      <div class="senddetail-cell" v-show="show === 'ready'">
-        <div class="senddetail-cell-detail" v-for="item in data['ready']" :key="item.id">
-          <div class="senddetail-cell-detail--box border-bottom-grey">
-            <span class="senddetail-cell-detail__title">{{item.brand + ' '}} {{item.order}}</span>
-            <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
-          </div>
-          <div class="senddetail-cell-detail--box flex border-bottom-grey">
-            <div class="send-icon">
-              收
-            </div>
-            <div>
-              <p>atom  {{item.receiptAddress.mobile}}</p>
-              <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
-            </div>
-          </div>
-          <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-            <p class="time">{{item.createTime}}</p>
-            <span class="sum-money">{{'￥' + item.sum}}</span>
-            <div>
-              <button type="" class="cancle-btn" @click="goPath(item.id, 'ready')">查看订单</button>
-            </div>
-          </div>
+      <div class="senddetail-cell" v-show="show === 'sign'">
+        <div>
+          <divider>下拉刷新、上拉加载</divider>
+           <scroller lock-x scrollbar-y use-pullup use-pulldown height="71vh" @on-pullup-loading="loadMoreSign" @on-pulldown-loading="refreshSign" v-model="signstatus" ref="scroller">
+             <div class="box2">
+               <h1 v-show="sign.length === 0">没有已经取件数据</h1>
+               <div class="senddetail-cell-detail" v-for="item in sign" :key="item.createTime">
+                   <div class="senddetail-cell-detail--box border-bottom-grey">
+                     <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
+                     <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
+                   </div>
+                   <div class="senddetail-cell-detail--box flex border-bottom-grey" >
+                     <div>
+                       <p>营业厅：  {{item.descript}}</p>
+                       <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
+                       <p>电话： {{item.mobile}} </p>
+                     </div>
+                   </div>
+                   <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
+                     <p class="time">{{item.createTime | formatedatestamp}}</p>
+                   </div>
+               </div>
+             </div>
+             <!--pullup slot-->
+             <div slot="pullup" class="xs-plugin-pullup-container xs-plugin-pullup-up" style="position: absolute; width: 100%; height: 40px; bottom: -40px; text-align: center;">
+               <span></span>
+               <span v-show="signstatus.pullupStatus === 'loading'"><spinner type="ios-small"></spinner></span>
+             </div>
+           </scroller>
         </div>
       </div>
     </div>
@@ -61,30 +79,68 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { Scroller, Divider, XSwitch, Group, Spinner } from 'vux'
 
 export default {
   name: 'pickup',
+  components: {
+    Scroller,
+    Divider,
+    XSwitch,
+    Group,
+    Spinner
+  },
   created () {
-    if (!this.data.init) {
-      this.initSendList()
+    if (!this.openid) {
+      return this.$router.push({path: '/', query: {page: 1}})
     }
-    console.log('data', this.data)
+    if (this.sign.length <= 0 && this.wait.length <= 0) {
+      this.initPickUpList()
+    }
   },
   computed: {
     ...mapGetters({
-      data: 'getSend',
-      switchtype: 'getSendSwitch'
+      'sign': 'getPickUpSign',
+      'wait': 'getPickUpWait',
+      'user': 'getUserInfo',
+      'openid': 'getOpenId'
     })
   },
   data () {
     return {
-      show: 'wait'
+      n: 10,
+      show: 'wait',
+      pullupEnabled: true,
+      signstatus: {
+        pullupStatus: 'default',
+        pulldownStatus: 'default'
+      }
     }
   },
   methods: {
     ...mapActions([
-      'setSend'
+      'addPickUpSign',
+      'addPickUpWait'
     ]),
+    loadMoreSign () {
+      setTimeout(() => {
+        this.n += 10
+        setTimeout(() => {
+          this.$refs.scroller.donePullup()
+        }, 10)
+      }, 1000)
+    },
+    refreshSign () {
+      setTimeout(() => {
+        // this.n = 10
+        this.$nextTick(() => {
+          setTimeout(() => {
+            this.$refs.scroller.donePulldown()
+            this.pullupEnabled && this.$refs.scroller.enablePullup()
+          }, 10)
+        })
+      }, 1000)
+    },
     changeShow (type) {
       this.show = type
     },
@@ -94,9 +150,25 @@ export default {
         type: data.type || 'warn'
       })
     },
-    async initSendList () {
-      const result = await this.setSend()
+    async initPickUpList () {
+      const result = await this.addPickUpSign({
+        mobile: this.user.mobile,
+        page: 1,
+        rows: 2
+      })
       this.showToast(result)
+      const result1 = await this.addPickUpWait({
+        mobile: this.user.mobile,
+        page: 1,
+        rows: 2
+      })
+      const _this = this
+      setTimeout(function () {
+        _this.showToast(result1)
+      }, 1000)
+      console.log('asd sign', this.sign)
+      console.log('asd wair', this.wait)
+      return
     },
     goPath (id, type) {
       this.$router.push({path: '/pickup/detail', query: {id, type}})
@@ -112,6 +184,19 @@ export default {
   padding: 0 1rem;
 }
 
+.box2-wrap {
+  height: 300px;
+  overflow: hidden;
+}
+.rotate {
+  display: inline-block;
+  transform: rotate(-180deg);
+}
+.pullup-arrow {
+  transition: all linear 0.2s;
+  color: #666;
+  font-size: 25px;
+}
 
 .border-bottom-grey {
   border-bottom: 1px solid #ececec;

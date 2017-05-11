@@ -58,13 +58,22 @@ export default {
         for (let i = 0, len = data.length; i < len; i++) {
           let info = data[i]
           let marker = new window.AMap.Marker({
+            info: data[i],
             position: [info.longitude, info.latitude],
             offset: new window.AMap.Pixel(-17, -42),
             draggable: false
           })
           marker.setMap(mapObj)
           window.AMap.event.addListener(marker, 'click', function (data) {
-            alert('asdsaasd')
+            let info = data.target.G.info
+            let cf = confirm('是否选择' + info.descript + '为寄件营业厅')
+            if (cf) {
+              info = JSON.stringify(info)
+              window.localStorage.removeItem('addressInfo')
+              window.localStorage.setItem('addressInfo', info)
+              window.history.go(-1)
+            }
+            return
           })
         }
       }

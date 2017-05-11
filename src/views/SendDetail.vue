@@ -11,7 +11,7 @@
       <div class="senddetail-cell" v-show="show === 'wait'">
         <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
           <div class="senddetail-cell-detail--box border-bottom-grey">
-            <span class="senddetail-cell-detail__title">营业厅: {{item.office}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
+            <span class="senddetail-cell-detail__title">营业厅: {{item.office.province + item.office.city + item.office.district + ' ' + item.office.descript}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
             <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
           </div>
           <div class="senddetail-cell-detail--box flex border-bottom-grey" >
@@ -26,7 +26,7 @@
           <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
             <p class="time">{{item.createTime}}</p>
             <div>
-              <button type="" class="cancle-btn">取消订单</button>
+              <button type="" class="cancle-btn" @click="cancle(item)">取消订单</button>
               <button type="" class="gosend-btn" @click="goPath(item.id, 'wait')">去寄件</button>
             </div>
           </div>
@@ -36,7 +36,7 @@
       <div class="senddetail-cell" v-show="show === 'ready'">
         <div class="senddetail-cell-detail" v-for="item in data['ready']" :key="item.id">
           <div class="senddetail-cell-detail--box border-bottom-grey">
-            <span class="senddetail-cell-detail__title">{{item.brand + ' '}} {{item.order}}</span>
+            <span class="senddetail-cell-detail__title">{{'品牌: ' + item.brand + ' '}} {{item.order}}</span>
             <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
           </div>
           <div class="senddetail-cell-detail--box flex border-bottom-grey">
@@ -69,7 +69,6 @@ export default {
     if (!this.data.init) {
       this.initSendList()
     }
-    console.log('data', this.data)
   },
   computed: {
     ...mapGetters({
@@ -84,7 +83,8 @@ export default {
   },
   methods: {
     ...mapActions([
-      'setSend'
+      'setSend',
+      'cancleSend'
     ]),
     changeShow (type) {
       this.show = type
@@ -101,6 +101,21 @@ export default {
     },
     goPath (id, type) {
       this.$router.push({path: 'qr', query: {id, type}})
+    },
+    async cancle (item) {
+      console.log('item', item)
+      const res = await this.cancleSend({
+        brand: item.brand,
+        describe: item.describe,
+        note: item.note,
+        office: item.officeId,
+        order: item.order,
+        receiptAddressId: item.receiptAddressId,
+        sendAddressId: item.sendAddressId,
+        sum: item.sum,
+        type: 5})
+      console.log('res', res)
+      this.showToast(res)
     }
   }
 }
