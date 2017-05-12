@@ -1,6 +1,5 @@
 <template>
   <div class="addaddress">
-    <mj-header title="添加地址"></mj-header>
     <div class="addaddress-container">
       <group>
          <x-input title="姓名" v-model="name" placeholder="请填写您的真实姓名" required></x-input>
@@ -31,6 +30,9 @@ export default {
   },
   created () {
   },
+  mounted () {
+    window.document.title = '添加地址'
+  },
   data () {
     return {
       addressData: ChinaAddressV3Data,
@@ -49,7 +51,7 @@ export default {
       const reg = /^1[3|4|5|8][0-9]\d{4,8}$/
       return reg.test(num)
     },
-    saveAddress () {
+    async saveAddress () {
       const rel = value2name(this.location, ChinaAddressV3Data).split(' ')
       const checked = this.value ? 1 : 2
       let {type} = this.$route.query
@@ -57,18 +59,22 @@ export default {
       if (!this.name || !this.mobile || !this.address || !this.location) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
-          type: 'warn'
+          type: 'warn',
+          width: '18rem'
         })
         return
       }
       if (!this.checkMobile(this.mobile)) {
         this.$vux.toast.show({
           text: '手机号格式不对，请重新填写',
-          type: 'warn'
+          type: 'warn',
+          width: '18rem'
         })
         return
       }
-      this.addAddress({address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
+      console.log('address', this.address)
+      console.log('rel[0]', rel[0])
+      await this.addAddress({address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
       this.$router.go(-1)
     }
   }

@@ -1,11 +1,11 @@
-let url = 'http://192.168.0.201:8890/WeChatService/'
+let url = 'http://1a699l6063.imwork.net/WeChatService/'
+
 if (process.env.NODE_ENV !== 'development') {
-  url = 'http://192.168.0.201:8890/WeChatService/'
+  url = 'http://1a699l6063.imwork.net/WeChatService/'
 }
 
-let urlW = 'http://1a699l6063.imwork.net/WeChatService/'
-if (process.env.NODE_ENV !== 'development') {
-  urlW = 'http://1a699l6063.imwork.net/WeChatService/'
+export const pic = {
+  qr: url + 'pic'
 }
 
 export const address = {
@@ -37,11 +37,12 @@ export const pickup = {
 
 export const user = {
   gettoken: function (code, params) {
-    return urlW + 'GetAccessToken?code=' + code + '&params=' + params
+    return url + 'GetAccessToken?code=' + code + '&params=' + params
   },
-  sendsms: urlW + 'GetRanCode',
-  bindphone: urlW + 'Binding',
-  getuserinfo: urlW + 'UserInfo'
+  sendsms: url + 'GetRanCode',
+  bindphone: url + 'Binding',
+  getuserinfo: url + 'UserInfo',
+  getwebopenid: url + 'UserOpenId'
 }
 
 export const wx = {

@@ -1,6 +1,5 @@
 <template>
   <div class="address">
-    <mj-header title="地址管理"></mj-header>
     <div class="address-container">
       <div class="address-container-tab">
         <tab active-color='#ff750f'>
@@ -55,6 +54,9 @@ export default {
     const {type, pick} = this.$route.query
     this.addressType = type || 'send'
     this.pick = pick === '1'
+  },
+  mounted () {
+    window.document.title = '地址管理'
   },
   data () {
     return {

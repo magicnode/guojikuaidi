@@ -1,27 +1,38 @@
 <template>
   <div class="pickupdetail">
-    <mj-header title="收件明细"></mj-header>
     <div class="pickupdetail-container">
       <p class="pickupdetail-container-sns">运单号码:</p>
-      <p class="pickupdetail-container-sns">881223554888866520</p>
+      <p class="pickupdetail-container-sns">{{orderSn}}</p>
       <p class="pickupdetail-container-tips">签收时请出示此二维码，店员扫描签收</p>
-      <img class="pickupdetail-container-qr" src="../assets/images/shouye.png" />
+      <img class="pickupdetail-container-qr" :src="qr" />
       <div class="pickupdetail-container-detail">
-        <p>货架号：A-9-526</p>
-        <p>联系电话：158655225252</p>
-        <p>快递品牌：顺丰</p>
+        <p>联系电话：{{mobile}}</p>
+        <p>站点名: {{name}}</p>
       </div>
     </div>
   </div>
 </template>
 <script>
+import {pic as picApi} from '@/api'
 
 export default {
   name: 'pickupdetail',
   created () {
+    const query = this.$route.query
+    this.qr = picApi.qr + '?orderSn=' + query.orderSn + '&userId=' + window.localStorage.getItem('mj_userId')
+    console.log('qr', this.qr)
+    this.mobile = query.mobile
+    this.name = query.name
+  },
+  mounted () {
+    window.document.title = '收件明细'
   },
   data () {
     return {
+      qr: '',
+      orderSn: '',
+      mobile: '',
+      name: ''
     }
   },
   methods: {

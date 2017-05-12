@@ -1,7 +1,6 @@
 <template>
   <div class="map">
-    <mj-header title="营业厅地图"></mj-header>
-    <div id="iCenter" style="height: 93vh;">
+    <div id="iCenter" style="height: 100vh;">
     </div>
   </div>
 </template>
@@ -19,6 +18,7 @@ export default {
   components: {
   },
   mounted () {
+    window.document.title = '选择营业厅'
     let mapObj = new window.AMap.Map('iCenter', {
       resizeEnable: true,
       zoom: 14
@@ -69,8 +69,8 @@ export default {
             let cf = confirm('是否选择' + info.descript + '为寄件营业厅')
             if (cf) {
               info = JSON.stringify(info)
-              window.localStorage.removeItem('addressInfo')
-              window.localStorage.setItem('addressInfo', info)
+              window.localStorage.removeItem('mj_addressInfo')
+              window.localStorage.setItem('mj_addressInfo', info)
               window.history.go(-1)
             }
             return

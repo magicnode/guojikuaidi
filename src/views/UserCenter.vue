@@ -21,9 +21,16 @@ import { mapGetters } from 'vuex'
 
 export default {
   name: 'usercenter',
-  created () {
+  async created () {
     if (!this.openid) {
-      return this.$router.push({path: '/', query: {page: 3}})
+      return this.$router.push({path: 'init', query: {page: 3}})
+    }
+    if (!this.user.mobile) {
+      const userinfo = await this.setUserInfo({openid: this.openid})
+      this.$vux.toast.show(userinfo)
+      if (userinfo.type === 'text') {
+        return this.$router.push({path: '/bindphone', query: {page: 3}})
+      }
     }
   },
   computed: {
@@ -31,6 +38,9 @@ export default {
       user: 'getUserInfo',
       openid: 'getOpenId'
     })
+  },
+  mounted () {
+    window.document.title = '我的'
   },
   data () {
     return {

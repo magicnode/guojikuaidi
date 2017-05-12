@@ -4,89 +4,27 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: 'app',
-  async created () {
-    if (!this.init) {
-      alert(1)
-      this.$store.commit('SET_USERINIT', {init: true})
+  created () {
+    const init = window.localStorage.getItem('mj_init')
+    let {code, state} = this.$route.query
+    if (init === 'done') {
+      alert('init is done, openid is being set')
+      this.$router.push({path: '/init', query: {code, page: state}})
+      return
+    }
+    if (!code && !state) {
+      alert('Redirect.vue: no code fail')
     } else {
-      let {code, state} = this.$route.query
-      const appid = 'wx543968867249e28d'
-      const secret = 'efc582e21d07549a8bade66ceefdc312'
-      // if (process.env.NODE_ENV !== 'development') {
-      // }
-      try {
-        // const fullPath = this.$route.fullPath
-        if (!code && !state) {
-          alert('fail')
-        } else {
-          const openidres = await this.setOpenid({appid, code, secret})
-          if (openidres.type !== 'success') {
-            this.$vux.toast.show({
-              type: 'warn',
-              text: '获取openid失败1，请从公众号重新点击进入',
-              width: '15rem'
-            })
-            return
-          }
-          // 通过openid获取用户信息
-          const userinfo = await this.setUserInfo({openid: this.openid})
-          if (userinfo.type === 'text') {
-            this.$router.push({path: '/bindphone'})
-            return
-          } else if (userinfo.type === 'warn') {
-            this.$vux.toast.show(userinfo)
-            return
-          }
-          alert('success')
-          // const _this = this
-          // switch (state) {
-          //   case 1:
-          //     _this.$router.push({path: '/pickup'})
-          //     break
-          //   case 2:
-          //     _this.$router.push({path: '/send'})
-          //     break
-          //   case 3:
-          //     _this.$router.push({path: '/usercenter'})
-          //     break
-          //   default:
-          //     break
-          // }
-        }
-      } catch (e) {
-        console.error(e)
-        this.$vux.toast.show({
-          type: 'warn',
-          text: '未知错误发生了...我也很绝望...',
-          width: '15rem'
-        })
-      }
+      window.localStorage.removeItem('mj_code')
+      window.localStorage.setItem('mj_code', code)
+      this.$router.push({path: '/init', query: {code, page: state}})
     }
   },
   data () {
     return {
     }
-  },
-  computed: {
-    ...mapState({
-      isLoading: state => state.isLoading,
-      isJump: state => state.isJump,
-      jumpSrc: state => state.jumpSrc
-    }),
-    ...mapGetters({
-      'openid': 'getOpenId',
-      'init': 'getUserInit'
-    })
-  },
-  methods: {
-    ...mapActions([
-      'setOpenid',
-      'setUserInfo'
-    ])
   }
 }
 </script>

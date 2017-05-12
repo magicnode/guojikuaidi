@@ -14,19 +14,7 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'app',
-  async created () {
-    this.$vux.toast.show({
-      type: 'text',
-      width: '15rem',
-      time: '4000',
-      text: '这里是app。vue正在为您跳转，请稍候'
-    })
-    alert(this.openid)
-    // let {code, state, page} = this.$route.query
-    // const appid = 'wx543968867249e28d'
-    // const secret = 'efc582e21d07549a8bade66ceefdc312'
-    // if (process.env.NODE_ENV !== 'development') {
-    // }
+  created () {
   },
   data () {
     return {

@@ -1,6 +1,5 @@
 <template>
   <div class="senddetail">
-    <mj-header title="取件列表"></mj-header>
     <div class="senddetail-container">
       <div class="address-container-tab">
         <tab active-color='#ff750f'>
@@ -29,7 +28,7 @@
                    <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
                      <p class="time">{{item.createTime | formatedatestamp}}</p>
                      <div>
-                       <button type="" class="gosend-btn" @click="goPath(item.id, 'wait')">去取件</button>
+                       <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去取件</button>
                      </div>
                    </div>
                </div>
@@ -90,9 +89,16 @@ export default {
     Group,
     Spinner
   },
-  created () {
+  async created () {
     if (!this.openid) {
-      return this.$router.push({path: '/', query: {page: 1}})
+      return this.$router.push({path: '/init', query: {page: 1}})
+    }
+    if (!this.user.mobile) {
+      const userinfo = await this.setUserInfo({openid: this.openid})
+      this.$vux.toast.show(userinfo)
+      if (userinfo.type === 'text') {
+        return this.$router.push({path: '/bindphone', query: {page: 1}})
+      }
     }
     if (this.sign.length <= 0 && this.wait.length <= 0) {
       this.initPickUpList()
@@ -105,6 +111,9 @@ export default {
       'user': 'getUserInfo',
       'openid': 'getOpenId'
     })
+  },
+  mounted () {
+    window.document.title = '取件列表'
   },
   data () {
     return {
@@ -120,7 +129,8 @@ export default {
   methods: {
     ...mapActions([
       'addPickUpSign',
-      'addPickUpWait'
+      'addPickUpWait',
+      'setUserInfo'
     ]),
     loadMoreSign () {
       setTimeout(() => {
@@ -147,7 +157,8 @@ export default {
     showToast (data) {
       this.$vux.toast.show({
         text: data.text || '出错啦',
-        type: data.type || 'warn'
+        type: data.type || 'warn',
+        width: '18rem'
       })
     },
     async initPickUpList () {
@@ -166,12 +177,10 @@ export default {
       setTimeout(function () {
         _this.showToast(result1)
       }, 1000)
-      console.log('asd sign', this.sign)
-      console.log('asd wair', this.wait)
       return
     },
-    goPath (id, type) {
-      this.$router.push({path: '/pickup/detail', query: {id, type}})
+    goPath (item) {
+      this.$router.push({path: '/pickup/detail', query: item})
     }
   }
 }

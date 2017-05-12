@@ -6,7 +6,7 @@ import * as types from '../mutation-types'
 
 let local = window.localStorage
 let instance = axios.create({
-  timeout: 1000
+  timeout: 3000
 })
 
 export const state = {
@@ -30,7 +30,7 @@ export const getters = {
 export const actions = {
   changeAddress ({ commit }) {
     instance.get(addressApi.index, {
-      params: {userId: local.userId}
+      params: {userId: local.getItem('mj_userId')}
     })
     .then((res) => {
       console.log('data rs', res.request.responseURL)
@@ -60,7 +60,8 @@ export const actions = {
         let result = {
           show: true,
           type: 'warn',
-          info: '获取地址信息失败'
+          info: '获取地址信息失败',
+          width: '18rem'
         }
         commit(types.SET_ADDRESS_RES, {result})
       }
@@ -70,7 +71,8 @@ export const actions = {
       let result = {
         show: true,
         type: 'warn',
-        info: '获取地址信息失败'
+        info: '获取地址信息失败',
+        width: '18rem'
       }
       commit(types.SET_ADDRESS_RES, {result})
     })
@@ -82,7 +84,6 @@ export const actions = {
       }
     })
     .then((res) => {
-      console.log('res url', res.request.responseURL)
       if (res.status === 200) {
         dispatch('changeAddress')
       }
@@ -91,31 +92,34 @@ export const actions = {
       console.error(err)
     })
   },
-  addAddress ({commit, dispatch}, {address, province, city, district, mobile, name, checked = 2, userId = local.userId, addressType = 1}) {
-    instance.get(addressApi.add, {
-      params: {address, province, city, district, mobile, name, checked, userId, addressType}
-    })
-    .then((res) => {
-      console.log('res url', res.request.responseURL)
+  async addAddress ({commit, dispatch}, {address, province, city, district, mobile, name, checked = 2, userId = local.getItem('mj_userId'), addressType = 1}) {
+    try {
+      const res = await instance({
+        method: 'post',
+        url: addressApi.add,
+        params: {
+          address, province, city, district, mobile, name, checked, userId, addressType
+        }
+      })
       if (res.status === 200) {
+        console.log('data rs', res.request.responseURL)
         dispatch('changeAddress')
       }
-    })
-    .catch(err => {
-      console.error(err)
+    } catch (e) {
+      console.error(e)
       let result = {
         type: 'warn',
-        info: '添加地址失败'
+        info: '添加地址失败',
+        width: '15rem'
       }
       commit(types.SET_ADDRESS_RES, {result})
-    })
+    }
   },
-  eidtAddress ({dispatch}, {id, address, province, city, district, mobile, name, checked = 2, userId = local.userId, addressType = 1}) {
+  eidtAddress ({dispatch}, {id, address, province, city, district, mobile, name, checked = 2, userId = local.getItem('mj_userId'), addressType = 1}) {
     instance.get(addressApi.update, {
       params: {id, address, province, city, district, mobile, name, checked, userId, addressType}
     })
     .then((res) => {
-      console.log('res url', res.request.responseURL)
       if (res.status === 200) {
         dispatch('changeAddress')
       }
@@ -126,7 +130,7 @@ export const actions = {
   },
   checkedAddress ({commit, dispatch}, {id, addressType}) {
     instance.get(addressApi.checked, {
-      params: {id, addressType, userId: local.userId}
+      params: {id, addressType, userId: local.getItem('mj_userId')}
     })
     .then((res) => {
       console.log('res url', res.request.responseURL)
@@ -152,7 +156,8 @@ export const actions = {
       let result = {
         show: true,
         type: 'warn',
-        info: '修改默认地址失败'
+        info: '修改默认地址失败',
+        width: '16rem'
       }
       commit(types.SET_ADDRESS_RES, {result})
     })

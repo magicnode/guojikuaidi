@@ -4,48 +4,67 @@ import * as types from '../mutation-types'
 import window from 'window'
 
 let instance = axios.create({
-  timeout: 10000
+  timeout: 5000
 })
+
+/**
+ * [state description]
+ * userid openid mobile nickname headimgurl等信息放在localStorage
+ * @type {Object}
+ */
+let localStorage = window.localStorage
 
 export const state = {
   init: false,
   userId: null,
-  info: {
-    mobile: '',
-    nickname: '',
-    headimgurl: ''
-  },
+  mobile: '',
+  nickname: '',
+  headimgurl: '',
   openid: '',
   smscode: ''
 }
 
 export const getters = {
   getUserId: state => {
-    let userId = state.userId
-    if (!userId) {
-      userId = window.localStorage.userId ? window.localStorage.userId : 1
-    }
+    const userId = window.localStorage.getItem('mj_userId') || ''
     return userId
   },
-  getUserInfo: state => state.info,
-  getOpenId: state => state.openid,
+  getUserInfo: state => {
+    const mobile = localStorage.getItem('mj_mobile') || ''
+    const nickname = localStorage.getItem('mj_nickname') || ''
+    const headimgurl = localStorage.getItem('mj_headimgurl') || ''
+    return {
+      mobile,
+      nickname,
+      headimgurl
+    }
+  },
+  getOpenId: state => {
+    const openid = localStorage.getItem('mj_openid') || ''
+    return openid
+  },
   getSmsCode: state => state.smscode,
   getUserInit: state => state.init
 }
 
 export const actions = {
   setUserId ({ commit }, { userId }) {
-    window.localStorage.removeItem('userId')
-    window.localStorage.setItem('userId', userId)
+    window.localStorage.removeItem('mj_userId')
+    window.localStorage.setItem('mj_userId', userId)
     commit(types.SET_USERID, { userId })
   },
   async setUserInfo ({ dispatch, commit }, {openid}) {
     try {
-      const res = await instance.post(userApi.getuserinfo, {
-        openid
+      const res = await instance({
+        method: 'post',
+        url: userApi.getuserinfo,
+        params: {
+          openid
+        }
       })
-      if (res.status === 200) {
-        let info = res.data
+      const data = res.data
+      if (data.code === 200) {
+        let info = data.obj
         if (!info.mobile) {
           return {
             text: '用户未绑定手机号，将跳转绑定页面',
@@ -54,7 +73,7 @@ export const actions = {
           }
         }
         dispatch('setUserId', {userId: info.id})
-        commit(types.SET_USERINFO, {info})
+        commit(types.SET_USERINFO, {mobile: info.mobile, headimgurl: info.headimgurl, nickname: info.nickname})
         return {
           text: '获取用户信息成功',
           width: '15rem',
@@ -69,7 +88,7 @@ export const actions = {
     } catch (err) {
       console.error(err)
       return {
-        text: '获取用户信息失败',
+        text: '获取用户信息失败, 网络错误',
         width: '15rem',
         type: 'warn'
       }
@@ -77,30 +96,33 @@ export const actions = {
   },
   async setOpenid ({ commit }, {appid, secret, code}) {
     try {
-      alert('1111')
-      alert(appid)
-      alert(code)
+      localStorage.setItem('mj_init', 'done')
       const url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + appid + '&secret=' + secret + '&code=' + code + '&grant_type=authorization_code'
-      alert(url)
-      const res = await axios({
-        method: 'get',
-        url
+      const res = await instance({
+        method: 'post',
+        url: userApi.getwebopenid,
+        params: {
+          url
+        }
       })
+      console.log('res', res)
       if (res.status === 200) {
-        alert(res.status)
         let data = res.data
-        alert(res.data.errcode)
-        let openid = data.openid
+        data = JSON.parse(data)
         if (data.errcode) {
           return {
             text: data.errmsg,
             type: 'warn'
           }
         }
+        let openid = data.openid
+        localStorage.removeItem('mj_openid')
+        localStorage.setItem('mj_openid', openid)
         commit(types.SET_OPENID, {openid})
         return {
           text: '获取用户openid成功',
-          type: 'success'
+          type: 'success',
+          openid
         }
       }
       return {
@@ -108,17 +130,15 @@ export const actions = {
         type: 'warn'
       }
     } catch (err) {
-      alert(err)
+      console.error(err)
       return {
-        text: '获取用户openid失败',
+        text: '获取用户openid失败, 网络错误',
         type: 'warn'
       }
     }
   },
   async smsSend ({commit}, {mobile, openid}) {
     try {
-      console.log('mobile', mobile)
-      console.log('openid', openid)
       const res = await instance({
         method: 'post',
         url: userApi.sendsms,
@@ -156,8 +176,6 @@ export const actions = {
   },
   async bindUser ({dispatch, commit}, {mobile, openid}) {
     try {
-      console.log('mobile', mobile)
-      console.log('openid', openid)
       const res = await instance({
         method: 'post',
         url: userApi.bindphone,
@@ -169,7 +187,6 @@ export const actions = {
       const data = res.data
       const code = data.code
       if (code === 200) {
-        await dispatch('setUserInfo', {openid})
         return {
           text: data.mess,
           type: 'success'
@@ -201,8 +218,11 @@ export const mutations = {
   [types.SET_USERID] (state, { userId }) {
     state.userId = userId
   },
-  [types.SET_USERINFO] (state, { info }) {
-    state.info = info
+  [types.SET_USERINFO] (state, { mobile = localStorage.mj_mobile, nickname = localStorage.mj_nickname,
+    headimgurl = localStorage.mj_headimgurl }) {
+    localStorage.setItem('mj_mobile', mobile)
+    localStorage.setItem('mj_nickname', nickname)
+    localStorage.setItem('mj_headimgurl', headimgurl)
   },
   [types.SET_OPENID] (state, { openid }) {
     state.openid = openid

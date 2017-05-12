@@ -1,6 +1,5 @@
 <template>
   <div class="senddetail">
-    <mj-header title="寄件列表"></mj-header>
     <div class="senddetail-container">
       <div class="address-container-tab">
         <tab active-color='#ff750f'>
@@ -69,6 +68,9 @@ export default {
     if (!this.data.init) {
       this.initSendList()
     }
+  },
+  mounted () {
+    window.document.title = '寄件列表'
   },
   computed: {
     ...mapGetters({

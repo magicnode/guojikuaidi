@@ -1,6 +1,5 @@
 <template>
   <div class="send">
-    <mj-header title="寄件"></mj-header>
     <div class="send-container">
       <div class="send-container-address flex">
         <div class="send-container-address__intro">
@@ -65,19 +64,29 @@ export default {
     Selector,
     XInput
   },
-  created () {
+  async created () {
     if (!this.openid) {
-      return this.$router.push({path: '/', query: {page: 2}})
+      return this.$router.push({path: '/init', query: {page: 2}})
     }
-    let addressInfo = window.localStorage.getItem('addressInfo')
-    addressInfo = JSON.parse(addressInfo)
-    this.office = addressInfo.descript
+    if (!this.user.mobile) {
+      const userinfo = await this.setUserInfo({openid: this.openid})
+      this.$vux.toast.show(userinfo)
+      if (userinfo.type === 'text') {
+        return this.$router.push({path: '/bindphone', query: {page: 2}})
+      }
+    }
     if (this.brand.length <= 0) {
       this.initBrand()
     }
     if (!this.sendAddress['id'] && !this.pickupAddress['id']) {
       this.setDefaultAddress()
     }
+    let addressInfo = window.localStorage.getItem('mj_addressInfo')
+    addressInfo = JSON.parse(addressInfo)
+    this.office = addressInfo ? addressInfo.descript : ''
+  },
+  mounted () {
+    window.document.title = '寄件'
   },
   computed: {
     ...mapGetters({
@@ -87,7 +96,8 @@ export default {
       sendAddress: 'getSendAddress',
       pickupAddress: 'getPickupAddress',
       result: 'getSendResult',
-      openid: 'getOpenId'
+      openid: 'getOpenId',
+      user: 'getUserInfo'
     })
   },
   data () {
@@ -116,19 +126,18 @@ export default {
     showToast ({text, type}) {
       this.$vux.toast.show({
         text,
-        type
+        type,
+        width: '18rem'
       })
     },
     onChange (val) {
-      console.log('val', val)
       this.$store.commit('SET_SEND_ADD', {express: val})
     },
     goPath (path) {
       this.$router.push({path})
     },
     async submitSend () {
-      const timestamp = new Date().getTime()
-      let addressInfo = window.localStorage.getItem('addressInfo')
+      let addressInfo = window.localStorage.getItem('mj_addressInfo')
       addressInfo = JSON.parse(addressInfo)
       if (!this.sendadd.express) {
         this.showToast({text: '请选择快递品牌', type: 'warn'})
@@ -142,15 +151,19 @@ export default {
         this.showToast({text: '请输入物品描述', type: 'warn'})
         return
       }
+      console.log('brand', this.sendadd.express)
+      console.log('describe', this.describe)
+      console.log('note', this.label)
+      console.log('office', addressInfo.id)
+      console.log('receiptAddressId', this.pickupAddress['id'])
+      console.log('sendAddressId', this.sendAddress['id'])
       const result = await this.createSend({
         brand: this.sendadd.express,
         describe: this.describe,
         note: this.label,
         office: addressInfo.id,
-        order: timestamp,
         receiptAddressId: this.pickupAddress['id'],
         sendAddressId: this.sendAddress['id'],
-        sum: Number(Math.random() * 100).toFixed(),
         type: 1
       })
       if (result) {

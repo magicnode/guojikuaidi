@@ -73,7 +73,6 @@ export const actions = {
         wait = wait.concat(resdata)
         wait = Array.from(new Set(wait))
         commit(types.SET_PICKUP_WAIT, {wait})
-        console.log('state wait', state.wait)
         return {
           text: '获取未签收寄件成功',
           type: 'success'

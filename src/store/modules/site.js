@@ -36,18 +36,21 @@ export const actions = {
         commit(types.SET_SITE_RECENT, {recent: resdata})
         return {
           text: '获取营业厅地址成功',
-          type: 'success'
+          type: 'success',
+          width: '18rem'
         }
       }
       return {
         text: '获取营业厅地址失败',
-        type: 'warn'
+        type: 'warn',
+        width: '18rem'
       }
     } catch (err) {
       console.error(err)
       return {
         text: '获取营业厅地址失败',
-        type: 'warn'
+        type: 'warn',
+        width: '18rem'
       }
     }
   }

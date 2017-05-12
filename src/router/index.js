@@ -83,5 +83,13 @@ export default new Router({
     path: '/redirect',
     name: 'Redirect',
     component: require('@/views/Redirect')
+  }, {
+    path: '/test',
+    name: 'Test',
+    component: require('@/views/Test')
+  }, {
+    path: '/init',
+    name: 'Init',
+    component: require('@/views/Init')
   }]
 })

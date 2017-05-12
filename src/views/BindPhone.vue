@@ -9,7 +9,7 @@
            <img src="../assets/images/new/bin_ico_pho.png" alt="phone">
          </div>
          <div>
-           <input type="text" name="mobile" v-model="mobile" placeholder="输入手机号" />
+           <input style="max-width: 10rem;" type="text" name="mobile" v-model="mobile" placeholder="输入手机号" />
          </div>
          <div>
            <button v-show="getting === false" type="" class="button btn-get" @click="getCode">获取验证码</button>
@@ -21,8 +21,11 @@
            <img src="../assets/images/new/bin_ico_ver.png" alt="phone">
          </div>
          <div>
-           <input type="text" name="mobile" v-model="code" placeholder="输入验证码" />
+           <input style="max-width: 10rem;" type="text" name="mobile" v-model="code" placeholder="输入验证码" />
          </div>
+         <div>
+           <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
+          </div>
        </div>
        <div class="check" style="padding-top: 2rem;">
          <button class="button btn-login" @click="submitPhone">确定</button>
@@ -56,7 +59,8 @@ export default {
     ...mapActions([
       'setOpenid',
       'smsSend',
-      'bindUser'
+      'bindUser',
+      'setUserInfo'
     ]),
     setTime () {
       const _this = this
@@ -91,7 +95,7 @@ export default {
       }
       if (!this.openid) {
         this.$vux.toast.show({
-          text: '未知错误发生了...我也很绝望...',
+          text: 'openid无法获取，请重新登录',
           type: 'text',
           width: '20rem'
         })
@@ -132,7 +136,41 @@ export default {
       })
       this.$vux.toast.show(bindres)
       if (bindres.type === 'success') {
-        this.$router.push({path: '/usercenter'})
+        await this.getUserInfoByOpenid({openid: this.openid})
+      }
+    },
+    async getUserInfoByOpenid ({openid}) {
+      const userinfo = await this.setUserInfo({openid})
+      if (userinfo.type === 'text') {
+        // 用户未绑定手机， 跳转绑定手机页面
+        this.$router.push({path: '/bindphone'})
+        return
+      } else if (userinfo.type === 'success') {
+        // 获取用户信息成功, 根据page跳转页面
+        this.$vux.toast.show({
+          type: 'success',
+          text: 'getUserInfoByOpenid 获取用户信息成功，即将为您跳转',
+          width: '18rem'
+        })
+        let {page} = this.$route.query
+        const _this = this
+        switch (page) {
+          case 1:
+            _this.$router.push({path: '/pickup'})
+            break
+          case 2:
+            _this.$router.push({path: '/send'})
+            break
+          case 3:
+            _this.$router.push({path: '/usercenter'})
+            break
+          default:
+            _this.$router.push({path: '/usercenter'})
+            break
+        }
+        return
+      } else {
+        this.$vux.toast.show(userinfo)
         return
       }
     }
@@ -148,7 +186,8 @@ export default {
   color: @dark-yellow;
   border: 1px solid @dark-yellow;
   background: transparent;
-  padding: 0.3rem;
+  padding: .3rem .1rem;
+  font-size: 1.2rem;
 }
 
 .btn-login {
@@ -176,7 +215,7 @@ export default {
       margin-top: 2rem;
       display: flex;
       align-items: center;
-      // justify-content: center;
+      justify-content: space-around;
       border-bottom: 1px solid @borderbt;
       div {
         padding: .5rem;

@@ -1,6 +1,5 @@
 <template>
   <div class="addaddress">
-    <mj-header title="编辑地址"></mj-header>
     <div class="addaddress-container">
       <group>
          <x-input title="姓名" v-model="name" placeholder="请填写您的真实姓名" required></x-input>
@@ -40,6 +39,9 @@ export default {
     if (query.checked === 1) {
       this.value = true
     }
+  },
+  mounted () {
+    window.document.title = '编辑地址'
   },
   data () {
     return {

@@ -61,7 +61,7 @@ export const actions = {
   async setSend ({ commit }) {
     try {
       const res = await instance.get(sendApi.index, {
-        params: {userId: local.userId}
+        params: {userId: local.getItem('mj_userId')}
       })
       if (res.status === 200) {
         let resdata = res.data
@@ -106,7 +106,7 @@ export const actions = {
   async setDefaultAddress ({commit}) {
     try {
       const {data} = await instance.get(addressApi.default, {
-        params: {userId: local.userId}
+        params: {userId: local.getItem('mj_userId')}
       })
       commit(types.SET_SEND_DEFAULTADDRESS, {sendAddress: data.SendAddress, pickupAddress: data.receiptAddress})
     } catch (err) {
@@ -124,10 +124,8 @@ export const actions = {
         describe = state.add.describe,
         note = state.add.note,
         office = state.add.office,
-        order = state.add.order,
         receiptAddressId = state.add.receiptAddressId,
         sendAddressId = state.add.sendAddressId,
-        sum = state.add.sum,
         type = state.add.type }) {
     try {
       const res = await axios.get(sendApi.create, {
@@ -136,12 +134,10 @@ export const actions = {
           describe,
           note,
           office,
-          order,
           receiptAddressId,
           sendAddressId,
-          sum,
           type,
-          userId: local.userId
+          userId: local.getItem('mj_userId')
         }
       })
       if (res.data) {
@@ -171,7 +167,7 @@ export const actions = {
           sendAddressId,
           sum,
           type: 5,
-          userId: local.userId
+          userId: local.getItem('mj_userId')
         }
       })
       if (res.data) {
@@ -218,7 +214,6 @@ export const mutations = {
   [types.SET_SEND_DEFAULTADDRESS] (state, {sendAddress = state.sendAddress, pickupAddress = state.pickupAddress}) {
     state.sendAddress = sendAddress
     state.pickupAddress = pickupAddress
-    console.log(',,,', pickupAddress)
   },
   [types.SET_SEND_RES] (state, {show = false, type, info}) {
     state.result.show = show
