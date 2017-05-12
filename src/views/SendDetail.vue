@@ -10,7 +10,11 @@
       <div class="senddetail-cell" v-show="show === 'wait'">
         <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
           <div class="senddetail-cell-detail--box border-bottom-grey">
-            <span class="senddetail-cell-detail__title">营业厅: {{item.office.province + item.office.city + item.office.district + ' ' + item.office.descript}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
+            <span class="senddetail-cell-detail__title">
+             <span>
+              营业厅: {{item.office.province + item.office.city + item.office.district + ' ' + item.office.descript}}</span>
+             <img src="../assets/images/new/pic_ico_map.png" alt="">
+            </span>
             <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
           </div>
           <div class="senddetail-cell-detail--box flex border-bottom-grey" >
@@ -26,7 +30,7 @@
             <p class="time">{{item.createTime}}</p>
             <div>
               <button type="" class="cancle-btn" @click="cancle(item)">取消订单</button>
-              <button type="" class="gosend-btn" @click="goPath(item.id, 'wait')">去寄件</button>
+              <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去寄件</button>
             </div>
           </div>
         </div>
@@ -51,7 +55,7 @@
             <p class="time">{{item.createTime}}</p>
             <span class="sum-money">{{'￥' + item.sum}}</span>
             <div>
-              <button type="" class="cancle-btn" @click="goPath(item.id, 'ready')">查看订单</button>
+              <button type="" class="cancle-btn" @click="goPath(item, 'ready')">查看订单</button>
             </div>
           </div>
         </div>
@@ -101,8 +105,8 @@ export default {
       const result = await this.setSend()
       this.showToast(result)
     },
-    goPath (id, type) {
-      this.$router.push({path: 'qr', query: {id, type}})
+    goPath (item, type) {
+      this.$router.push({path: 'qr', query: item})
     },
     async cancle (item) {
       console.log('item', item)
