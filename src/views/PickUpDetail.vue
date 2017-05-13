@@ -7,7 +7,7 @@
       <img class="pickupdetail-container-qr" :src="qr" />
       <div class="pickupdetail-container-detail">
         <p>联系电话：{{mobile}}</p>
-        <p>站点名: {{name}}</p>
+        <p>货架号: {{code}}</p>
       </div>
     </div>
   </div>
@@ -19,10 +19,12 @@ export default {
   name: 'pickupdetail',
   created () {
     const query = this.$route.query
-    this.qr = picApi.qr + '?orderSn=' + query.orderSn + '&userId=' + window.localStorage.getItem('mj_userId')
+    const userId = query.userId
+    this.qr = picApi.qr + '?orderSn=' + query.orderSn + '&userId=' + window.localStorage.getItem('mj_userId') || userId
     console.log('qr', this.qr)
+    this.orderSn = query.orderSn
     this.mobile = query.mobile
-    this.name = query.name
+    this.code = query.code
   },
   mounted () {
     window.document.title = '收件明细'
@@ -32,7 +34,7 @@ export default {
       qr: '',
       orderSn: '',
       mobile: '',
-      name: ''
+      code: ''
     }
   },
   methods: {

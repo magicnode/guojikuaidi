@@ -91,5 +91,9 @@ export default new Router({
     path: '/init',
     name: 'Init',
     component: require('@/views/Init')
+  }, {
+    path: '/office/location',
+    name: 'OfficeLocation',
+    component: require('@/views/OfficeLocation')
   }]
 })

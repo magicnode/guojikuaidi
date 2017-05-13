@@ -46,7 +46,6 @@
           </cell>
         </group>
       </div>
-      
       <div class="" style="padding:2rem;"> 
         <button type="submit" class="btn-sub" @click="submitSend">提交</button>
       </div>
@@ -151,16 +150,12 @@ export default {
         this.showToast({text: '请输入物品描述', type: 'warn'})
         return
       }
-      console.log('brand', this.sendadd.express)
-      console.log('describe', this.describe)
-      console.log('note', this.label)
-      console.log('office', addressInfo.id)
-      console.log('receiptAddressId', this.pickupAddress['id'])
-      console.log('sendAddressId', this.sendAddress['id'])
+      const timestamp = 'time' + new Date().getTime()
       const result = await this.createSend({
         brand: this.sendadd.express,
         describe: this.describe,
         note: this.label,
+        order: timestamp,
         office: addressInfo.id,
         receiptAddressId: this.pickupAddress['id'],
         sendAddressId: this.sendAddress['id'],

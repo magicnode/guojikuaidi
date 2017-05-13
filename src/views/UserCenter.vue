@@ -4,7 +4,6 @@
       <img :src="user.headimgurl" :alt="user.nickname">
       <p>{{user.nickname}}</p>
     </div>
-
     <div class="usercenter-orderfunc">
       <div class="usercenter-orderfunc-box flex" v-for="item in orderfunc" @click="goPath(item.path)">
         <div class="usercenter-orderfunc-box--info">
@@ -13,6 +12,9 @@
         </div>
         <span class="arrow-left"></span>
       </div>
+    </div>
+    <div class="" style="padding:2rem;"> 
+      <button type="submit" class="btn-sub" @click="loginout">登出</button>
     </div>
   </div>
 </template>
@@ -72,6 +74,22 @@ export default {
       }
       this.$router.push({path})
       return
+    },
+    loginout () {
+      this.$vux.confirm.show({
+        title: '确定登出吗?',
+        onCancel () {
+          console.log('no loginout')
+        },
+        onConfirm () {
+          window.localStorage.removeItem('mj_openid')
+          window.localStorage.removeItem('mj_code')
+          window.localStorage.removeItem('mj_nickname')
+          window.localStorage.removeItem('mj_headimgurl')
+          window.localStorage.removeItem('mj_userId')
+          window.history.go(0)
+        }
+      })
     }
   }
 }
@@ -83,6 +101,17 @@ export default {
 .flex {
   display: flex;
   align-items: center;
+}
+
+.btn-sub {
+  color: white;
+  border: none;
+  padding: .8rem 1rem;
+  font-size: 1.8rem;
+  width: 21rem;
+  background-color: @dark-yellow;
+  border: none;
+  border-radius: 5px;
 }
 
 .usercenter-padding {

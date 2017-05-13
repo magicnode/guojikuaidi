@@ -59,7 +59,7 @@ export default {
       'eidtAddress'
     ]),
     checkMobile (num) {
-      const reg = /^1[3|4|5|8][0-9]\d{4,8}$/
+      const reg = /^1[1|3|4|5|7|8|9][0-9]\d{4,8}$/
       return reg.test(num)
     },
     confirm () {
@@ -76,7 +76,8 @@ export default {
       if (!this.checkMobile(this.mobile)) {
         this.$vux.toast.show({
           text: '手机号格式不对，请重新填写',
-          type: 'warn'
+          type: 'warn',
+          width: '30rem'
         })
         return
       }

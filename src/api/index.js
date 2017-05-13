@@ -1,7 +1,7 @@
 let url = 'http://1a699l6063.imwork.net/WeChatService/'
 
 if (process.env.NODE_ENV !== 'development') {
-  url = 'http://1a699l6063.imwork.net/WeChatService/'
+  url = 'http://app.quandikeji.com/WeChatService/'
 }
 
 export const pic = {
@@ -14,7 +14,8 @@ export const address = {
   update: url + 'updateAddress',
   delete: url + 'deleteAddress',
   checked: url + 'checked',
-  default: url + 'GETADDRESSDEFAULT'
+  default: url + 'GETADDRESSDEFAULT',
+  officelocation: url + 'FindStationInfo'
 }
 
 export const send = {

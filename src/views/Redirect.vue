@@ -7,15 +7,10 @@
 
 export default {
   created () {
-    const init = window.localStorage.getItem('mj_init')
+    // const init = window.localStorage.getItem('mj_init')
     let {code, state} = this.$route.query
-    if (init === 'done') {
-      alert('init is done, openid is being set')
-      this.$router.push({path: '/init', query: {code, page: state}})
-      return
-    }
     if (!code && !state) {
-      alert('Redirect.vue: no code fail')
+      console.log('Redirect.vue: no code fail')
     } else {
       window.localStorage.removeItem('mj_code')
       window.localStorage.setItem('mj_code', code)

@@ -120,6 +120,7 @@ export const actions = {
     commit(types.SET_SEND_DEFAULTADDRESS, {pickupAddress})
   },
   async createSend ({dispatch, commit}, {
+        order,
         brand = state.add.brand,
         describe = state.add.describe,
         note = state.add.note,
@@ -130,6 +131,7 @@ export const actions = {
     try {
       const res = await axios.get(sendApi.create, {
         params: {
+          order,
           brand,
           describe,
           note,

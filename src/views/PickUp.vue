@@ -8,7 +8,27 @@
         </tab>
       </div>
       <div class="senddetail-cell" v-show="show === 'wait'">
-        <div>
+        <h1 v-show="wait.length === 0">没有待取件数据</h1>
+        <div class="senddetail-cell-detail" v-for="item in wait" :key="item.createTime">
+            <div class="senddetail-cell-detail--box border-bottom-grey">
+              <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
+              <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
+            </div>
+            <div class="senddetail-cell-detail--box flex border-bottom-grey" >
+              <div>
+                <p>营业厅：  {{item.descript}}</p>
+                <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
+                <p>电话： {{item.mobile}} </p>
+              </div>
+            </div>
+            <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
+              <p class="time">{{item.createTime | formatedatestamp}}</p>
+              <div>
+                <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去取件</button>
+              </div>
+            </div>
+        </div>
+        <!-- <div>
           <divider>下拉刷新、上拉加载</divider>
            <scroller lock-x scrollbar-y use-pullup use-pulldown height="200vh" @on-pullup-loading="loadMoreSign" @on-pulldown-loading="refreshSign" v-model="signstatus" ref="scroller">
              <div class="box2">
@@ -33,17 +53,34 @@
                    </div>
                </div>
              </div>
-             <!--pullup slot-->
+
              <div slot="pullup" class="xs-plugin-pullup-container xs-plugin-pullup-up" style="position: absolute; width: 100%; height: 40px; bottom: -40px; text-align: center;">
                <span></span>
                <span v-show="signstatus.pullupStatus === 'loading'"><spinner type="ios-small"></spinner></span>
              </div>
            </scroller>
-        </div>
+        </div> -->
       </div>
       <!-- 已寄件 -->
       <div class="senddetail-cell" v-show="show === 'sign'">
-        <div>
+        <h1 v-show="sign.length === 0">没有已经取件数据</h1>
+        <div class="senddetail-cell-detail" v-for="item in sign" :key="item.createTime">
+            <div class="senddetail-cell-detail--box border-bottom-grey">
+              <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
+              <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
+            </div>
+            <div class="senddetail-cell-detail--box flex border-bottom-grey" >
+              <div>
+                <p>营业厅：  {{item.descript}}</p>
+                <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
+                <p>电话： {{item.mobile}} </p>
+              </div>
+            </div>
+            <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
+              <p class="time">{{item.createTime | formatedatestamp}}</p>
+            </div>
+        </div>
+<!--         <div>
           <divider>下拉刷新、上拉加载</divider>
            <scroller lock-x scrollbar-y use-pullup use-pulldown height="71vh" @on-pullup-loading="loadMoreSign" @on-pulldown-loading="refreshSign" v-model="signstatus" ref="scroller">
              <div class="box2">
@@ -65,13 +102,13 @@
                    </div>
                </div>
              </div>
-             <!--pullup slot-->
+
              <div slot="pullup" class="xs-plugin-pullup-container xs-plugin-pullup-up" style="position: absolute; width: 100%; height: 40px; bottom: -40px; text-align: center;">
                <span></span>
                <span v-show="signstatus.pullupStatus === 'loading'"><spinner type="ios-small"></spinner></span>
              </div>
            </scroller>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -165,13 +202,13 @@ export default {
       const result = await this.addPickUpSign({
         mobile: this.user.mobile,
         page: 1,
-        rows: 2
+        rows: 200
       })
       this.showToast(result)
       const result1 = await this.addPickUpWait({
         mobile: this.user.mobile,
         page: 1,
-        rows: 2
+        rows: 200
       })
       const _this = this
       setTimeout(function () {
@@ -255,6 +292,7 @@ export default {
 
 .senddetail {
   &-cell {
+    padding-bottom: 8rem;
     &-status {
       font-size: 1.6rem;
       text-align: left;

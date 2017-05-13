@@ -11,9 +11,9 @@
         <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
           <div class="senddetail-cell-detail--box border-bottom-grey">
             <span class="senddetail-cell-detail__title">
-             <span>
+             <span class="office-info">
               营业厅: {{item.office.province + item.office.city + item.office.district + ' ' + item.office.descript}}</span>
-             <img src="../assets/images/new/pic_ico_map.png" alt="">
+             <img src="../assets/images/new/pic_ico_map.png" alt="item.office.descript" @click="showOffice({province: item.office.province, city: item.office.city, district: item.office.district, descript: item.office.descript})">
             </span>
             <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
           </div>
@@ -22,7 +22,7 @@
               收
             </div>
             <div>
-              <p>atom  {{item.receiptAddress.mobile}}</p>
+              <p>{{item.name}}  {{item.receiptAddress.mobile}} {{item.brand}}</p>
               <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
             </div>
           </div>
@@ -47,7 +47,7 @@
               收
             </div>
             <div>
-              <p>atom  {{item.receiptAddress.mobile}}</p>
+              <p>{{item.name}}  {{item.receiptAddress.mobile}}</p>
               <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
             </div>
           </div>
@@ -98,7 +98,8 @@ export default {
     showToast (data) {
       this.$vux.toast.show({
         text: data.text || '出错啦',
-        type: data.type || 'warn'
+        type: data.type || 'warn',
+        width: '20rem'
       })
     },
     async initSendList () {
@@ -109,19 +110,32 @@ export default {
       this.$router.push({path: 'qr', query: item})
     },
     async cancle (item) {
-      console.log('item', item)
-      const res = await this.cancleSend({
-        brand: item.brand,
-        describe: item.describe,
-        note: item.note,
-        office: item.officeId,
-        order: item.order,
-        receiptAddressId: item.receiptAddressId,
-        sendAddressId: item.sendAddressId,
-        sum: item.sum,
-        type: 5})
-      console.log('res', res)
-      this.showToast(res)
+      const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
+      this.$vux.confirm.show({
+        title: '确定取消这一订单吗?',
+        onCancel () {
+        },
+        async onConfirm () {
+          const res = await _this.cancleSend({
+            brand: item.brand,
+            describe: item.describe,
+            note: item.note,
+            office: item.officeId,
+            order: item.order,
+            receiptAddressId: item.receiptAddressId,
+            sendAddressId: item.sendAddressId,
+            sum: item.sum,
+            type: 5})
+          _this.showToast(res)
+        }
+      })
+    },
+    showOffice ({province = '', city = '', district = '', descript = ''}) {
+      const content = province + city + district + descript
+      this.showToast({
+        text: content,
+        type: 'text'
+      })
     }
   }
 }
@@ -134,6 +148,14 @@ export default {
   padding: 0 1rem;
 }
 
+.office-info {
+  width: 15rem;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: baseline;
+}
 
 .border-bottom-grey {
   border-bottom: 1px solid #ececec;
@@ -156,6 +178,7 @@ export default {
 }
 
 .cancle-btn {
+  margin-right: 1rem;
   font-size: 1.4rem;
   height: 2.5rem;
   text-align: center;

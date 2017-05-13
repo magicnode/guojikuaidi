@@ -51,13 +51,13 @@ export const actions = {
         }
       }
       return {
-        text: '获取已签收寄件成功失败',
+        text: '获取已签收寄件失败',
         type: 'warn'
       }
     } catch (err) {
       console.error(err)
       return {
-        text: '获取已签收寄件成功失败',
+        text: '获取已签收寄件失败, 网络错误',
         type: 'warn'
       }
     }
@@ -79,13 +79,13 @@ export const actions = {
         }
       }
       return {
-        text: '获取未签收寄件成功失败',
+        text: '获取未签收寄件失败',
         type: 'warn'
       }
     } catch (err) {
       console.error(err)
       return {
-        text: '获取已签收寄件成功失败',
+        text: '获取未签收寄件失败,网络错误',
         type: 'warn'
       }
     }
