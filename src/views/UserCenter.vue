@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="" style="padding:2rem;"> 
-      <button type="submit" class="btn-sub" @click="loginout">登出</button>
+      <button class="btn-sub" @click="loginout">登出</button>
     </div>
   </div>
 </template>
@@ -76,6 +76,7 @@ export default {
       return
     },
     loginout () {
+      const _this = this
       this.$vux.confirm.show({
         title: '确定登出吗?',
         onCancel () {
@@ -87,7 +88,7 @@ export default {
           window.localStorage.removeItem('mj_nickname')
           window.localStorage.removeItem('mj_headimgurl')
           window.localStorage.removeItem('mj_userId')
-          window.history.go(0)
+          _this.$router.push({path: '/init'})
         }
       })
     }

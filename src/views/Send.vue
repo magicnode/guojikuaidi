@@ -47,7 +47,7 @@
         </group>
       </div>
       <div class="" style="padding:2rem;"> 
-        <button type="submit" class="btn-sub" @click="submitSend">提交</button>
+        <button class="btn-sub" @click="submitSend">提交</button>
       </div>
 
     </div>

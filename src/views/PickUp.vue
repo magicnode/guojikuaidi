@@ -11,7 +11,7 @@
         <h1 v-show="wait.length === 0">没有待取件数据</h1>
         <div class="senddetail-cell-detail" v-for="item in wait" :key="item.createTime">
             <div class="senddetail-cell-detail--box border-bottom-grey">
-              <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
+              <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt="" @click="watchOffice(item.userId)"></span>
               <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
             </div>
             <div class="senddetail-cell-detail--box flex border-bottom-grey" >
@@ -66,7 +66,7 @@
         <h1 v-show="sign.length === 0">没有已经取件数据</h1>
         <div class="senddetail-cell-detail" v-for="item in sign" :key="item.createTime">
             <div class="senddetail-cell-detail--box border-bottom-grey">
-              <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
+              <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt="" @click="watchOffice(item.userId)"></span>
               <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
             </div>
             <div class="senddetail-cell-detail--box flex border-bottom-grey" >
@@ -218,6 +218,9 @@ export default {
     },
     goPath (item) {
       this.$router.push({path: '/pickup/detail', query: item})
+    },
+    watchOffice (userId) {
+      this.$router.push({path: '/office/location', query: {userId}})
     }
   }
 }

@@ -1,4 +1,5 @@
-let url = 'http://1a699l6063.imwork.net/WeChatService/'
+// let url = 'http://1a699l6063.imwork.net/WeChatService/'
+let url = 'http://app.quandikeji.com/WeChatService/'
 
 if (process.env.NODE_ENV !== 'development') {
   url = 'http://app.quandikeji.com/WeChatService/'

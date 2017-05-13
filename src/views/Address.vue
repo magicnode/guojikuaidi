@@ -15,7 +15,7 @@
               <p>{{item.name}} <strong>{{item.mobile}}</strong></p>
               <p class="location" style="font-size:1.4rem;">{{item.province + item.city + ' ' + item.district + item.address}}</p>
             </div>
-           <img src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
+           <img v-show="showDel" src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
           </div>
           <div class="flex address-container-list__item--func flex">
             <span class="is-default" v-show="item.checked == 1">
@@ -54,6 +54,7 @@ export default {
     const {type, pick} = this.$route.query
     this.addressType = type || 'send'
     this.pick = pick === '1'
+    this.showDel = !(pick === '1')
   },
   mounted () {
     window.document.title = '地址管理'
@@ -61,7 +62,8 @@ export default {
   data () {
     return {
       addressType: 'send',
-      pick: false
+      pick: false,
+      showDel: true
     }
   },
   computed: {
@@ -85,7 +87,6 @@ export default {
     },
     selectAddress (item) {
       if (!this.pick) return
-      console.log('item', item)
       if (this.addressType === 'send') {
         this.setSendAddress({sendAddress: item})
       } else {
@@ -104,10 +105,10 @@ export default {
       'delAddress',
       'checkedAddress',
       'setSendAddress',
-      'setPickupAddress'
+      'setPickupAddress',
+      'setDefaultAddress'
     ]),
     deleteItem (id) {
-      console.log('id', id)
       // 显示
       const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
       this.$vux.confirm.show({

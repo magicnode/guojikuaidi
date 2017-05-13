@@ -7,9 +7,9 @@ import { WechatPlugin, Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin } f
 import router from './router'
 import store from './store'
 import App from './App'
+import AxiosPlugin from './plugins/axios'
 import * as filters from './filters'
 import Header from './components/Header.vue'
-import AxiosPlugin from './plugins/axios.js'
 
 FastClick.attach(document.body)
 

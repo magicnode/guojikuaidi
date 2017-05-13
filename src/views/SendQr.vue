@@ -2,7 +2,7 @@
   <div class="sendqr">
     <div class="sendqr-container">
       <p class="sendqr-container-sns">运单号码: </p>
-      <p class="sendqr-container-sns">{{orderSn}}</p>
+      <p class="sendqr-container-sns">{{order}}</p>
       <img class="sendqr-container-qr" :src="qr" />
     </div>
   </div>
@@ -14,8 +14,13 @@ export default {
   name: 'sendqr',
   created () {
     const query = this.$route.query
-    this.qr = picApi.qr + '?orderSn=' + query.orderSn + '&userId=' + window.localStorage.getItem('mj_userId')
-    console.log('qr', this.qr)
+    let order = query.order
+    const reg = /time/g
+    if (reg.istest(order)) {
+      order = ''
+    }
+    this.qr = picApi.qr + '?orderSn=' + order + '&userId=' + window.localStorage.getItem('mj_userId')
+    this.order = order
   },
   mounted () {
     window.document.title = '寄件明细'
@@ -25,7 +30,7 @@ export default {
   data () {
     return {
       qr: '',
-      orderSn: ''
+      order: ''
     }
   },
   methods: {
