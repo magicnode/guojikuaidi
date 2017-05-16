@@ -12,6 +12,23 @@ import MJFooter from '@/components/Footer'
 export default {
   name: 'contains',
   created () {
+    function GetQueryString (name) {
+      const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)')
+      const params = window.location.search.substr(1).match(reg)
+      if (params !== null) return params[2]
+      return null
+    }
+    const code = GetQueryString('code')
+    const state = GetQueryString('state')
+    console.log('code', code)
+    console.log('state', state)
+    if (!code && !state) {
+      console.log('container.vue: no code fail')
+    } else {
+      window.localStorage.removeItem('mj_code')
+      window.localStorage.setItem('mj_code', code)
+      this.$router.push({path: '/init', query: {code, page: state}})
+    }
   },
   components: {
     'mj-footer': MJFooter

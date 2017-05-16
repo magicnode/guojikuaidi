@@ -32,7 +32,7 @@
 
       <div class="send-container-select">
         <group>
-          <cell title="营业厅" disabled is-link link="/hallmap">{{office}}</cell>
+          <cell class="office" title="营业厅" disabled is-link link="/hallmap">{{office}}</cell>
           <selector placeholder="请选择快递品牌"  v-model="sendadd.express" title="快递品牌" name="district" :options="brand" @on-change="onChange"></selector>
           <x-input title="物品描述" :max="max" placeholder="请输入物品描述" v-model="describe"></x-input>
           <x-input title="备注" :max="max" placeholder="请输入备注" v-model="note"></x-input>
@@ -184,6 +184,14 @@ export default {
   background-color: @dark-yellow;
 }
 
+.office {
+  .weui-cell__ft {
+    width: 18rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 .send {
   &-container {
     padding-bottom: 6rem;
@@ -214,8 +222,8 @@ export default {
         flex: 3;
         text-align: left;
         p {
+          white-space: nowrap;
           max-width: 14rem;
-          white-space: pre-wrap;
           font-size: 1.6rem;
         }
       }

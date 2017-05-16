@@ -15,10 +15,12 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 
 let appid = config.dev.appid
 let secret = config.dev.appsecret
+let redirectUri = 'http://171u9555b3.iask.in:25806/'
 if (process.env.NODE_ENV !== 'development') {
   console.log('this is pro app')
   appid = config.pro.appid
   secret = config.pro.appsecret
+  redirectUri = 'http://www.mijihome.cn/wx/'
 }
 
 export default {
@@ -60,7 +62,7 @@ export default {
     } else {
       // 获取openid失败, 跳转到授权页面
       let {page} = this.$route.query
-      const redirectUri = 'http://www.mijihome.cn/redirect'
+      redirectUri = encodeURIComponent(redirectUri)
       const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appid + '&redirect_uri=' + redirectUri + '&response_type=code&scope=snsapi_base&state=' + page + '#wechat_redirect'
       window.location.href = url
       return
