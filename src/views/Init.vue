@@ -15,12 +15,12 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 
 let appid = config.dev.appid
 let secret = config.dev.appsecret
-let redirectUri = 'http://171u9555b3.iask.in:25806/'
+let redirectUri = 'http://171u9555b3.iask.in/'
 if (process.env.NODE_ENV !== 'development') {
   console.log('this is pro app')
   appid = config.pro.appid
   secret = config.pro.appsecret
-  redirectUri = 'http://www.mijihome.cn/wx/'
+  redirectUri = 'http://www.mijihome.cn/redirect/'
 }
 
 export default {
@@ -44,9 +44,11 @@ export default {
           text: '获取openid失败，请从公众号重新点击进入',
           width: '15rem'
         })
-        localStorage.removeItem('mj_code')
-        localStorage.removeItem('mj_init')
-        return
+        if (process.env.NODE_ENV !== 'development') {
+          window.location.href = '/wx/#/usercenter'
+        } else {
+          window.location.href = '/#/usercenter'
+        }
       }
       // 通过openid获取用户信息
       let openid = openidres.openid
@@ -62,7 +64,6 @@ export default {
     } else {
       // 获取openid失败, 跳转到授权页面
       let {page} = this.$route.query
-      redirectUri = encodeURIComponent(redirectUri)
       const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appid + '&redirect_uri=' + redirectUri + '&response_type=code&scope=snsapi_base&state=' + page + '#wechat_redirect'
       window.location.href = url
       return
@@ -101,7 +102,7 @@ export default {
         this.$vux.toast.show({
           type: 'success',
           text: '获取用户信息成功，即将为您跳转',
-          width: '18rem'
+          width: '28rem'
         })
         let {page} = this.$route.query
         const _this = this

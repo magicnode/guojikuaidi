@@ -72,6 +72,10 @@ body {
   color: #2c3e50;
 }
 
+select,option,textarea {
+  font-family: 'Microsoft YaHei', 'Avenir', Helvetica, Arial, sans-serif;
+}
+
 .loading-img {
   position: absolute;
   top: 20%;

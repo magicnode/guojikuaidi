@@ -33,7 +33,8 @@ const store = new Vuex.Store({
       type: 'success',
       info: 'show'
     },
-    brand: []
+    brand: [],
+    page: 'usercenter'
   },
   actions: {
     async setAllBrand ({commit}) {
@@ -63,11 +64,15 @@ const store = new Vuex.Store({
     }
   },
   getters: {
-    getAllBrand: state => state.brand
+    getAllBrand: state => state.brand,
+    getPage: state => state.page
   },
   mutations: {
     SET_TITLE (state, { title }) {
       state.title = title
+    },
+    SET_PAGE (state, { page }) {
+      state.page = page
     },
     SET_BRAND (state, { brand }) {
       state.brand = brand

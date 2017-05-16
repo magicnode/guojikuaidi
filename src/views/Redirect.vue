@@ -7,7 +7,6 @@
 
 export default {
   created () {
-    // const init = window.localStorage.getItem('mj_init')
     let {code, state} = this.$route.query
     if (!code && !state) {
       console.log('Redirect.vue: no code fail')

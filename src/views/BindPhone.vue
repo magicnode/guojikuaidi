@@ -1,6 +1,6 @@
 <template>
-  <div class="login">
-     <div class="login-container">
+  <div class="bind">
+     <div class="bind-container">
        <div class="logo">
           <img src="../assets/images/new/bin_log.png" alt="妙寄图标">
        </div>
@@ -11,9 +11,10 @@
          <div>
            <input style="max-width: 10rem;" type="text" name="mobile" v-model="mobile" placeholder="输入手机号" />
          </div>
-         <div>
-           <button v-show="getting === false" type="" class="button btn-get" @click="getCode">获取验证码</button>
-           <span v-show="getting === true" style="white-space: nowrap;font-size: 1.6rem;">{{time + ' s 后可重新获取'}}</span>
+         <div class="getcode">
+           <button v-show="getting === false && (mobile.toString().length < 11) === true" type="" class="button btn-get-disable">获取验证码</button>
+           <button v-show="getting === false && (mobile.toString().length >= 11) ===true" type="" class="button btn-get" @click="getCode">获取验证码</button>
+           <span v-show="getting === true" style="white-space: nowrap;font-size: 1.2rem;">{{time + ' s 后可重新获取'}}</span>
          </div>
        </div>
        <div class="input mobile">
@@ -23,11 +24,11 @@
          <div>
            <input style="max-width: 10rem;" type="text" name="mobile" v-model="code" placeholder="输入验证码" />
          </div>
-         <div>
+         <div class="getcode">
            <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
           </div>
        </div>
-       <div class="check" style="padding-top: 2rem;">
+       <div class="check" style="padding-top: 4rem;">
          <button class="button btn-login" @click="submitPhone">确定</button>
        </div>
      </div>
@@ -75,7 +76,6 @@ export default {
       }, 1000)
     },
     async getCode () {
-      const mb = this.mobile
       if (!this.mobile) {
         this.$vux.toast.show({
           text: '手机号不能为空!',
@@ -108,6 +108,7 @@ export default {
         openid: this.openid
       })
       this.$vux.toast.show(res)
+      const mb = this.mobile
       if (res.type === 'success') {
         this.sendmobile = mb
       }
@@ -149,8 +150,8 @@ export default {
         // 获取用户信息成功, 根据page跳转页面
         this.$vux.toast.show({
           type: 'success',
-          text: 'getUserInfoByOpenid 获取用户信息成功，即将为您跳转',
-          width: '18rem'
+          text: '获取用户信息成功, 即将为您跳转',
+          width: '28rem'
         })
         let {page} = this.$route.query
         const _this = this
@@ -179,19 +180,27 @@ export default {
 
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
+<style lang="less" scoped>
 @import '../assets/styles/colors.less';
 .btn-get {
   border-radius: 5px;
   color: @dark-yellow;
   border: 1px solid @dark-yellow;
   background: transparent;
-  padding: .3rem .1rem;
+  padding: .3rem .3rem;
+  font-size: 1.2rem;
+}
+
+.btn-get-disable {
+  border-radius: 5px;
+  color: @greybtn;
+  border: 1px solid @greybtn;
+  padding: .3rem .3rem;
   font-size: 1.2rem;
 }
 
 .btn-login {
-  width: 70%;
+  width: 100%;
   border-radius: 5px;
   padding: 1rem;
   color: white;
@@ -199,19 +208,24 @@ export default {
   background: @dark-yellow;
 }
 
-.login {
+.getcode {
+  width: 9rem;
+}
+
+.bind {
   background: white;
   height: 100vh;
   *height: 62rem;
   &-container {
-    padding: 2rem;
+    padding: 2.5rem;
     .logo {
+      padding: 1rem;
+      padding-bottom: 2rem;
       img {
         width: 30%;
       }
     }
     .input {
-      padding-left: 2rem;
       margin-top: 2rem;
       display: flex;
       align-items: center;

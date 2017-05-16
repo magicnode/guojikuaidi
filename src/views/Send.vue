@@ -6,8 +6,19 @@
           <span class="bgblue">寄</span>
         </div>
         <div class="send-container-address__info">
-          <p>{{sendAddress['name']}} <strong>{{sendAddress['mobile']}}</strong></p>
-          <p>{{sendAddress['address']}}</p>
+          <div class="send-container-address__info--line">
+            <div>
+              <span>
+                {{sendAddress['name']}}
+              </span>
+              <span class="address-info">
+                {{sendAddress['mobile']}}    
+              </span>
+            </div>
+          </div>
+          <p>
+           {{sendAddress['address']}}
+          </p>
         </div>
         <div class="send-container-address__link">
           <router-link to="/address?type=send&pick=1">
@@ -20,7 +31,14 @@
           <span class="bgyellow">收</span>
         </div>
         <div class="send-container-address__info">
-          <p>{{pickupAddress['name']}} <strong>{{pickupAddress['mobile']}}</strong></p>
+          <div class="send-container-address__info--line">
+            <div>
+              <span>{{pickupAddress['name']}}</span>
+              <span class="address-info">
+                {{pickupAddress['mobile']}}
+              </span>
+            </div>
+          </div>
           <p>{{pickupAddress['address']}}</p>
         </div>
         <div class="send-container-address__link">
@@ -29,24 +47,22 @@
           </router-link>
         </div>
       </div>
-
       <div class="send-container-select">
-        <group>
-          <cell class="office" title="营业厅" disabled is-link link="/hallmap">{{office}}</cell>
+        <group label-width="8rem" label-margin-right="1rem" label-align="left">
+          <cell class="office" title="营业厅" disabled is-link link="/hallmap">{{office || '请选择营业厅'}}</cell>
           <selector placeholder="请选择快递品牌"  v-model="sendadd.express" title="快递品牌" name="district" :options="brand" @on-change="onChange"></selector>
-          <x-input title="物品描述" :max="max" placeholder="请输入物品描述" v-model="describe"></x-input>
-          <x-input title="备注" :max="max" placeholder="请输入备注" v-model="note"></x-input>
+          <x-textarea title="物品描述" :show-counter="false" :max="max" :autosize="true" placeholder="请输入物品描述 (200字限制)" :rows="1" v-model="describe"></x-textarea>
+          <x-textarea title="备注" :max="max" placeholder="请输入备注 (200字限制)" :autosize="true" :show-counter="false" v-model="note" :rows="1"></x-textarea>
         </group>
       </div>
-
       <div class="send-container-select">
         <group>
-          <cell title="寄件列表" link="/send/detail" disabled is-link style="padding:1rem;">
+          <cell title="寄件列表" link="/send/detail" disabled is-link style="padding:1.5rem;">
             <img slot="icon" width="33px" style="display:block;margin-right:5px;" src="../assets/images/new/sen_ico_lis.png" />
           </cell>
         </group>
       </div>
-      <div class="" style="padding:2rem;"> 
+      <div class="div-btn-sub"> 
         <button class="btn-sub" @click="submitSend">提交</button>
       </div>
 
@@ -54,16 +70,18 @@
   </div>
 </template>
 <script>
-import { Selector, XInput } from 'vux'
+import { Selector, XInput, XTextarea } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'send',
   components: {
     Selector,
-    XInput
+    XInput,
+    XTextarea
   },
   async created () {
+    this.$store.commit('SET_PAGE', {page: 'send'})
     if (!this.openid) {
       return this.$router.push({path: '/init', query: {page: 2}})
     }
@@ -179,19 +197,27 @@ export default {
 .bgblue {
   background-color: @light-blue;
 }
-
 .bgyellow {
   background-color: @dark-yellow;
 }
-
-.office {
-  .weui-cell__ft {
-    width: 18rem;
+.weui-cell.office.weui-cell_access{
+  div.weui-cell__ft {
+    width: 100%;
+    text-align: left;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 }
 
+label {
+  font-size: 1.6rem;
+}
+.weui-cell__bd {
+  font-size: 1.6rem;
+}
+.weui-cell:before {
+  border-top: 1px solid @borderbt!important;
+}
 .send {
   &-container {
     padding-bottom: 6rem;
@@ -203,7 +229,7 @@ export default {
       justify-content: space-between;
       background: white;
       &:first-child {
-        border-bottom: 1px solid #ececec;
+        border-bottom: 1px solid @borderbt;
       }
       &__intro {
         flex: 1;
@@ -221,10 +247,12 @@ export default {
         padding-left:1rem;
         flex: 3;
         text-align: left;
-        p {
-          white-space: nowrap;
-          max-width: 14rem;
-          font-size: 1.6rem;
+        &--line {
+          div {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
         }
       }
       &__link {
@@ -281,15 +309,21 @@ export default {
         width: 3rem;
       }
     }
-    .btn-sub {
-      color: white;
-      border: none;
-      padding: .8rem 1rem;
-      font-size: 1.8rem;
-      width: 21rem;
-      background-color: @dark-yellow;
-      border: none;
-      border-radius: 5px;
+    .div-btn-sub {
+      padding: 1.7rem;
+      padding-top: 2.2rem;
+      text-align: center;
+      overflow: hidden;
+      .btn-sub {
+        color: white;
+        border: none;
+        padding: 1.2rem 0;
+        font-size: 1.8rem;
+        width: 100%;
+        background-color: @dark-yellow;
+        border: none;
+        border-radius: 5px;
+      }
     }
   }
 }

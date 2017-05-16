@@ -13,8 +13,8 @@
         <span class="arrow-left"></span>
       </div>
     </div>
-    <div class="" style="padding:2rem;"> 
-      <button class="btn-sub" @click="loginout">登出</button>
+    <div class="" style="padding:2rem;display:none;"> 
+      <button class="btn-sub" @click="loginout">刷新状态</button>
     </div>
   </div>
 </template>
@@ -24,6 +24,7 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'usercenter',
   async created () {
+    this.$store.commit('SET_PAGE', {page: 'usercenter'})
     if (!this.openid) {
       return this.$router.push({path: 'init', query: {page: 3}})
     }
@@ -78,7 +79,7 @@ export default {
     loginout () {
       const _this = this
       this.$vux.confirm.show({
-        title: '确定登出吗?',
+        title: '确定刷新状态吗?',
         onCancel () {
           console.log('no loginout')
         },
@@ -88,7 +89,9 @@ export default {
           window.localStorage.removeItem('mj_nickname')
           window.localStorage.removeItem('mj_headimgurl')
           window.localStorage.removeItem('mj_userId')
-          _this.$router.push({path: '/init'})
+          window.localStorage.removeItem('mj_mobile')
+          window.localStorage.removeItem('mj_init')
+          _this.$router.push({path: '/init', query: {page: 3}})
         }
       })
     }
@@ -127,7 +130,7 @@ export default {
   overflow: hidden;
   padding: 1.2rem;
   &-info {
-    padding: 1rem;
+    padding: 2rem;
     background: @dark-yellow;
     overflow: hidden;
     position: relative;
@@ -165,7 +168,7 @@ export default {
     border-top: 1px solid #F1F1F1;
     &-box {
       justify-content: space-between;
-      padding: .8rem 0;
+      padding: 1.2rem .5rem;
       padding-left: 1rem;
       box-sizing: border-box;
       background: #fff;

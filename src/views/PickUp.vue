@@ -127,6 +127,7 @@ export default {
     Spinner
   },
   async created () {
+    this.$store.commit('SET_PAGE', {page: 'pickup'})
     if (!this.openid) {
       return this.$router.push({path: '/init', query: {page: 1}})
     }

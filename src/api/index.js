@@ -1,4 +1,8 @@
+// wu
 // let url = 'http://1a699l6063.imwork.net/WeChatService/'
+// xiao
+// let url = 'http://171n12404g.imwork.net/WeChatService/'
+// online
 let url = 'http://app.quandikeji.com/WeChatService/'
 
 if (process.env.NODE_ENV !== 'development') {
