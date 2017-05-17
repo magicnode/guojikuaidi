@@ -5,7 +5,7 @@ export const addOne = function (num) {
 export const sendstatus = function (val) {
   // 状态1.等待接单，2.中转中，3.已派送，4.已签收 5. 已取消
   const sendsta = {
-    1: '等待接单',
+    1: '待接单',
     2: '中转中',
     3: '已派送',
     4: '已签收',
@@ -17,7 +17,7 @@ export const sendstatus = function (val) {
 export const pickupstatus = function (val) {
   // 状态1.等待接单，2.中转中，3.已派送，4.已签收
   const sendsta = {
-    1: '等待接单',
+    1: '待接单',
     2: '中转中',
     3: '已派送',
     4: '已签收'

@@ -8,43 +8,42 @@ let instance = axios.create({
 })
 
 export const state = {
-  sign: [],
-  wait: [],
-  signquery: {
-    page: 1,
-    row: 5
+  sign: {
+    data: [],
+    query: {
+      page: 1,
+      rows: 5
+    }
   },
-  waitquery: {
-    page: 1,
-    row: 5
+  wait: {
+    data: [],
+    query: {
+      page: 1,
+      rows: 5
+    }
   },
   switchtype: 'wait'
 }
 
 // getters
 export const getters = {
-  getPickUpSign: state => state.sign,
-  getPickUpWait: state => state.wait,
-  getPickUpSignQuery: state => state.signquery,
-  getPickUpWaitQuery: state => state.waitquery,
+  getPickUpSign: state => state.sign.data,
+  getPickUpWait: state => state.wait.data,
+  getPickUpSignQuery: state => state.sign.query,
+  getPickUpWaitQuery: state => state.wait.query,
   getPickUpType: state => state.switchtype
 }
 
 // actions
 export const actions = {
-  async addPickUpSign ({ commit }, {mobile, page, rows}) {
+  async initPickUpSign ({ commit }, {query = {mobile: '', page: 1, rows: 5}}) {
     try {
       const res = await instance.get(pickupApi.sign, {
-        params: {
-          mobile, page, rows
-        }
+        params: query
       })
       if (res.status === 200) {
-        let resdata = res.data
-        let sign = state.sign
-        sign = sign.concat(resdata)
-        sign = Array.from(new Set(sign))
-        commit(types.SET_PICKUP_SIGN, {sign})
+        const data = res.data
+        commit(types.SET_PICKUP_SIGN, {data, query})
         return {
           text: '获取已签收寄件成功',
           type: 'success'
@@ -62,17 +61,77 @@ export const actions = {
       }
     }
   },
-  async addPickUpWait ({ commit }, {mobile, page, rows}) {
+  async addPickUpSign ({ commit }, {query = {mobile: '', page: 1, rows: 5}}) {
     try {
-      const res = await instance.get(pickupApi.wait, {
-        params: { mobile, page, rows }
+      const res = await instance.get(pickupApi.sign, {
+        params: query
       })
       if (res.status === 200) {
         let resdata = res.data
-        let wait = state.wait
-        wait = wait.concat(resdata)
-        wait = Array.from(new Set(wait))
-        commit(types.SET_PICKUP_WAIT, {wait})
+        let data = state.sign.data
+        data = data.concat(resdata)
+        commit(types.SET_PICKUP_SIGN, {data, query})
+        return {
+          text: '获取已签收寄件成功',
+          type: 'success'
+        }
+      }
+      return {
+        text: '获取已签收寄件失败',
+        type: 'warn'
+      }
+    } catch (err) {
+      console.error(err)
+      return {
+        text: '获取已签收寄件失败, 网络错误',
+        type: 'warn'
+      }
+    }
+  },
+  async initPickUpWait ({ commit }, {query = {mobile: '', page: 1, rows: 5}}) {
+    try {
+      const res = await instance.get(pickupApi.wait, {
+        params: query
+      })
+      if (res.status === 200) {
+        const data = res.data
+        console.log('data', data)
+        commit(types.SET_PICKUP_WAIT, {data, query})
+        return {
+          text: '获取已签收寄件成功',
+          type: 'success'
+        }
+      }
+      return {
+        text: '获取已签收寄件失败',
+        type: 'warn'
+      }
+    } catch (err) {
+      console.error(err)
+      return {
+        text: '获取已签收寄件失败, 网络错误',
+        type: 'warn'
+      }
+    }
+  },
+  async addPickUpWait ({ commit }, {query = {mobile: '', page: 1, rows: 5}}) {
+    try {
+      const res = await instance.get(pickupApi.wait, {
+        params: query
+      })
+      if (res.status === 200) {
+        const resdata = res.data
+        // if (resdata.length <= 0) {
+        //   return {
+        //     text: '没有数据了~',
+        //     type: 'text'
+        //   }
+        // }
+        let data = state.wait.data
+        data = data.concat(resdata)
+        query.page = query.page + 1
+        console.log('query', query)
+        commit(types.SET_PICKUP_WAIT, {data, query})
         return {
           text: '获取未签收寄件成功',
           type: 'success'
@@ -93,10 +152,16 @@ export const actions = {
 }
 
 export const mutations = {
-  [types.SET_PICKUP_SIGN] (state, {sign}) {
-    state.sign = sign
+  [types.SET_PICKUP_SIGN] (state, {data = state.sign.data, query = state.sign.query}) {
+    state.sign = {
+      data,
+      query
+    }
   },
-  [types.SET_PICKUP_WAIT] (state, {wait}) {
-    state.wait = wait
+  [types.SET_PICKUP_WAIT] (state, {data = state.wait.data, query = state.wait.query}) {
+    state.wait = {
+      data,
+      query
+    }
   }
 }

@@ -13,7 +13,7 @@
         <span class="arrow-left"></span>
       </div>
     </div>
-    <div class="" style="padding:2rem;display:none;"> 
+    <div class="" style="padding:2rem;"> 
       <button class="btn-sub" @click="loginout">刷新状态</button>
     </div>
   </div>
@@ -69,7 +69,8 @@ export default {
       if (!path) {
         this.$vux.toast.show({
           text: '暂未开放',
-          type: 'warn'
+          type: 'warn',
+          width: '16rem'
         })
         return
       }

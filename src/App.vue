@@ -44,6 +44,7 @@ export default {
 
 <style lang="less">
 @import '~vux/src/styles/reset.less';
+@import './assets/styles/colors.less';
 
 html,body{
   font-size: 10px;
@@ -90,6 +91,10 @@ select,option,textarea {
 .pic-leave-active {
   animation: pic-out .5s;
 }
+.weui-dialog__btn_primary {
+    color: @dark-yellow;
+}
+
 @keyframes pic-in {
   0% {
     transform: scale(0) rotate3d(360,360,360,360deg);

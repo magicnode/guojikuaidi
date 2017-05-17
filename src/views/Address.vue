@@ -94,8 +94,10 @@ export default {
       }
       this.$vux.toast.show({
         text: '选择地址成功',
-        type: 'success'
+        type: 'success',
+        width: '15rem'
       })
+      this.$router.go(-1)
     },
     changeShow (type) {
       this.addressType = type

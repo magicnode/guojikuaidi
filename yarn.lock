@@ -4559,6 +4559,10 @@ vue-hot-reload-api@^2.0.11:
   version "2.0.11"
   resolved "http://registry.npm.taobao.org/vue-hot-reload-api/download/vue-hot-reload-api-2.0.11.tgz#bf26374fb73366ce03f799e65ef5dfd0e28a1568"
 
+vue-infinite-scroll@^2.0.1:
+  version "2.0.1"
+  resolved "http://registry.npm.taobao.org/vue-infinite-scroll/download/vue-infinite-scroll-2.0.1.tgz#f418bd5cdca5e16837ce3b78333832288729e660"
+
 vue-loader@^11.1.4:
   version "11.3.4"
   resolved "http://registry.npm.taobao.org/vue-loader/download/vue-loader-11.3.4.tgz#65e10a44ce092d906e14bbc72981dec99eb090d2"
@@ -4580,6 +4584,12 @@ vue-router@^2.2.0:
   version "2.3.1"
   resolved "http://registry.npm.taobao.org/vue-router/download/vue-router-2.3.1.tgz#3135448cf57d4ca576906061a5a9d25fae0214d7"
 
+vue-scroller@^2.2.0:
+  version "2.2.0"
+  resolved "http://registry.npm.taobao.org/vue-scroller/download/vue-scroller-2.2.0.tgz#4bf70ae14a25b543e779ab20c9daed6ffc549753"
+  dependencies:
+    vue "^2.2.6"
+
 vue-style-loader@^2.0.0:
   version "2.0.5"
   resolved "http://registry.npm.taobao.org/vue-style-loader/download/vue-style-loader-2.0.5.tgz#f0efac992febe3f12e493e334edb13cd235a3d22"
@@ -4598,7 +4608,7 @@ vue-template-es2015-compiler@^1.2.2:
   version "1.5.1"
   resolved "http://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.5.1.tgz#0c36cc57aa3a9ec13e846342cb14a72fcac8bd93"
 
-vue@^2.2.2:
+vue@^2.2.2, vue@^2.2.6:
   version "2.2.6"
   resolved "http://registry.npm.taobao.org/vue/download/vue-2.2.6.tgz#451714b394dd6d4eae7b773c40c2034a59621aed"
 

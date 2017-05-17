@@ -48,16 +48,19 @@
         </div>
       </div>
       <div class="send-container-select">
-        <group label-width="8rem" label-margin-right="1rem" label-align="left">
-          <cell class="office" title="营业厅" disabled is-link link="/hallmap">{{office || '请选择营业厅'}}</cell>
-          <selector placeholder="请选择快递品牌"  v-model="sendadd.express" title="快递品牌" name="district" :options="brand" @on-change="onChange"></selector>
-          <x-textarea title="物品描述" :show-counter="false" :max="max" :autosize="true" placeholder="请输入物品描述 (200字限制)" :rows="1" v-model="describe"></x-textarea>
-          <x-textarea title="备注" :max="max" placeholder="请输入备注 (200字限制)" :autosize="true" :show-counter="false" v-model="note" :rows="1"></x-textarea>
+        <group label-width="6rem" label-margin-right="1rem" label-align="left">
+          <cell class="office" title="营业厅" is-link link="/hallmap">{{office || '选择营业厅'}}</cell>
+          <selector direction="rtl" v-model="expresstype" placeholder="选择快递品牌"   title="快递品牌" name="district" :options="brand" @on-change="onChange">
+          </selector>
+          <x-textarea title="物品描述" :show-counter="false" :max="max" :autosize="true" placeholder="描述你的物品 (200字限制)" :rows="1" v-model="describe">
+          </x-textarea>
+          <x-textarea title="备注" :max="max" placeholder="添加备注 (200字限制)" :autosize="true" :show-counter="false" v-model="note" :rows="1">
+          </x-textarea>
         </group>
       </div>
       <div class="send-container-select">
         <group>
-          <cell title="寄件列表" link="/send/detail" disabled is-link style="padding:1.5rem;">
+          <cell title="寄件列表" link="/send/detail" is-link style="padding:1.5rem;">
             <img slot="icon" width="33px" style="display:block;margin-right:5px;" src="../assets/images/new/sen_ico_lis.png" />
           </cell>
         </group>
@@ -65,12 +68,11 @@
       <div class="div-btn-sub"> 
         <button class="btn-sub" @click="submitSend">提交</button>
       </div>
-
     </div>
   </div>
 </template>
 <script>
-import { Selector, XInput, XTextarea } from 'vux'
+import { Selector, XInput, XTextarea, Spinner } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -78,7 +80,8 @@ export default {
   components: {
     Selector,
     XInput,
-    XTextarea
+    XTextarea,
+    Spinner
   },
   async created () {
     this.$store.commit('SET_PAGE', {page: 'send'})
@@ -101,6 +104,8 @@ export default {
     let addressInfo = window.localStorage.getItem('mj_addressInfo')
     addressInfo = JSON.parse(addressInfo)
     this.office = addressInfo ? addressInfo.descript : ''
+    const mjBrand = window.localStorage.getItem('mj_send_brand')
+    this.expresstype = mjBrand || undefined
   },
   mounted () {
     window.document.title = '寄件'
@@ -125,7 +130,8 @@ export default {
       describe: '',
       note: '',
       label: '',
-      office: ''
+      office: '',
+      expresstype: undefined
     }
   },
   methods: {
@@ -148,7 +154,8 @@ export default {
       })
     },
     onChange (val) {
-      this.$store.commit('SET_SEND_ADD', {express: val})
+      window.localStorage.setItem('mj_send_brand', val)
+      this.$store.commit('SET_SEND_ADD', {brand: val})
     },
     goPath (path) {
       this.$router.push({path})
@@ -202,18 +209,27 @@ export default {
 }
 .weui-cell.office.weui-cell_access{
   div.weui-cell__ft {
+    font-size: 1.5rem;
     width: 100%;
-    text-align: left;
+    color: #333;
+    text-align: right;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 }
 
-label {
-  font-size: 1.6rem;
-}
 .weui-cell__bd {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
+  textarea {
+    text-align: right;
+  }
+  select {
+    color: #333;
+  }
+}
+
+label {
+  font-size: 1.5rem;
 }
 .weui-cell:before {
   border-top: 1px solid @borderbt!important;
@@ -225,7 +241,7 @@ label {
     &-address {
       font-size: 1.4rem;
       padding: 1rem 0;
-      padding-left: 1rem;
+      padding-left: 27px;
       justify-content: space-between;
       background: white;
       &:first-child {
@@ -258,6 +274,7 @@ label {
       &__link {
         flex: 2;
         padding: 0 1rem;
+        text-align: right;
         height: 5rem;
         line-height: 5rem;
         a {

@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import FastClick from 'fastclick'
+import VueScroller from 'vue-scroller'
 import { WechatPlugin, Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin } from 'vux'
 
 import router from './router'
@@ -10,9 +11,11 @@ import App from './App'
 import AxiosPlugin from './plugins/axios'
 import * as filters from './filters'
 import Header from './components/Header.vue'
+import MJSpinner from './components/MJSpinner.vue'
 
 FastClick.attach(document.body)
 
+Vue.use(VueScroller)
 Vue.use(AxiosPlugin)
 Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
@@ -25,6 +28,7 @@ Vue.component('cell', Cell)
 Vue.component('tab', Tab)
 Vue.component('tabItem', TabItem)
 Vue.component('mj-header', Header)
+Vue.component('mj-spinner', MJSpinner)
 
 router.beforeEach(function (to, from, next) {
   // let jumpSrc = 'http://112.74.34.241:3000/pics/random?show=1'

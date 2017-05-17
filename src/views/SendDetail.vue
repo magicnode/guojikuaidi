@@ -17,12 +17,12 @@
             </span>
             <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
           </div>
-          <div class="senddetail-cell-detail--box flex border-bottom-grey" >
+          <div class="senddetail-cell-detail--box flex border-bottom-grey middle-box" >
             <div class="send-icon">
               收
             </div>
             <div>
-              <p>{{item.name}}  {{item.receiptAddress.mobile}} {{item.brand}}</p>
+              <p>{{item.name}}  {{item.receiptAddress.mobile}}</p>
               <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
             </div>
           </div>
@@ -149,16 +149,17 @@ export default {
 }
 
 .office-info {
+  font-size: 1.5rem;
   width: 15rem;
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  vertical-align: baseline;
+  vertical-align: bottom;
 }
 
 .border-bottom-grey {
-  border-bottom: 1px solid #ececec;
+  border-bottom: 1px solid @borderbt;
 }
 .send-icon {
   border-radius: 50%;
@@ -177,31 +178,29 @@ export default {
  color: @dark-yellow;
 }
 
-.cancle-btn {
-  margin-right: 1rem;
+.normal-btn {
+  width: 6rem;
   font-size: 1.4rem;
-  height: 2.5rem;
   text-align: center;
-  border: 1px solid #999;
-  padding: 0.3rem;
+  padding: .2rem .5rem;
   border-radius: 5px;
-  background: transparent;
   box-sizing: border-box;
-  color: #999;
   white-space: nowrap;
 }
 
+.cancle-btn {
+  .normal-btn;
+  color: #999;
+  margin-right: .3rem;
+  border: 1px solid #999;
+  background: transparent;
+}
+
 .gosend-btn {
-  font-size: 1.4rem;
-  height: 2.5rem;
-  text-align: center;
-  box-sizing: border-box;
-  border: none;
-  padding: 0.3rem;
-  border-radius: 5px;
-  background: @dark-yellow;
+  .normal-btn;
   color: white;
-  white-space: nowrap;
+  border: none;
+  background: @dark-yellow;
 }
 
 .senddetail {
@@ -215,10 +214,10 @@ export default {
     &-detail {
       background: white;
       text-align: justify;
-      padding: 1rem;
+      padding: 0 1rem;
       margin: 1rem 0;
       &--box {
-        padding: .5rem;
+        padding: .5rem 0;
       }
       &__title {
         font-size: 1.6rem;
@@ -230,19 +229,24 @@ export default {
       }
       p {
         font-size: 1.4rem;
-        padding: .2rem;
+        padding: .2rem 0;
+      }
+      .middle-box {
+        color: #999;
       }
       .wait-senddetail {
         float: right;
         color: @dark-yellow;
+        padding-top: .3rem;
       }
       .already-senddetail {
         float: right;
         color: #999;
+        padding-top: .3rem;
       }
       .time {
-        font-size: 1.3rem;
-        color: #999;
+        font-size: 1.2rem;
+        color: #333;
       }
     }
   }

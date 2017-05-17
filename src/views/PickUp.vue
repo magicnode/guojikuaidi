@@ -1,129 +1,85 @@
 <template>
   <div class="senddetail">
     <div class="senddetail-container">
-      <div class="address-container-tab">
+      <div class="senddetail-container-tab">
         <tab active-color='#ff750f'>
           <tab-item selected @on-item-click="changeShow('wait')">待取件</tab-item>
           <tab-item @on-item-click="changeShow('sign')">已完成</tab-item>
         </tab>
       </div>
       <div class="senddetail-cell" v-show="show === 'wait'">
-        <h1 v-show="wait.length === 0">没有待取件数据</h1>
-        <div class="senddetail-cell-detail" v-for="item in wait" :key="item.createTime">
-            <div class="senddetail-cell-detail--box border-bottom-grey">
-              <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt="" @click="watchOffice(item.userId)"></span>
-              <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
-            </div>
-            <div class="senddetail-cell-detail--box flex border-bottom-grey" >
-              <div>
-                <p>营业厅：  {{item.descript}}</p>
-                <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
-                <p>电话： {{item.mobile}} </p>
+        <scroller 
+          :on-refresh="refreshWait"
+          :on-infinite="infiniteWait"
+          class="senddetail-scroller">
+          <!-- custom refresh spinner, use default `spinner` & viewBox 0,0,64,64 class -->
+          <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
+          <div class="senddetail-cell-detail" v-for="item in wait" :key="item.createTime">
+              <div class="senddetail-cell-detail--box border-bottom-grey">
+                <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt="" @click="watchOffice(item.userId)"></span>
+                <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
               </div>
-            </div>
-            <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-              <p class="time">{{item.createTime | formatedatestamp}}</p>
-              <div>
-                <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去取件</button>
+              <div class="senddetail-cell-detail--box flex border-bottom-grey" >
+                <div class="office-info">
+                  <p>营业厅：  {{item.descript}}</p>
+                  <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
+                  <p>电话： {{item.mobile}} </p>
+                </div>
+                <div>
+                </div>
               </div>
-            </div>
-        </div>
-        <!-- <div>
-          <divider>下拉刷新、上拉加载</divider>
-           <scroller lock-x scrollbar-y use-pullup use-pulldown height="200vh" @on-pullup-loading="loadMoreSign" @on-pulldown-loading="refreshSign" v-model="signstatus" ref="scroller">
-             <div class="box2">
-               <h1 v-show="wait.length === 0">没有代取件数据</h1>
-               <div class="senddetail-cell-detail" v-for="item in wait" :key="item.createTime">
-                   <div class="senddetail-cell-detail--box border-bottom-grey">
-                     <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
-                     <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
-                   </div>
-                   <div class="senddetail-cell-detail--box flex border-bottom-grey" >
-                     <div>
-                       <p>营业厅：  {{item.descript}}</p>
-                       <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
-                       <p>电话： {{item.mobile}} </p>
-                     </div>
-                   </div>
-                   <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-                     <p class="time">{{item.createTime | formatedatestamp}}</p>
-                     <div>
-                       <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去取件</button>
-                     </div>
-                   </div>
-               </div>
-             </div>
-
-             <div slot="pullup" class="xs-plugin-pullup-container xs-plugin-pullup-up" style="position: absolute; width: 100%; height: 40px; bottom: -40px; text-align: center;">
-               <span></span>
-               <span v-show="signstatus.pullupStatus === 'loading'"><spinner type="ios-small"></spinner></span>
-             </div>
-           </scroller>
-        </div> -->
+              <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
+                <p class="time">{{item.createTime | formatedatestamp}}</p>
+                <div>
+                  <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去取件</button>
+                </div>
+              </div>
+          </div>
+          <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
+          <div style="height: 50px;">
+          </div>
+        </scroller>
       </div>
       <!-- 已寄件 -->
       <div class="senddetail-cell" v-show="show === 'sign'">
-        <h1 v-show="sign.length === 0">没有已经取件数据</h1>
-        <div class="senddetail-cell-detail" v-for="item in sign" :key="item.createTime">
-            <div class="senddetail-cell-detail--box border-bottom-grey">
-              <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt="" @click="watchOffice(item.userId)"></span>
-              <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
-            </div>
-            <div class="senddetail-cell-detail--box flex border-bottom-grey" >
-              <div>
-                <p>营业厅：  {{item.descript}}</p>
-                <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
-                <p>电话： {{item.mobile}} </p>
+        <scroller 
+          :on-refresh="refreshSign"
+          :on-infinite="infiniteSign"
+          class="senddetail-scroller">
+          <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
+          <div class="senddetail-cell-detail" v-for="item in sign" :key="item.createTime">
+              <div class="senddetail-cell-detail--box border-bottom-grey">
+                <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt="" @click="watchOffice(item.userId)"></span>
+                <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
               </div>
-            </div>
-            <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-              <p class="time">{{item.createTime | formatedatestamp}}</p>
-            </div>
-        </div>
-<!--         <div>
-          <divider>下拉刷新、上拉加载</divider>
-           <scroller lock-x scrollbar-y use-pullup use-pulldown height="71vh" @on-pullup-loading="loadMoreSign" @on-pulldown-loading="refreshSign" v-model="signstatus" ref="scroller">
-             <div class="box2">
-               <h1 v-show="sign.length === 0">没有已经取件数据</h1>
-               <div class="senddetail-cell-detail" v-for="item in sign" :key="item.createTime">
-                   <div class="senddetail-cell-detail--box border-bottom-grey">
-                     <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}} <img src="../assets/images/new/pic_ico_map.png" alt=""></span>
-                     <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
-                   </div>
-                   <div class="senddetail-cell-detail--box flex border-bottom-grey" >
-                     <div>
-                       <p>营业厅：  {{item.descript}}</p>
-                       <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
-                       <p>电话： {{item.mobile}} </p>
-                     </div>
-                   </div>
-                   <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-                     <p class="time">{{item.createTime | formatedatestamp}}</p>
-                   </div>
-               </div>
-             </div>
-
-             <div slot="pullup" class="xs-plugin-pullup-container xs-plugin-pullup-up" style="position: absolute; width: 100%; height: 40px; bottom: -40px; text-align: center;">
-               <span></span>
-               <span v-show="signstatus.pullupStatus === 'loading'"><spinner type="ios-small"></spinner></span>
-             </div>
-           </scroller>
-        </div> -->
+              <div class="senddetail-cell-detail--box flex border-bottom-grey" >
+                <div class="office-info">
+                  <p>营业厅：  {{item.descript}}</p>
+                  <p>地址：  {{item.province + item.city + '市' + item.district + item.descript}}</p>
+                  <p>电话： {{item.mobile}} </p>
+                </div>
+              </div>
+              <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
+                <p class="time">{{item.createTime | formatedatestamp}}</p>
+              </div>
+          </div>
+          <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
+          <div style="height: 50px;">
+          </div>
+        </scroller>
       </div>
     </div>
   </div>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { Scroller, Divider, XSwitch, Group, Spinner } from 'vux'
+import { Divider, XSwitch, Spinner } from 'vux'
 
 export default {
   name: 'pickup',
   components: {
-    Scroller,
     Divider,
     XSwitch,
-    Group,
     Spinner
   },
   async created () {
@@ -138,14 +94,13 @@ export default {
         return this.$router.push({path: '/bindphone', query: {page: 1}})
       }
     }
-    if (this.sign.length <= 0 && this.wait.length <= 0) {
-      this.initPickUpList()
-    }
   },
   computed: {
     ...mapGetters({
       'sign': 'getPickUpSign',
+      'signquery': 'getPickUpSignQuery',
       'wait': 'getPickUpWait',
+      'waitquery': 'getPickUpWaitQuery',
       'user': 'getUserInfo',
       'openid': 'getOpenId'
     })
@@ -157,6 +112,7 @@ export default {
     return {
       n: 10,
       show: 'wait',
+      nowait: false,
       pullupEnabled: true,
       signstatus: {
         pullupStatus: 'default',
@@ -166,31 +122,74 @@ export default {
   },
   methods: {
     ...mapActions([
+      'initPickUpSign',
       'addPickUpSign',
+      'initPickUpWait',
       'addPickUpWait',
       'setUserInfo'
     ]),
-    loadMoreSign () {
-      setTimeout(() => {
-        this.n += 10
-        setTimeout(() => {
-          this.$refs.scroller.donePullup()
-        }, 10)
-      }, 1000)
-    },
-    refreshSign () {
-      setTimeout(() => {
-        // this.n = 10
-        this.$nextTick(() => {
-          setTimeout(() => {
-            this.$refs.scroller.donePulldown()
-            this.pullupEnabled && this.$refs.scroller.enablePullup()
-          }, 10)
-        })
-      }, 1000)
-    },
     changeShow (type) {
       this.show = type
+    },
+    async refreshWait (done) {
+      const mobile = this.user.mobile
+      const _this = this
+      const query = {
+        mobile,
+        page: 1,
+        rows: 5
+      }
+      setTimeout(async function () {
+        console.log('refresh')
+        const resultWait = await _this.initPickUpWait({query})
+        if (resultWait.type !== 'success') {
+          _this.showToast(resultWait)
+        }
+        done()
+      }, 1200)
+    },
+    async infiniteWait (done) {
+      const mobile = this.user.mobile
+      const _this = this
+      setTimeout(async function () {
+        console.log('infinite')
+        _this.waitquery.mobile = mobile
+        const resultWait = await _this.addPickUpWait({query: _this.waitquery})
+        if (resultWait.type !== 'success') {
+          _this.showToast(resultWait)
+        }
+        done()
+      }, 1200)
+    },
+    async refreshSign (done) {
+      const mobile = this.user.mobile
+      const _this = this
+      const query = {
+        mobile,
+        page: 1,
+        rows: 5
+      }
+      setTimeout(async function () {
+        console.log('refresh')
+        const resultWait = await _this.initPickUpSign({query})
+        if (resultWait.type !== 'success') {
+          _this.showToast(resultWait)
+        }
+        done()
+      }, 1200)
+    },
+    async infiniteSign (done) {
+      const mobile = this.user.mobile
+      const _this = this
+      setTimeout(async function () {
+        console.log('infinite')
+        _this.waitquery.mobile = mobile
+        const resultWait = await _this.addPickUpSign({query: _this.waitquery})
+        if (resultWait.type !== 'success') {
+          _this.showToast(resultWait)
+        }
+        done()
+      }, 1200)
     },
     showToast (data) {
       this.$vux.toast.show({
@@ -200,20 +199,20 @@ export default {
       })
     },
     async initPickUpList () {
-      const result = await this.addPickUpSign({
+      const resultWait = await this.addPickUpWait({
         mobile: this.user.mobile,
         page: 1,
-        rows: 200
+        rows: 100
       })
-      this.showToast(result)
-      const result1 = await this.addPickUpWait({
+      this.showToast(resultWait)
+      const resultSign = await this.addPickUpSign({
         mobile: this.user.mobile,
         page: 1,
-        rows: 200
+        rows: 2
       })
       const _this = this
       setTimeout(function () {
-        _this.showToast(result1)
+        _this.showToast(resultSign)
       }, 1000)
       return
     },
@@ -251,6 +250,7 @@ export default {
 .border-bottom-grey {
   border-bottom: 1px solid #ececec;
 }
+
 .send-icon {
   border-radius: 50%;
   background: #BEB9B9;
@@ -268,6 +268,16 @@ export default {
  color: @dark-yellow;
 }
 
+.normal-btn {
+  width: 6rem;
+  font-size: 1.4rem;
+  text-align: center;
+  padding: .2rem .5rem;
+  border-radius: 5px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
 .cancle-btn {
   font-size: 1.4rem;
   height: 2.5rem;
@@ -282,19 +292,27 @@ export default {
 }
 
 .gosend-btn {
-  font-size: 1.4rem;
-  height: 2.5rem;
-  text-align: center;
-  box-sizing: border-box;
+  .normal-btn;
   border: none;
-  padding: 0.3rem;
-  border-radius: 5px;
   background: @dark-yellow;
   color: white;
-  white-space: nowrap;
+}
+
+.office-info {
+  color: #999;
 }
 
 .senddetail {
+  &-container {
+    &-tab {
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+  }
+  &-scroller {
+    padding-top: 54px;
+  }
   &-cell {
     padding-bottom: 8rem;
     &-status {
@@ -306,13 +324,13 @@ export default {
     &-detail {
       background: white;
       text-align: justify;
-      padding: 1rem;
+      padding: 0 1rem;
       margin: 1rem 0;
       &--box {
-        padding: .5rem;
+        padding: .4rem 0;
       }
       &__title {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
         img {
           width: auto;
           height: 2rem;
@@ -326,14 +344,16 @@ export default {
       .wait-senddetail {
         float: right;
         color: @dark-yellow;
+        padding-top: .3rem;
       }
       .already-senddetail {
         float: right;
         color: #999;
+        padding-top: .3rem;
       }
       .time {
-        font-size: 1.3rem;
-        color: #999;
+        font-size: 1.2rem;
+        color: #333;
       }
     }
   }
