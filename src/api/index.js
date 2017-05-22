@@ -1,9 +1,9 @@
-// wu
+// wu cong
 // let url = 'http://1a699l6063.imwork.net/WeChatService/'
-// xiao
-// let url = 'http://171n12404g.imwork.net/WeChatService/'
-// online
-let url = 'http://app.quandikeji.com/WeChatService/'
+// xiao hang
+let url = 'http://192.168.0.201:8890/WeChatService/'
+// online app 云端服务
+// let url = 'http://app.quandikeji.com/WeChatService/'
 
 if (process.env.NODE_ENV !== 'development') {
   url = 'http://app.quandikeji.com/WeChatService/'
@@ -25,7 +25,8 @@ export const address = {
 
 export const send = {
   index: url + 'findSend',
-  create: url + 'insertSend'
+  create: url + 'insertSend',
+  cancle: url + 'end_send'
 }
 
 export const brand = {
@@ -38,7 +39,8 @@ export const site = {
 
 export const pickup = {
   sign: url + 'TAKECOURIERSIGN',
-  wait: url + 'TAKECOURIER'
+  wait: url + 'TAKECOURIER',
+  all: url + 'ALLDELIVERY'
 }
 
 export const user = {

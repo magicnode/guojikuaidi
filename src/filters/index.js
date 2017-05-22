@@ -44,7 +44,7 @@ export const formatedatestamp = function (timpstamp) {
   let month = date.getMonth() + 1
   month = month > 10 ? month : '0' + month
   let day = date.getDate()
-  day = day > 10 ? day : '0' + day
+  day = day >= 10 ? day : '0' + day
   let h = date.getHours() + ':'
   let m = date.getMinutes() + ':'
   let s = date.getSeconds()
@@ -146,4 +146,11 @@ export const pickupstate = function (val) {
     201: '问题件'
   }
   return states[val]
+}
+
+export const officeinfo = function (office) {
+  if (!office) {
+    return ''
+  }
+  return office.city + '市' + office.district + ' ' + office.descript
 }

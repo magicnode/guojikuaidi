@@ -10,12 +10,12 @@
       <p v-if="pick" style="text-align: left;font-size: 1.4rem;padding: 0.5rem;padding-bottom: 0;">点击手机号或姓名处选择地址</p>
       <div class="address-container-list">
         <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id">
-          <div class="flex address-container-list__item--info">
-            <div @click="selectAddress(item)">
-              <p>{{item.name}} <strong>{{item.mobile}}</strong></p>
+          <div class="flex address-container-list__item--info" @click="selectAddress(item)">
+            <div>
+              <p>{{item.name + '  '}} {{item.mobile}}</p>
               <p class="location" style="font-size:1.4rem;">{{item.province + item.city + ' ' + item.district + item.address}}</p>
             </div>
-           <img v-show="showDel" src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
+           <img v-show="!pick" src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
           </div>
           <div class="flex address-container-list__item--func flex">
             <span class="is-default" v-show="item.checked == 1">
@@ -32,12 +32,10 @@
             </span>
           </div>
         </div>
-
         <div class="address-container-add" @click="goPath('/address/add', {type: addressType})">
           <p>新增地址</p>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -54,7 +52,6 @@ export default {
     const {type, pick} = this.$route.query
     this.addressType = type || 'send'
     this.pick = pick === '1'
-    this.showDel = !(pick === '1')
   },
   mounted () {
     window.document.title = '地址管理'
@@ -62,8 +59,7 @@ export default {
   data () {
     return {
       addressType: 'send',
-      pick: false,
-      showDel: true
+      pick: false
     }
   },
   computed: {
@@ -95,7 +91,7 @@ export default {
       this.$vux.toast.show({
         text: '选择地址成功',
         type: 'success',
-        width: '15rem'
+        width: '18rem'
       })
       this.$router.go(-1)
     },
@@ -120,10 +116,15 @@ export default {
           console.log(_this)
         },
         onConfirm () {
+          _this.$vux.loading.show({
+            text: '正在提交'
+          })
           _this.delAddress({id})
+          _this.$vux.loading.hide()
           // 显示
           _this.$vux.toast.show({
-            text: '删除成功'
+            text: '删除成功',
+            width: '18rem'
           })
         }
       })
@@ -162,10 +163,10 @@ export default {
   background-color: @bg-grey;
   &-container {
     &-add {
-      padding: 1rem 3rem;
+      padding: 1rem 1rem;
       p {
-        font-size: 1.6rem;
-        padding: .7rem;
+        font-size: 1.8rem;
+        padding: 1rem 0;
         color: white;
         background: @dark-yellow;
         border-radius: 6px;

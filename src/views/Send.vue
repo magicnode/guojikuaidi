@@ -52,16 +52,16 @@
           <cell class="office" title="营业厅" is-link link="/hallmap">{{office || '选择营业厅'}}</cell>
           <selector direction="rtl" v-model="expresstype" placeholder="选择快递品牌"   title="快递品牌" name="district" :options="brand" @on-change="onChange">
           </selector>
-          <x-textarea title="物品描述" :show-counter="false" :max="max" :autosize="true" placeholder="描述你的物品 (200字限制)" :rows="1" v-model="describe">
+          <x-textarea type="text" title="物品描述" :show-counter="false" :max="max" :autosize="true" placeholder="描述你的物品 (200字限制)" :rows="1" v-model="describe" @on-focus="hideFooter" @on-blur="onChangeText('describe')">
           </x-textarea>
-          <x-textarea title="备注" :max="max" placeholder="添加备注 (200字限制)" :autosize="true" :show-counter="false" v-model="note" :rows="1">
+          <x-textarea type="text" title="备注" :max="max" placeholder="添加备注 (200字限制)" :autosize="true" :show-counter="false" v-model="note" :rows="1" @on-focus="hideFooter" @on-blur="onChangeText('note')">
           </x-textarea>
         </group>
       </div>
       <div class="send-container-select">
         <group>
-          <cell title="寄件列表" link="/send/detail" is-link style="padding:1.5rem;">
-            <img slot="icon" width="33px" style="display:block;margin-right:5px;" src="../assets/images/new/sen_ico_lis.png" />
+          <cell title="寄件列表" link="/send/detail" is-link style="padding:1rem 2.2rem;">
+            <img slot="icon" class="send-icon" style="display:block;margin-right:5px;" src="../assets/images/new/sen_ico_lis.png" />
           </cell>
         </group>
       </div>
@@ -85,7 +85,7 @@ export default {
   },
   async created () {
     this.$store.commit('SET_PAGE', {page: 'send'})
-    if (!this.openid) {
+    if (!this.openid || this.userid === '' || !this.userid) {
       return this.$router.push({path: '/init', query: {page: 2}})
     }
     if (!this.user.mobile) {
@@ -95,9 +95,6 @@ export default {
         return this.$router.push({path: '/bindphone', query: {page: 2}})
       }
     }
-    if (this.brand.length <= 0) {
-      this.initBrand()
-    }
     if (!this.sendAddress['id'] && !this.pickupAddress['id']) {
       this.setDefaultAddress()
     }
@@ -106,6 +103,9 @@ export default {
     this.office = addressInfo ? addressInfo.descript : ''
     const mjBrand = window.localStorage.getItem('mj_send_brand')
     this.expresstype = mjBrand || undefined
+    this.describe = window.localStorage.getItem('mj_send_describe')
+    this.note = window.localStorage.getItem('mj_send_note')
+    this.initBrand({id: addressInfo.userId})
   },
   mounted () {
     window.document.title = '寄件'
@@ -119,7 +119,8 @@ export default {
       pickupAddress: 'getPickupAddress',
       result: 'getSendResult',
       openid: 'getOpenId',
-      user: 'getUserInfo'
+      user: 'getUserInfo',
+      userid: 'getUserId'
     })
   },
   data () {
@@ -131,7 +132,8 @@ export default {
       note: '',
       label: '',
       office: '',
-      expresstype: undefined
+      expresstype: undefined,
+      loading: false
     }
   },
   methods: {
@@ -140,8 +142,8 @@ export default {
       'createSend',
       'setAllBrand'
     ]),
-    async initBrand () {
-      const result = await this.setAllBrand()
+    async initBrand ({id}) {
+      const result = await this.setAllBrand({id})
       if (result.type !== 'success') {
         this.showToast({text: result.text, type: result.type})
       }
@@ -157,13 +159,23 @@ export default {
       window.localStorage.setItem('mj_send_brand', val)
       this.$store.commit('SET_SEND_ADD', {brand: val})
     },
+    onChangeText (type) {
+      if (type === 'describe' && this.describe) {
+        window.localStorage.setItem('mj_send_describe', this.describe)
+      }
+      if (type === 'note' && this.note) {
+        window.localStorage.setItem('mj_send_note', this.note)
+      }
+      this.showFooter()
+    },
     goPath (path) {
       this.$router.push({path})
     },
     async submitSend () {
+      if (this.loading) return
       let addressInfo = window.localStorage.getItem('mj_addressInfo')
       addressInfo = JSON.parse(addressInfo)
-      if (!this.sendadd.express) {
+      if (!this.expresstype) {
         this.showToast({text: '请选择快递品牌', type: 'warn'})
         return
       }
@@ -175,25 +187,44 @@ export default {
         this.showToast({text: '请输入物品描述', type: 'warn'})
         return
       }
+      this.$vux.loading.show({
+        text: '正在提交'
+      })
+      // 提交寄件
       const timestamp = 'time' + new Date().getTime()
       const result = await this.createSend({
-        brand: this.sendadd.express,
+        brand: this.expresstype,
         describe: this.describe,
         note: this.label,
+        office: addressInfo.userId,
         order: timestamp,
-        office: addressInfo.id,
         receiptAddressId: this.pickupAddress['id'],
         sendAddressId: this.sendAddress['id'],
         type: 1
       })
+      this.$vux.loading.hide()
       if (result) {
         this.showToast({text: '提交成功'})
         this.$router.push({path: '/send/detail'})
+        window.localStorage.removeItem('mj_send_describe')
+        window.localStorage.removeItem('mj_send_note')
         return
       } else {
         this.showToast({text: '提交失败', type: 'warn'})
         return
       }
+    },
+    showFooter () {
+      const footer = window.document.getElementsByTagName('footer')[0]
+      footer.className = ''
+      // const submitBtn = window.document.getElementsByClassName('div-btn-sub')[0]
+      // submitBtn.className = submitBtn.className.replace(/fixedbottom/g, '')
+    },
+    hideFooter () {
+      const footer = window.document.getElementsByTagName('footer')[0]
+      footer.className = 'hide'
+      // const submitBtn = window.document.getElementsByClassName('div-btn-sub')[0]
+      // submitBtn.className += ' fixedbottom'
     }
   }
 }
@@ -218,6 +249,10 @@ export default {
   }
 }
 
+.send-icon {
+  width: 4rem;
+}
+
 .weui-cell__bd {
   font-size: 1.5rem;
   textarea {
@@ -231,9 +266,23 @@ export default {
 label {
   font-size: 1.5rem;
 }
+
 .weui-cell:before {
   border-top: 1px solid @borderbt!important;
 }
+
+.fixedbottom {
+  padding-top: 0!important;
+  padding-bottom: 0!important;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  button {
+    width: 100%!important;
+    border-radius: 0!important;
+  }
+}
+
 .send {
   &-container {
     padding-bottom: 6rem;
@@ -308,14 +357,12 @@ label {
         }
       }
     }
-
     &-select {
       label {
         text-align: left;
             padding-left: 1rem;
       }
     }
-
     &-hall {
       margin-top: 1rem;
       padding: 1rem 1rem;
@@ -327,16 +374,15 @@ label {
       }
     }
     .div-btn-sub {
-      padding: 1.7rem;
-      padding-top: 2.2rem;
+      padding: 2rem 0rem;
       text-align: center;
       overflow: hidden;
       .btn-sub {
         color: white;
         border: none;
-        padding: 1.2rem 0;
+        padding: 1rem 0;
         font-size: 1.8rem;
-        width: 100%;
+        width: 92%;
         background-color: @dark-yellow;
         border: none;
         border-radius: 5px;

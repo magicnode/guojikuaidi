@@ -33,7 +33,6 @@ export const actions = {
       params: {userId: local.getItem('mj_userId')}
     })
     .then((res) => {
-      console.log('data rs', res.request.responseURL)
       if (res.status === 200) {
         let data = res.data
         let send = []
@@ -54,7 +53,6 @@ export const actions = {
         })
         data.send = send
         data.pickup = pickup
-        console.log('data', data)
         commit(types.SET_ADDRESS, {data})
       } else {
         let result = {

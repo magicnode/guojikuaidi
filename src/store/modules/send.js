@@ -43,7 +43,8 @@ export const state = {
     show: false,
     type: 'success',
     info: '成功'
-  }
+  },
+  qr_send: {}
 }
 
 // getters
@@ -53,7 +54,14 @@ export const getters = {
   getSendAdd: state => state.add,
   getSendAddress: state => state.sendAddress,
   getPickupAddress: state => state.pickupAddress,
-  getSendResult: state => state.result
+  getSendResult: state => state.result,
+  getQrSend: state => state.qr_send
+}
+
+function gettimestamp (time) {
+  const arr = time.split(/\s/)
+  time = arr[0] + ' ' + arr[1].replace(/-/g, ':')
+  return new Date(time).getTime()
 }
 
 // actions
@@ -76,6 +84,12 @@ export const actions = {
             ready.push(item)
           }
         }
+        wait.sort(function (a, b) {
+          return gettimestamp(b.createTime) - gettimestamp(a.createTime)
+        })
+        ready.sort(function (a, b) {
+          return gettimestamp(b.createTime) - gettimestamp(a.createTime)
+        })
         data.wait = wait
         data.ready = ready
         data.init = true
@@ -151,25 +165,17 @@ export const actions = {
         return false
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       commit(types.SET_SEND_RES, {show: true, type: 'warn', info: '寄件失败'})
       return false
     }
   },
-  async cancleSend ({ dispatch, commit }, { brand, describe, note, office, order, receiptAddressId, sendAddressId, sum, type }) {
+  async cancleSend ({ dispatch, commit }, { id, type = 5 }) {
     try {
-      const res = await axios.get(sendApi.create, {
+      const res = await axios.get(sendApi.cancle, {
         params: {
-          brand,
-          describe,
-          note,
-          office,
-          order,
-          receiptAddressId,
-          sendAddressId,
-          sum,
-          type: 5,
-          userId: local.getItem('mj_userId')
+          id,
+          type: 5
         }
       })
       if (res.data) {
@@ -189,6 +195,34 @@ export const actions = {
       return {
         type: 'warn',
         text: '取消寄件失败'
+      }
+    }
+  },
+  async setSingleSend ({commit}, {id}) {
+    try {
+      const res = await instance.get(sendApi.index, {
+        params: {id}
+      })
+      if (res.status === 200) {
+        let data = res.data[0]
+        commit(types.SET_QR_SEND, {data})
+        return {
+          text: '获取寄件信息成功',
+          type: 'success',
+          width: '20rem'
+        }
+      }
+      return {
+        text: '获取寄件信息失败',
+        type: 'warn',
+        width: '20rem'
+      }
+    } catch (err) {
+      console.error(err)
+      return {
+        text: '获取寄件信息失败, 网络错误',
+        type: 'warn',
+        width: '25rem'
       }
     }
   }
@@ -221,5 +255,8 @@ export const mutations = {
     state.result.show = show
     state.result.type = type
     state.result.info = info
+  },
+  [types.SET_QR_SEND] (state, {data}) {
+    state.qr_send = data
   }
 }

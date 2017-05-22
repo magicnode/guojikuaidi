@@ -3,35 +3,55 @@
     <div class="senddetail-container">
       <div class="senddetail-container-tab">
         <tab active-color='#ff750f'>
-          <tab-item selected @on-item-click="changeShow('wait')">待取件</tab-item>
-          <tab-item @on-item-click="changeShow('sign')">已完成</tab-item>
+          <tab-item :selected="show ==='pickup'" @on-item-click="changeShow('pickup')">取件</tab-item>
+          <tab-item :selected="show ==='send'" @on-item-click="changeShow('send')">寄件</tab-item>
         </tab>
       </div>
-      <div class="senddetail-cell" v-show="show === 'wait'">
+      <div class="senddetail-cell" v-show="show === 'pickup'">
         <scroller 
-          :on-refresh="refreshWait"
-          :on-infinite="infiniteWait"
-          ref="my_scroller_1"
+          :on-refresh="refreshPickup"
+          :on-infinite="infinitePickup"
+          ref="my_scroller_pickup"
           class="senddetail-scroller">
+          <!-- custom refresh spinner, use default `spinner` & viewBox 0,0,64,64 class -->
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="senddetail-cell-detail" v-for="item in wait" :key="item.createTime">
-              <mj-pickupitem :item="item"></mj-pickupitem>
+          <div class="senddetail-cell-detail" v-for="item in pickup" :key="item.createTime">
+              <div class="senddetail-cell-detail--box border-bottom-grey">
+                <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}}</span>
+                <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
+              </div>
+              <div class="senddetail-cell-detail--box flex border-bottom-grey" >
+                <div class="office-info">
+                  <p>营业厅：  {{item.descript}}</p>
+                  <p>地址：  {{item.district + item.descript}}</p>
+                  <p>电话： {{item.mobile}} </p>
+                </div>
+                <div class="address-icon">
+                  <img src="../assets/images/new/pic_ico_map.png" alt="" @click="watchOffice(item.userId)">
+                </div>
+              </div>
+              <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
+                <p class="time">{{item.createTime | formatedatestamp}}</p>
+                <div>
+                  <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去取件</button>
+                </div>
+              </div>
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
           <div style="height: 50px;">
           </div>
         </scroller>
       </div>
-      <!-- 已取件 -->
-      <div class="senddetail-cell" v-show="show === 'sign'">
+      <!-- 已寄件 -->
+      <div class="senddetail-cell" v-show="show === 'send'">
         <scroller 
-          :on-refresh="refreshSign"
-          :on-infinite="infiniteSign"
-          ref="my_scroller_2"
+          :on-refresh="refreshSend"
+          :on-infinite="infiniteSend"
+          ref="my_scroller_send"
           class="senddetail-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="senddetail-cell-detail" v-for="item in sign" :key="item.createTime">
-              <mj-pickupitem :item="item"></mj-pickupitem>
+          <div class="senddetail-cell-detail" v-for="item in send" :key="item.id">
+            <mj-senditem :item="item" readonly></mj-senditem>
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
           <div style="height: 50px;">
@@ -46,14 +66,13 @@ import { mapActions, mapGetters } from 'vuex'
 import { Divider, XSwitch, Spinner } from 'vux'
 
 export default {
-  name: 'pickup',
+  name: 'userpackage',
   components: {
     Divider,
     XSwitch,
     Spinner
   },
   async created () {
-    this.$store.commit('SET_PAGE', {page: 'pickup'})
     if (!this.openid || this.userid === '' || !this.userid) {
       return this.$router.push({path: '/init', query: {page: 1}})
     }
@@ -66,46 +85,38 @@ export default {
         return this.$router.push({path: '/nouser'})
       }
     }
-    console.log('qrsd', this.wait)
   },
   computed: {
     ...mapGetters({
-      'sign': 'getPickUpSign',
-      'signquery': 'getPickUpSignQuery',
-      'wait': 'getPickUpWait',
-      'waitquery': 'getPickUpWaitQuery',
+      'pickup': 'getPackagePickUp',
+      'pickupquery': 'getPackagePickUpQuery',
+      'send': 'getPackageSend',
+      'sendquery': 'getPackageSendQuery',
+      'show': 'getPackageType',
       'user': 'getUserInfo',
       'userid': 'getUserId',
       'openid': 'getOpenId'
     })
   },
   mounted () {
-    window.document.title = '取件列表'
+    window.document.title = '我的包裹'
   },
   data () {
     return {
-      n: 10,
-      show: 'wait',
-      nowait: false,
-      pullupEnabled: true,
-      signstatus: {
-        pullupStatus: 'default',
-        pulldownStatus: 'default'
-      }
     }
   },
   methods: {
     ...mapActions([
-      'initPickUpSign',
-      'addPickUpSign',
-      'initPickUpWait',
-      'addPickUpWait',
+      'initPackagePickUp',
+      'addPackagePickUp',
+      'initPackageSend',
+      'addPackageSend',
       'setUserInfo'
     ]),
     changeShow (type) {
-      this.show = type
+      this.$store.commit('SET_PACKAGE_TYPE', {type})
     },
-    async refreshWait (done) {
+    async refreshPickup (done) {
       const mobile = this.user.mobile
       const _this = this
       const query = {
@@ -114,32 +125,30 @@ export default {
         rows: 5
       }
       setTimeout(async function () {
-        console.log('refresh wait')
-        const resultWait = await _this.initPickUpWait({query})
-        if (resultWait.type !== 'success') {
-          _this.showToast(resultWait)
+        const result = await _this.initPackagePickUp({query})
+        if (result.type !== 'success') {
+          _this.showToast(result)
         }
         done(true)
       }, 1200)
     },
-    async infiniteWait (done) {
+    async infinitePickup (done) {
       const mobile = this.user.mobile
       const _this = this
       setTimeout(async function () {
-        console.log('infinite wait')
-        _this.waitquery.mobile = mobile
-        const resultWait = await _this.addPickUpWait({query: _this.waitquery})
-        if (resultWait.type !== 'success') {
-          _this.showToast(resultWait)
+        _this.pickupquery.mobile = mobile
+        const result = await _this.addPackagePickUp({query: _this.pickupquery})
+        if (result.type !== 'success') {
+          _this.showToast(result)
         }
-        if (resultWait.stop) {
+        if (result.stop) {
           done(true)
           return
         }
         done(true)
       }, 1200)
     },
-    async refreshSign (done) {
+    async refreshSend (done) {
       const mobile = this.user.mobile
       const _this = this
       const query = {
@@ -148,29 +157,23 @@ export default {
         rows: 5
       }
       setTimeout(async function () {
-        console.log('refresh sign')
-        const resultWait = await _this.initPickUpSign({query})
-        if (resultWait.type !== 'success') {
-          _this.showToast(resultWait)
+        console.log('refresh send')
+        const resultSend = await _this.initPackageSend({query})
+        if (resultSend.type !== 'success') {
+          _this.showToast(resultSend)
         }
         done()
       }, 1200)
     },
-    async infiniteSign (done) {
-      const mobile = this.user.mobile
+    async infiniteSend (done) {
       const _this = this
       setTimeout(async function () {
-        console.log('infinite sign')
-        _this.signquery.mobile = mobile
-        const resultSign = await _this.addPickUpSign({query: _this.signquery})
-        if (resultSign.type !== 'success') {
-          _this.showToast(resultSign)
+        console.log('infinite send')
+        const resultSend = await _this.addPackageSend({query: {}})
+        if (resultSend.type !== 'success') {
+          _this.showToast(resultSend)
         }
-        if (resultSign.stop) {
-          done(true)
-          return
-        }
-        done()
+        done(true)
       }, 1200)
     },
     showToast (data) {
@@ -179,6 +182,12 @@ export default {
         type: data.type || 'warn',
         width: '18rem'
       })
+    },
+    goPath (item) {
+      this.$router.push({path: '/pickup/detail', query: item})
+    },
+    watchOffice (userId) {
+      this.$router.push({path: '/office/location', query: {userId}})
     }
   }
 }
@@ -257,12 +266,13 @@ export default {
 }
 
 .office-info {
-  color: #999;
   flex: 6;
+  color: #999;
 }
+
 .address-icon {
   flex: 1;
-  text-align: center;
+  text-align:center;
   border-left: 1px solid @borderbt;
   padding: 1.3rem;
   padding-left: 2rem;
@@ -271,6 +281,7 @@ export default {
     width: 1.8rem;
   }
 }
+
 .senddetail {
   &-container {
     &-tab {
@@ -293,7 +304,7 @@ export default {
     &-detail {
       background: white;
       text-align: justify;
-      padding: 0 15px;
+      padding: 0 1rem;
       margin: 1rem 0;
       &--box {
         padding: .4rem 0;

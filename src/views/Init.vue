@@ -37,18 +37,14 @@ export default {
     if (code) {
       // 通过code获取openid
       const openidres = await this.setOpenid({appid, code, secret})
-      this.$vux.toast.show(openidres)
       if (openidres.type !== 'success') {
         this.$vux.toast.show({
           type: 'warn',
           text: '获取openid失败，请从公众号重新点击进入',
-          width: '15rem'
+          width: '20rem'
         })
-        if (process.env.NODE_ENV !== 'development') {
-          window.location.href = '/wx/#/usercenter'
-        } else {
-          window.location.href = '/#/usercenter'
-        }
+        window.localStorage.removeItem('mj_code')
+        return this.$router.push({path: '/nouser'})
       }
       // 通过openid获取用户信息
       let openid = openidres.openid
@@ -60,7 +56,6 @@ export default {
     if (openid) {
       // 通过openid从数据库中查询用户数据
       await this.getUserInfoByOpenid({openid})
-      return
     } else {
       // 获取openid失败, 跳转到授权页面
       let {page} = this.$route.query
@@ -101,12 +96,11 @@ export default {
         // 获取用户信息成功, 根据page跳转页面
         this.$vux.toast.show({
           type: 'success',
-          text: '获取用户信息成功，即将为您跳转',
-          width: '28rem'
+          text: '登录成功',
+          width: '16rem'
         })
         let {page} = this.$route.query
         const _this = this
-        console.log('page', page)
         switch (page) {
           case 1:
             _this.$router.push({path: '/pickup'})
@@ -123,8 +117,8 @@ export default {
         }
         return
       } else {
-        this.$vux.toast.show(userinfo)
-        return
+        window.localStorage.removeItem('mj_openid')
+        return this.$router.push({path: '/nouser'})
       }
     }
   }

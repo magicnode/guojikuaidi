@@ -9,55 +9,13 @@
       </div>
       <div class="senddetail-cell" v-show="show === 'wait'">
         <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
-          <div class="senddetail-cell-detail--box border-bottom-grey">
-            <span class="senddetail-cell-detail__title">
-             <span class="office-info">
-              营业厅: {{item.office.province + item.office.city + item.office.district + ' ' + item.office.descript}}</span>
-             <img src="../assets/images/new/pic_ico_map.png" alt="item.office.descript" @click="showOffice({province: item.office.province, city: item.office.city, district: item.office.district, descript: item.office.descript})">
-            </span>
-            <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
-          </div>
-          <div class="senddetail-cell-detail--box flex border-bottom-grey middle-box" >
-            <div class="send-icon">
-              收
-            </div>
-            <div>
-              <p>{{item.name}}  {{item.receiptAddress.mobile}}</p>
-              <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
-            </div>
-          </div>
-          <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-            <p class="time">{{item.createTime}}</p>
-            <div>
-              <button type="" class="cancle-btn" @click="cancle(item)">取消订单</button>
-              <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去寄件</button>
-            </div>
-          </div>
+          <mj-senditem :item="item"></mj-senditem>
         </div>
       </div>
       <!-- 已寄件 -->
       <div class="senddetail-cell" v-show="show === 'ready'">
         <div class="senddetail-cell-detail" v-for="item in data['ready']" :key="item.id">
-          <div class="senddetail-cell-detail--box border-bottom-grey">
-            <span class="senddetail-cell-detail__title">{{'品牌: ' + item.brand + ' '}} {{item.order}}</span>
-            <span class="wait-senddetail clearfixed">{{item.type | sendstatus}}</span>
-          </div>
-          <div class="senddetail-cell-detail--box flex border-bottom-grey">
-            <div class="send-icon">
-              收
-            </div>
-            <div>
-              <p>{{item.name}}  {{item.receiptAddress.mobile}}</p>
-              <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
-            </div>
-          </div>
-          <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-            <p class="time">{{item.createTime}}</p>
-            <span class="sum-money">{{'￥' + item.sum}}</span>
-            <div>
-              <button type="" class="cancle-btn" @click="goPath(item, 'ready')">查看订单</button>
-            </div>
-          </div>
+          <mj-senditem :item="item"></mj-senditem>
         </div>
       </div>
     </div>
@@ -116,6 +74,9 @@ export default {
         onCancel () {
         },
         async onConfirm () {
+          this.$vux.loading.show({
+            text: '正在取消'
+          })
           const res = await _this.cancleSend({
             brand: item.brand,
             describe: item.describe,
@@ -126,6 +87,7 @@ export default {
             sendAddressId: item.sendAddressId,
             sum: item.sum,
             type: 5})
+          _this.$vux.loading.hide()
           _this.showToast(res)
         }
       })
@@ -179,10 +141,10 @@ export default {
 }
 
 .normal-btn {
-  width: 6rem;
+  width: 6.6rem;
   font-size: 1.4rem;
   text-align: center;
-  padding: .2rem .5rem;
+  padding: .5rem .4rem;
   border-radius: 5px;
   box-sizing: border-box;
   white-space: nowrap;
@@ -201,6 +163,7 @@ export default {
   color: white;
   border: none;
   background: @dark-yellow;
+  border: 1px solid @dark-yellow;
 }
 
 .senddetail {
@@ -214,7 +177,7 @@ export default {
     &-detail {
       background: white;
       text-align: justify;
-      padding: 0 1rem;
+      padding: 0 15px;
       margin: 1rem 0;
       &--box {
         padding: .5rem 0;

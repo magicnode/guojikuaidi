@@ -5,7 +5,7 @@
       <p>{{user.nickname}}</p>
     </div>
     <div class="usercenter-orderfunc">
-      <div class="usercenter-orderfunc-box flex" v-for="item in orderfunc" @click="goPath(item.path)">
+      <div class="usercenter-orderfunc-box flex" v-for="item in orderfunc" @click="goPath(item.path)" v-if="item.show">
         <div class="usercenter-orderfunc-box--info">
           <img :src="item.src" alt="">
           <span>{{item.name}}</span>
@@ -13,7 +13,7 @@
         <span class="arrow-left"></span>
       </div>
     </div>
-    <div class="" style="padding:2rem;"> 
+    <div class="" style="padding:2rem 0;"> 
       <button class="btn-sub" @click="loginout">刷新状态</button>
     </div>
   </div>
@@ -25,8 +25,8 @@ export default {
   name: 'usercenter',
   async created () {
     this.$store.commit('SET_PAGE', {page: 'usercenter'})
-    if (!this.openid) {
-      return this.$router.push({path: 'init', query: {page: 3}})
+    if (!this.openid || this.userid === '' || !this.userid) {
+      return this.$router.push({path: '/init', query: {page: 3}})
     }
     if (!this.user.mobile) {
       const userinfo = await this.setUserInfo({openid: this.openid})
@@ -39,6 +39,7 @@ export default {
   computed: {
     ...mapGetters({
       user: 'getUserInfo',
+      userid: 'getUserId',
       openid: 'getOpenId'
     })
   },
@@ -51,16 +52,22 @@ export default {
       orderfunc: [{
         src: require('../assets/images/new/min_ico_add.png'),
         name: '地址管理',
-        path: '/address'
+        path: '/address',
+        show: true
       }, {
         src: require('../assets/images/new/min_ico_pac.png'),
-        name: '我的包裹'
+        name: '我的包裹',
+        path: '/user/package',
+        show: true
       }, {
         src: require('../assets/images/new/min_ico_rea.png'),
-        name: '实名认证'
+        name: '实名认证',
+        show: false
       }, {
         src: require('../assets/images/new/min_ico_cus.png'),
-        name: '客服中心'
+        name: '客服中心',
+        path: '/customer/service',
+        show: true
       }]
     }
   },
@@ -111,9 +118,9 @@ export default {
 .btn-sub {
   color: white;
   border: none;
-  padding: .8rem 1rem;
+  padding: 1rem 1rem;
   font-size: 1.8rem;
-  width: 21rem;
+  width: 100%;
   background-color: @dark-yellow;
   border: none;
   border-radius: 5px;
@@ -166,15 +173,16 @@ export default {
 
   &-orderfunc {
     flex-wrap: wrap;
-    border-top: 1px solid #F1F1F1;
+    border-top: 1px solid @borderbt;
     &-box {
       justify-content: space-between;
       padding: 1.2rem .5rem;
       padding-left: 1rem;
       box-sizing: border-box;
       background: #fff;
-      border-right: 1px solid #F1F1F1;
-      border-bottom: 1px solid #F1F1F1;
+      border-right: 1px solid @borderbt;
+      border-left: 1px solid @borderbt;
+      border-bottom: 1px solid @borderbt;
       &--info {
         flex: 3;
         text-align: left;

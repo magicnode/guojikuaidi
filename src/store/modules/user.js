@@ -6,7 +6,6 @@ import window from 'window'
 let instance = axios.create({
   timeout: 5000
 })
-
 /**
  * [state description]
  * userid openid mobile nickname headimgurl等信息放在localStorage

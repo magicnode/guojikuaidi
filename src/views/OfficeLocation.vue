@@ -6,6 +6,7 @@
 </template>
 <script>
 import {address as addressApi} from '@/api'
+import pic from '../assets/images/new/office404(1).jpg'
 
 const setOfficeMaker = function ({position, info, error}) {
   let mapObj = new window.AMap.Map('iCenter', {
@@ -20,9 +21,10 @@ const setOfficeMaker = function ({position, info, error}) {
       position: position,
       draggable: false
     })
+    const photo = '<img width=300 height=140 src="' + pic + '"><br>'
     const infoWindow = new SimpleInfoWindow({
-      infoTitle: '<strong>' + info.name + '</strong>',
-      infoBody: '<p class="office-info"><p>简介：' + info.descript + '</p><p>具体地址: ' + info.address + '</p></p>' + error,
+      infoTitle: '<span>营业厅名称: ' + info.name + '</strong>',
+      infoBody: photo + '<p class="office-info"><p>简介：' + info.descript + '</p><p>具体地址: ' + info.address + '</p></p>' + error,
       offset: new window.AMap.Pixel(0, -31)
     })
     function openInfoWin () {
@@ -62,6 +64,7 @@ export default {
       })
       if (res.status === 200) {
         const data = res.data
+        // console.log('office data', data)
         this.province = data.province
         this.city = data.city
         this.district = data.district

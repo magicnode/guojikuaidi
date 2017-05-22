@@ -7,6 +7,7 @@ import * as user from './modules/user'
 import * as send from './modules/send'
 import * as pickup from './modules/pickup'
 import * as address from './modules/address'
+import * as userpackage from './modules/package'
 import {brand as brandApi} from '@/api'
 
 Vue.use(Vuex)
@@ -21,7 +22,8 @@ const store = new Vuex.Store({
     user,
     send,
     pickup,
-    address
+    address,
+    userpackage
   },
   state: {
     title: '妙寄',
@@ -37,9 +39,11 @@ const store = new Vuex.Store({
     page: 'usercenter'
   },
   actions: {
-    async setAllBrand ({commit}) {
+    async setAllBrand ({commit}, {id}) {
       try {
-        const result = await instance.get(brandApi.index)
+        const result = await instance.get(brandApi.index, {
+          params: {id}
+        })
         if (result.data) {
           commit('SET_BRAND', {brand: result.data})
           return {

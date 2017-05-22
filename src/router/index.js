@@ -60,10 +60,6 @@ export default new Router({
     name: 'SendEnd',
     component: require('@/views/SendEnd')
   }, {
-    path: '/user/package',
-    name: 'Package',
-    component: require('@/views/Package')
-  }, {
     path: '/smslogin',
     name: 'SmsLogin',
     component: require('@/views/SmsLogin')
@@ -95,5 +91,17 @@ export default new Router({
     path: '/office/location',
     name: 'OfficeLocation',
     component: require('@/views/OfficeLocation')
+  }, {
+    path: '/nouser',
+    name: 'NoUser',
+    component: require('@/views/NoUser')
+  }, {
+    path: '/user/package',
+    name: 'UserPackage',
+    component: require('@/views/UserPackage')
+  }, {
+    path: '/customer/service',
+    name: 'CustomerService',
+    component: require('@/views/CustomerService')
   }]
 })

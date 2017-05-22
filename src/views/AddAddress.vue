@@ -79,7 +79,7 @@ export default {
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
+<style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 .addaddress {
@@ -103,10 +103,11 @@ export default {
 
     &-add {
       margin-top: 10rem;
-      padding: 1rem 3rem;
+      padding: 1rem 1rem;
       p {
-        font-size: 1.6rem;
-        padding: .7rem;
+        font-size: 1.8rem;
+        padding: 1rem 0;
+        width: 100%;
         color: white;
         background: @dark-yellow;
         border-radius: 6px;

@@ -43,6 +43,7 @@ export const actions = {
       })
       if (res.status === 200) {
         const data = res.data
+        query.page = query.page + 1
         commit(types.SET_PICKUP_SIGN, {data, query})
         return {
           text: '获取已签收寄件成功',
@@ -69,7 +70,15 @@ export const actions = {
       if (res.status === 200) {
         let resdata = res.data
         let data = state.sign.data
+        if (resdata.length <= 0) {
+          return {
+            text: '没有数据了~',
+            type: 'text',
+            stop: true
+          }
+        }
         data = data.concat(resdata)
+        query.page = query.page + 1
         commit(types.SET_PICKUP_SIGN, {data, query})
         return {
           text: '获取已签收寄件成功',
@@ -95,7 +104,14 @@ export const actions = {
       })
       if (res.status === 200) {
         const data = res.data
-        console.log('data', data)
+        if (data.length <= 0) {
+          return {
+            text: '没有数据',
+            type: 'text'
+          }
+        }
+        query.page = query.page + 1
+        console.log('query', query)
         commit(types.SET_PICKUP_WAIT, {data, query})
         return {
           text: '获取已签收寄件成功',
@@ -121,16 +137,16 @@ export const actions = {
       })
       if (res.status === 200) {
         const resdata = res.data
-        // if (resdata.length <= 0) {
-        //   return {
-        //     text: '没有数据了~',
-        //     type: 'text'
-        //   }
-        // }
         let data = state.wait.data
+        if (resdata.length <= 0) {
+          return {
+            text: '没有数据了~',
+            type: 'text',
+            stop: true
+          }
+        }
         data = data.concat(resdata)
         query.page = query.page + 1
-        console.log('query', query)
         commit(types.SET_PICKUP_WAIT, {data, query})
         return {
           text: '获取未签收寄件成功',

@@ -11,7 +11,7 @@
          <x-switch title="设为默认地址" v-model="value"></x-switch>
        </group>
        <div class="addaddress-container-add">
-         <p @click.stop="confirm">确定</p>
+         <p @click.stop="confirm">保存</p>
        </div>
     </div>
   </div>
@@ -112,10 +112,10 @@ export default {
 
     &-add {
       margin-top: 10rem;
-      padding: 1rem 3rem;
+      padding: 1rem 1rem;
       p {
-        font-size: 1.6rem;
-        padding: .7rem;
+        font-size: 1.8rem;
+        padding: 1rem 0;
         color: white;
         background: @dark-yellow;
         border-radius: 6px;

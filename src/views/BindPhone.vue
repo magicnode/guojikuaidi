@@ -137,7 +137,9 @@ export default {
       })
       this.$vux.toast.show(bindres)
       if (bindres.type === 'success') {
-        await this.getUserInfoByOpenid({openid: this.openid})
+        setTimeout(async function () {
+          await this.getUserInfoByOpenid({openid: this.openid})
+        }, 1500)
       }
     },
     async getUserInfoByOpenid ({openid}) {
@@ -148,11 +150,6 @@ export default {
         return
       } else if (userinfo.type === 'success') {
         // 获取用户信息成功, 根据page跳转页面
-        this.$vux.toast.show({
-          type: 'success',
-          text: '获取用户信息成功, 即将为您跳转',
-          width: '28rem'
-        })
         let {page} = this.$route.query
         const _this = this
         switch (page) {

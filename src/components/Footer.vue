@@ -78,6 +78,7 @@ footer {
   bottom: 0;
   width: 100%;
   background: white;
+  border-top: 1px solid @borderbt;
   ul {
     width: 100%;
     overflow: hidden;

@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import FastClick from 'fastclick'
 import VueScroller from 'vue-scroller'
-import { WechatPlugin, Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin } from 'vux'
+import { WechatPlugin, Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin, LoadingPlugin } from 'vux'
 
 import router from './router'
 import store from './store'
@@ -11,6 +11,8 @@ import App from './App'
 import AxiosPlugin from './plugins/axios'
 import * as filters from './filters'
 import Header from './components/Header.vue'
+import PickupItem from './components/PickupItem.vue'
+import SendItem from './components/SendItem.vue'
 import MJSpinner from './components/MJSpinner.vue'
 
 FastClick.attach(document.body)
@@ -20,6 +22,7 @@ Vue.use(AxiosPlugin)
 Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 Vue.use(ToastPlugin)
+Vue.use(LoadingPlugin)
 
 Vue.config.productionTip = false
 
@@ -29,6 +32,8 @@ Vue.component('tab', Tab)
 Vue.component('tabItem', TabItem)
 Vue.component('mj-header', Header)
 Vue.component('mj-spinner', MJSpinner)
+Vue.component('mj-pickupitem', PickupItem)
+Vue.component('mj-senditem', SendItem)
 
 router.beforeEach(function (to, from, next) {
   // let jumpSrc = 'http://112.74.34.241:3000/pics/random?show=1'
