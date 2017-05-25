@@ -148,13 +148,17 @@ export default {
     justify-content: center;
     align-items: center;
     img {
-      width: 6rem;
+      width: 7.5rem;
       border-radius: 50%;
     }
     p {
       color: white;
       font-size: 1.6rem;
-      padding: 1rem 0;
+      padding: 1rem 0 0 0;
+      // position: absolute;
+      // top: 11rem;
+      width: 100%;
+      text-align: center;
     }
   }
 
@@ -187,8 +191,8 @@ export default {
         flex: 3;
         text-align: left;
         img {
-          width: 1.8rem;
-          height: 2rem;
+          width: 1.9rem;
+          height: auto;
           margin-right: 7px;
           vertical-align:middle;
           font-size: 0;

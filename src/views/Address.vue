@@ -9,32 +9,39 @@
       </div>
       <p v-if="pick" style="text-align: left;font-size: 1.4rem;padding: 0.5rem;padding-bottom: 0;">点击手机号或姓名处选择地址</p>
       <div class="address-container-list">
-        <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id">
-          <div class="flex address-container-list__item--info" @click="selectAddress(item)">
-            <div>
-              <p>{{item.name + '  '}} {{item.mobile}}</p>
-              <p class="location" style="font-size:1.4rem;">{{item.province + item.city + ' ' + item.district + item.address}}</p>
-            </div>
-           <img v-show="!pick" src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
+        <scroller 
+          :on-refresh="refresh"
+          :on-infinite="infinite"
+          ref="my_scroller_address"
+          class="address-scroller">
+          <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
+          <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id">
+              <div class="flex address-container-list__item--info" @click="selectAddress(item)">
+                <div>
+                  <p>{{item.name + '  '}} {{item.mobile}}</p>
+                  <p class="location" style="font-size:1.4rem;">{{item.province + item.city + ' ' + item.district + item.address}}</p>
+                </div>
+               <img v-show="!pick" src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
+              </div>
+              <div class="flex address-container-list__item--func flex">
+                <span class="is-default" v-show="item.checked == 1">
+                  <img src="../assets/images/sen_btn_che.png" alt="">
+                  <span>默认地址</span>
+                </span>
+                <span class="not-default" v-show="item.checked == 2" @click.stop="changeChecked(item.id, item.checked)">
+                  <img src="../assets/images/add_ico_nor.png" alt="">
+                  <span>设为默认</span>
+                </span>
+                <span class="edit" @click="goPath('/address/edit', item)">
+                  <img src="../assets/images/add_ico_cha.png" alt="">
+                  <span>编辑</span>
+                </span>
+              </div>
           </div>
-          <div class="flex address-container-list__item--func flex">
-            <span class="is-default" v-show="item.checked == 1">
-              <img src="../assets/images/sen_btn_che.png" alt="">
-              <span>默认地址</span>
-            </span>
-            <span class="not-default" v-show="item.checked == 2" @click.stop="changeChecked(item.id, item.checked)">
-              <img src="../assets/images/add_ico_nor.png" alt="">
-              <span>设为默认</span>
-            </span>
-            <span class="edit" @click="goPath('/address/edit', item)">
-              <img src="../assets/images/add_ico_cha.png" alt="">
-              <span>编辑</span>
-            </span>
+          <div class="address-container-add" @click="goPath('/address/add', {type: addressType})">
+            <p>新增地址</p>
           </div>
-        </div>
-        <div class="address-container-add" @click="goPath('/address/add', {type: addressType})">
-          <p>新增地址</p>
-        </div>
+        </scroller>
       </div>
     </div>
   </div>
@@ -120,6 +127,7 @@ export default {
             text: '正在提交'
           })
           _this.delAddress({id})
+          _this.setDefaultAddress()
           _this.$vux.loading.hide()
           // 显示
           _this.$vux.toast.show({
@@ -150,18 +158,35 @@ export default {
           _this.showToast()
         }
       })
+    },
+    async refresh (done) {
+      const _this = this
+      setTimeout(async function () {
+        console.log('refresh address')
+        await _this.changeAddress()
+        done()
+      }, 1200)
+    },
+    async infinite (done) {
+      await this.changeAddress()
+      done(true)
     }
   }
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
+<style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 .address {
   min-height: 100vh;
   background-color: @bg-grey;
   &-container {
+    &-tab {
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
     &-add {
       padding: 1rem 1rem;
       p {
@@ -172,9 +197,7 @@ export default {
         border-radius: 6px;
       }
     }
-
     &-list {
-      margin-top: 2rem;
       &__intro {
         padding: 1rem;
         padding-top: 0;
@@ -182,7 +205,7 @@ export default {
         text-align: left;
       }
       &__item {
-        margin-bottom: 2rem;
+        margin-bottom: 12px;
         background: white;
         .padding {
           padding: 1rem;
@@ -203,7 +226,6 @@ export default {
             width: 2rem;
           }
         }
-
         &--func {
           font-size: 1.2rem;
           justify-content: space-between;
@@ -235,6 +257,9 @@ export default {
         }
       }
     }
+  }
+  &-scroller {
+    padding-top: 52px;
   }
 }
 </style>

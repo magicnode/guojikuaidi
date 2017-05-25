@@ -35,20 +35,20 @@ export const actions = {
         commit(types.SET_SITE, {data})
         commit(types.SET_SITE_RECENT, {recent: resdata})
         return {
-          text: '获取营业厅地址成功',
+          text: '获取"妙寄"全网站点成功',
           type: 'success',
           width: '18rem'
         }
       }
       return {
-        text: '获取营业厅地址失败',
+        text: '获取站点地址失败',
         type: 'warn',
         width: '18rem'
       }
     } catch (err) {
       console.error(err)
       return {
-        text: '获取营业厅地址失败',
+        text: '获取站点地址失败',
         type: 'warn',
         width: '18rem'
       }

@@ -1,22 +1,36 @@
 <template>
   <div class="senddetail">
     <div class="senddetail-container">
-      <div class="address-container-tab">
+      <div class="senddetail-container-tab">
         <tab active-color='#ff750f'>
           <tab-item selected @on-item-click="changeShow('wait')">待寄件</tab-item>
           <tab-item @on-item-click="changeShow('ready')">已寄件</tab-item>
         </tab>
       </div>
       <div class="senddetail-cell" v-show="show === 'wait'">
-        <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
-          <mj-senditem :item="item"></mj-senditem>
-        </div>
+        <scroller 
+          :on-refresh="refresh"
+          :on-infinite="infinite"
+          ref="my_scroller_senddetail"
+          class="senddetail-scroller">
+          <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
+          <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
+            <mj-senditem :item="item"></mj-senditem>
+          </div>
+        </scroller>
       </div>
       <!-- 已寄件 -->
       <div class="senddetail-cell" v-show="show === 'ready'">
-        <div class="senddetail-cell-detail" v-for="item in data['ready']" :key="item.id">
-          <mj-senditem :item="item"></mj-senditem>
-        </div>
+        <scroller 
+          :on-refresh="refresh"
+          :on-infinite="infinite"
+          ref="my_scroller_senddetail"
+          class="senddetail-scroller">
+          <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
+          <div class="senddetail-cell-detail" v-for="item in data['ready']" :key="item.id">
+            <mj-senditem :item="item"></mj-senditem>
+          </div>
+        </scroller>
       </div>
     </div>
   </div>
@@ -62,6 +76,7 @@ export default {
     },
     async initSendList () {
       const result = await this.setSend()
+      if (result.type === 'success') return
       this.showToast(result)
     },
     goPath (item, type) {
@@ -98,6 +113,21 @@ export default {
         text: content,
         type: 'text'
       })
+    },
+    refresh (done) {
+      const _this = this
+      setTimeout(async function () {
+        _this.initSendList()
+        done(true)
+      }, 1200)
+    },
+    infinite (done) {
+      done(true)
+      const _this = this
+      setTimeout(async function () {
+        _this.initSendList()
+        done(true)
+      }, 1200)
     }
   }
 }
@@ -167,6 +197,13 @@ export default {
 }
 
 .senddetail {
+  &-container {
+    &-tab {
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+  }
   &-cell {
     &-status {
       font-size: 1.6rem;
@@ -212,6 +249,9 @@ export default {
         color: #333;
       }
     }
+  }
+  &-scroller {
+    padding-top: 44px;
   }
 }
 </style>

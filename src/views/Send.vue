@@ -9,14 +9,14 @@
           <div class="send-container-address__info--line">
             <div>
               <span>
-                {{sendAddress['name']}}
+                {{sendAddress['name']}}&nbsp;&nbsp;
               </span>
               <span class="address-info">
                 {{sendAddress['mobile']}}    
               </span>
             </div>
           </div>
-          <p>
+          <p class="address-detail-info">
            {{sendAddress['address']}}
           </p>
         </div>
@@ -33,13 +33,13 @@
         <div class="send-container-address__info">
           <div class="send-container-address__info--line">
             <div>
-              <span>{{pickupAddress['name']}}</span>
+              <span>{{pickupAddress['name']}}&nbsp;&nbsp;</span>
               <span class="address-info">
                 {{pickupAddress['mobile']}}
               </span>
             </div>
           </div>
-          <p>{{pickupAddress['address']}}</p>
+          <p class="address-detail-info">{{pickupAddress['address']}}</p>
         </div>
         <div class="send-container-address__link">
           <router-link to="/address?type=pickup&pick=1">
@@ -48,8 +48,8 @@
         </div>
       </div>
       <div class="send-container-select">
-        <group label-width="6rem" label-margin-right="1rem" label-align="left">
-          <cell class="office" title="营业厅" is-link link="/hallmap">{{office || '选择营业厅'}}</cell>
+        <group label-width="6rem" label-align="left">
+          <cell class="office" title="寄件站点" is-link link="/hallmap">{{office || '选择寄件站点'}}</cell>
           <selector direction="rtl" v-model="expresstype" placeholder="选择快递品牌"   title="快递品牌" name="district" :options="brand" @on-change="onChange">
           </selector>
           <x-textarea type="text" title="物品描述" :show-counter="false" :max="max" :autosize="true" placeholder="描述你的物品 (200字限制)" :rows="1" v-model="describe" @on-focus="hideFooter" @on-blur="onChangeText('describe')">
@@ -60,7 +60,7 @@
       </div>
       <div class="send-container-select">
         <group>
-          <cell title="寄件列表" link="/send/detail" is-link style="padding:1rem 2.2rem;">
+          <cell title="寄件列表" link="/send/detail" is-link style="padding:1rem 2.2rem;padding-left:11px;">
             <img slot="icon" class="send-icon" style="display:block;margin-right:5px;" src="../assets/images/new/sen_ico_lis.png" />
           </cell>
         </group>
@@ -108,7 +108,7 @@ export default {
     this.initBrand({id: addressInfo.userId})
   },
   mounted () {
-    window.document.title = '寄件'
+    window.document.title = '到点寄件'
   },
   computed: {
     ...mapGetters({
@@ -180,7 +180,7 @@ export default {
         return
       }
       if (!addressInfo.id) {
-        this.showToast({text: '请选择营业厅', type: 'warn'})
+        this.showToast({text: '请选择寄件站点', type: 'warn'})
         return
       }
       if (!this.describe) {
@@ -238,6 +238,15 @@ export default {
 .bgyellow {
   background-color: @dark-yellow;
 }
+
+.weui-cells {
+  margin-top: 12px!important;
+}
+
+.weui-cell {
+  padding-left: 18px!important;
+}
+
 .weui-cell.office.weui-cell_access{
   div.weui-cell__ft {
     font-size: 1.5rem;
@@ -283,6 +292,22 @@ label {
   }
 }
 
+.address-detail-info {
+  white-space: nowrap;
+  max-width: 19rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  @media (max-width:320px) {
+    width: 14rem;
+  }
+  @media (min-width:360px) {
+    width: 20rem;
+  }
+  @media (min-width:400px) {
+    width: 26rem;
+  }
+}
+
 .send {
   &-container {
     padding-bottom: 6rem;
@@ -290,7 +315,7 @@ label {
     &-address {
       font-size: 1.4rem;
       padding: 1rem 0;
-      padding-left: 27px;
+      padding-left: 18px;
       justify-content: space-between;
       background: white;
       &:first-child {
@@ -309,26 +334,25 @@ label {
         }
       }
       &__info {
-        padding-left:1rem;
-        flex: 3;
+        padding-left: .8rem;
+        flex: 9;
         text-align: left;
         &--line {
           div {
             display: flex;
             align-items: center;
-            justify-content: space-between;
           }
         }
       }
       &__link {
         flex: 2;
-        padding: 0 1rem;
+        padding: 0 0;
+        padding-right: 1rem;
         text-align: right;
         height: 5rem;
         line-height: 5rem;
         a {
           color: @dark-yellow;
-          padding: .5rem;
         }
       }
     }
@@ -360,7 +384,7 @@ label {
     &-select {
       label {
         text-align: left;
-            padding-left: 1rem;
+        padding-left: .1rem;
       }
     }
     &-hall {

@@ -6,7 +6,7 @@
     </div>
     <div class="pickupitem-box flex">
       <div class="pickupitem-box__office">
-        <p>营业厅：  {{item.name}}</p>
+        <p>取件站点：  {{item.name}}</p>
         <p>地址：  {{item.city + '市' + item.district + item.descript}}</p>
         <p>电话： {{item.mobile}} </p>
       </div>
@@ -88,9 +88,11 @@ export default {
     &__title {
       font-size: 1.5rem;
       img {
+        margin-right: .5rem;
         width: auto;
-        height: 2rem;
-        vertical-align: top;
+        height: 3rem;
+        vertical-align: middle;
+        border-radius: 6px;
       }
     }
     &__state {

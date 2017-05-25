@@ -3,66 +3,73 @@
    <div class="container">
      <div class="pickupqr-img">
        <img class="pickupqr-container-qr" :src="qr" />
-       <p>请向店员出示此二维码</p>
+       <p>取件时，请向店员出示此二维码</p>
      </div>
      <div class="pickupqr-detail">
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">运单号码</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span class="pickupqr-detail-box__content">{{orderSn}}</span>
+         <span class="pickupqr-detail-box__content">{{query.orderSn}}</span>
        </div>
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">货架号</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span class="pickupqr-detail-box__content">{{code}}</span>
+         <span class="pickupqr-detail-box__content">{{query.code}}</span>
        </div>
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">快递品牌</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span class="pickupqr-detail-box__content">{{brandId | brandtype}}</span>
+         <span class="pickupqr-detail-box__content">{{query.brandId | brandtype}}</span>
        </div>
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">快递类型</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span class="pickupqr-detail-box__content">{{state | pickupstate}}</span>
+         <span class="pickupqr-detail-box__content">{{query.expresstype | pickupstate}}</span>
        </div>
      </div>
      <div class="pickupqr-detail">
        <div class="pickupqr-detail-box">
-         <span class="pickupqr-detail-box__title">营业厅</span>
+         <span class="pickupqr-detail-box__title">取件站点</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span class="pickupqr-detail-box__content">{{query.name}}</span>
+         <span class="pickupqr-detail-box__content">{{office.name}}</span>
          <img style="width: 1.4rem;padding: 0 1rem;position: absolute;right: 6px;" src="../assets/images/new/pic_ico_map.png" alt="地址" @click="watchOffice(query.userId)">
        </div>
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">地址</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span class="pickupqr-detail-box__content">{{query.city + '市' + query.district + query.descript}}</span>
+         <span class="pickupqr-detail-box__content">{{office.province + office.city + '市' + office.district}}</span>
        </div>
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">电话</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span class="pickupqr-detail-box__content">{{query.mobile}}</span>
+         <span class="pickupqr-detail-box__content"><a :href="tel">{{office.mobile}}</a></span>
        </div>
      </div>
    </div>
   </div>
 </template>
 <script>
-import {pic as picApi} from '@/api'
+import {pic as picApi, address as addressApi} from '@/api'
 
 export default {
   name: 'pickupdetail',
-  created () {
+  async created () {
     const query = this.$route.query
     const userId = query.userId
-    this.qr = picApi.qr + '?orderSn=' + query.orderSn + '&userId=' + window.localStorage.getItem('mj_userId') || userId
-    this.orderSn = query.orderSn
-    this.mobile = query.mobile
-    this.code = query.code
-    this.state = query.state
-    this.brandId = query.brandId
+    this.qr = picApi.pickupqr + '?orderSn=' + query.orderSn + '&userId=' + userId || window.localStorage.getItem('mj_userId')
     this.query = query
+    const office = await this.$http.post(addressApi.officelocation + '?userId=' + query.userId)
+    console.log('asdas', office.data)
+    if (office.status !== 200) {
+      this.$vux.toast.show({
+        text: '获取站点信息失败',
+        type: 'warn',
+        width: '18rem'
+      })
+    } else {
+      this.office = office.data
+      this.tel = 'tel:' + this.office.mobile
+    }
   },
   mounted () {
     window.document.title = '收件明细'
@@ -70,12 +77,9 @@ export default {
   data () {
     return {
       qr: '',
-      orderSn: '',
-      mobile: '',
-      code: '',
-      state: '',
-      brandId: '',
-      query: {}
+      office: {},
+      query: {},
+      tel: ''
     }
   },
   methods: {
@@ -151,6 +155,9 @@ export default {
         color: @dark-yellow;
         margin-left: 1rem;
         white-space: nowrap;
+        a {
+          color: @dark-yellow;
+        }
       }
     }
   }

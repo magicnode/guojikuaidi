@@ -28,7 +28,7 @@ export default {
   async created () {
     this.$vux.toast.show({
       type: 'text',
-      width: '15rem',
+      width: '18rem',
       time: '4000',
       text: '正在为您跳转，请稍候'
     })

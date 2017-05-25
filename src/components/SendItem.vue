@@ -5,12 +5,10 @@
       <div class="senditem-box">
         <span class="senditem-box__office">
          <span class="senditem-box__office--info">
-          <!-- 营业厅: {{item.office.city + '市' + item.office.district + ' ' + item.office.descript}} -->
-          营业厅: {{item.office | officeinfo}}
+          寄件站点: {{item.office | officeinfo}}
          </span>
          <img src="../assets/images/new/pic_ico_map.png" alt="item.office.descript" @click="watchOffice(item.officeId)">
         </span>
-        <span class="senditem-box__state">{{item.type | sendstatus}}</span>
       </div>
       <div class="senditem-box flex">
         <div class="senditem-box__icon">
@@ -18,8 +16,9 @@
         </div>
         <div class="senditem-box__address">
           <p>{{item.name}}  {{item.receiptAddress.mobile}}</p>
-          <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
+          <p class="senditem-box__address--detail">{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}}</p>
         </div>
+        <span class="senditem-box__state">{{item.type | sendstatus}}</span>
       </div>
       <div class="senditem-box flex" style="justify-content: space-between;">
         <p class="senditem-box__time">{{item.createTime}}</p>
@@ -35,7 +34,6 @@
     <div class="senditem">
       <div class="senditem-box">
         <span class="senditem-box__office"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.order}}</span>
-        <span class="senditem-box__state">{{item.type | sendstatus}}</span>
       </div>
       <div class="senditem-box flex">
         <div class="senditem-box__icon">
@@ -43,8 +41,9 @@
         </div>
         <div>
           <p>{{item.name}}  {{item.receiptAddress.mobile}}</p>
-          <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}} </p>
+          <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}}</p>
         </div>
+        <span class="senditem-box__state">{{item.type | sendstatus}}</span>
       </div>
       <div class="senditem-box flex" style="justify-content: space-between;">
         <p class="senditem-box__time">{{item.createTime}}</p>
@@ -94,6 +93,7 @@ export default {
       })
     },
     goPath (item, type) {
+      console.log('irwem', item)
       const id = item.id
       const order = item.order
       this.$router.push({path: '/send/qr', query: {id, order}})
@@ -174,11 +174,13 @@ export default {
       img {
         width: auto;
         height: 2.5rem;
-        vertical-align: top;
+        float: right;
+        vertical-align: middle;
+        // border-radius: 6px;
       }
       &--info {
         font-size: 1.5rem;
-        width: 15rem;
+        max-width: 86%;
         display: inline-block;
         overflow: hidden;
         white-space: nowrap;
@@ -187,9 +189,11 @@ export default {
       }
     }
     &__state {
-      float: right;
+      font-size: 1.2rem;
       color: @dark-yellow;
       padding-top: .3rem;
+      position: absolute;
+      right: 2.7rem;
     }
     &__price {
       font-size: 1.4rem;
@@ -208,6 +212,22 @@ export default {
     }
     &__address {
       font-size: 1.3rem;
+      &--detail {
+        width: 18rem;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        @media (max-width:320px) {
+          width: 14rem;
+        }
+        @media (min-width:360px) {
+          width: 18rem;
+        }
+        @media (min-width:400px) {
+          width: 20rem;
+        }
+      }
     }
   }
 }

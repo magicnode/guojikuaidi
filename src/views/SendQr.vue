@@ -3,7 +3,7 @@
     <div class="container">
       <div class="sendqr-img">
         <img class="sendqr-container-qr" :src="qr" />
-        <p>请向店员出示此二维码</p>
+        <p>寄件时，请向店员出示此二维码</p>
       </div>
       <div class="sendqr-detail">
         <div class="sendqr-detail-box">
@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">营业厅</span>
+          <span class="sendqr-detail-box__title">寄件站点</span>
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">{{data.office.name}}</span>
           <img style="width: 1.4rem;padding: 0 1rem;position: absolute;right: 6px;" src="../assets/images/new/pic_ico_map.png" alt="地址" @click="watchOffice(data.officeId)">
@@ -137,6 +137,16 @@ export default {
         text-align: left;
         p {
           font-size: 1.4rem;
+          width: 20rem;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          @media (max-width:320px) {
+            width: 16rem;
+          }
+          @media (min-width:400px) {
+            width: 25rem;
+          }
         }
       }
       &__title {
@@ -152,6 +162,7 @@ export default {
         color: @dark-yellow;
         margin-left: 1rem;
         white-space: nowrap;
+        overflow: hidden;
       }
     }
   }

@@ -280,7 +280,7 @@ export default {
     }
   }
   &-scroller {
-    padding-top: 54px;
+    padding-top: 42px;
   }
   &-cell {
     padding-bottom: 8rem;

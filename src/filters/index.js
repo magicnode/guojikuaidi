@@ -131,19 +131,11 @@ export const brandimg = function (val) {
 }
 
 export const pickupstate = function (val) {
+  //  0普通间 1到付件 2代收货款
   const states = {
-    0: '等待数据',
-    1: '成功',
-    2: '未接听',
-    3: '空号',
-    4: '线路故障',
-    5: '失败',
-    101: '待取件',
-    102: '上架',
-    103: '分派',
-    301: '已经签收',
-    302: '退回',
-    201: '问题件'
+    0: '普通件',
+    1: '到付件',
+    2: '代收货款'
   }
   return states[val]
 }
@@ -152,5 +144,6 @@ export const officeinfo = function (office) {
   if (!office) {
     return ''
   }
-  return office.city + '市' + office.district + ' ' + office.descript
+  return office.district + ' ' + office.descript
+  // return office.descript
 }

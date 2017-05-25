@@ -2,13 +2,14 @@
   <div class="map">
     <div id="iCenter" style="height: 100vh;">
     </div>
+    <div id="panel"></div>
   </div>
 </template>
 <script>
 import axios from 'axios'
 import { mapGetters, mapActions } from 'vuex'
 import {site as siteApi} from '@/api'
-import pic from '../assets/images/new/office404(1).jpg'
+import pic from '../assets/images/new/officedefault.png'
 
 let instance = axios.create({
   timeout: 2000
@@ -19,7 +20,7 @@ export default {
   components: {
   },
   mounted () {
-    window.document.title = '选择营业厅'
+    window.document.title = '选择寄件站点'
     let mapObj = new window.AMap.Map('iCenter', {
       resizeEnable: true,
       zoom: 14
@@ -42,7 +43,7 @@ export default {
       })
       mapObj.addControl(geolocation)
       geolocation.getCurrentPosition()
-      async function getBounds () {
+      async function getBounds (selfPosition) {
         let bounds = mapObj.getBounds()
         let southwestOb = bounds.getSouthWest()
         let southwest = []
@@ -67,14 +68,6 @@ export default {
           marker.setMap(mapObj)
           window.AMap.event.addListener(marker, 'click', function (data) {
             let info = data.target.G.info
-            console.log('info', info)
-            // let cf = confirm('是否选择' + info.descript + '为寄件营业厅')
-            // if (cf) {
-            //   info = JSON.stringify(info)
-            //   window.localStorage.removeItem('mj_addressInfo')
-            //   window.localStorage.setItem('mj_addressInfo', info)
-            //   window.history.go(-1)
-            // }
             window.AMapUI.loadUI(['overlay/SimpleInfoWindow'], function (SimpleInfoWindow) {
               const marker = new window.AMap.Marker({
                 map: mapObj,
@@ -82,22 +75,17 @@ export default {
                 position: [info.longitude, info.latitude],
                 draggable: false
               })
-              const photo = '<img width=300 height=140 src="' + pic + '"><br>'
+              const photo = '<div class="officeimg"><img src="' + pic + '"></div>'
               const officeBtnId = 'userId' + info.userId
               const infoWindow = new SimpleInfoWindow({
                 infoTitle: '<span>妙寄全网站点: ' + info.name || '' + '</span>',
-                infoBody: photo + '<p class="office-info"><p>具体地址: ' + info.descript + '</p><p>电话号码: ' + info.mobile + '</p><p>是否选择该营业厅为寄件营业厅?</p><p class="div-confirm-btn"><button type="" id="' + officeBtnId + '" class="confirm-btn">确定</button></p></p>',
+                infoBody: photo + '<div class="office-detail"><p class="office-info"><p>具体地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p><p>是否选择该站点为寄件站点?</p><p class="div-confirm-btn"><button type="" id="' + officeBtnId + '" class="confirm-btn">确定</button></p></p></div>',
                 offset: new window.AMap.Pixel(0, -31)
               })
-              console.log('btn id', officeBtnId)
-              console.log('btn id', typeof officeBtnId)
               setTimeout(function () {
                 const btn = window.document.getElementById(officeBtnId)
                 console.log('btn', btn)
                 btn.addEventListener('click', function () {
-                  // let cf = confirm('是否选择' + info.descript + '为寄件营业厅')
-                  // if (cf) {
-                  // }
                   info = JSON.stringify(info)
                   window.localStorage.removeItem('mj_addressInfo')
                   window.localStorage.setItem('mj_addressInfo', info)
@@ -112,12 +100,25 @@ export default {
               })
               openInfoWin()
             })
+            // window.AMap.plugin(['AMap.Walking'], function () {
+            //   const walking = new window.AMap.Walking()
+            //   walking.search(new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat()), new window.AMap.LngLat(info.longitude, info.latitude), function (status, result) {
+            //     if (status === 'complete') {
+            //       (new window.Lib.AMap.WalkingRender()).autoRender({
+            //         data: result,
+            //         map: mapObj,
+            //         panel: 'panel'
+            //       })
+            //     }
+            //   })
+            // })
             return
           })
         }
       }
       window.AMap.event.addListener(geolocation, 'complete', function (data) {
-        getBounds()
+        const selfPosition = data.position
+        getBounds(selfPosition)
       })
       window.AMap.event.addListener(geolocation, 'error', function () {
         // alert('定位失败')
@@ -157,6 +158,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
 @import '../assets/styles/colors.less';
+@import '../assets/styles/helpers.less';
 .normal-btn {
   width: 6.6rem;
   font-size: 1.4rem;

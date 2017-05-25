@@ -111,7 +111,6 @@ export const actions = {
           }
         }
         query.page = query.page + 1
-        console.log('query', query)
         commit(types.SET_PICKUP_WAIT, {data, query})
         return {
           text: '获取已签收寄件成功',

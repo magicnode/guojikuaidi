@@ -136,9 +136,10 @@ export default {
         openid: this.openid
       })
       this.$vux.toast.show(bindres)
+      const _this = this
       if (bindres.type === 'success') {
         setTimeout(async function () {
-          await this.getUserInfoByOpenid({openid: this.openid})
+          await _this.getUserInfoByOpenid({openid: _this.openid})
         }, 1500)
       }
     },

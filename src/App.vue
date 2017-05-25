@@ -117,5 +117,7 @@ select,option,textarea {
     transform: scale(0) rotate3d(360,360,360,360deg);
   }
 }
-
+.amap-ui-smp-ifwn-content-body {
+  border: none!important;
+}
 </style>

@@ -22,7 +22,7 @@
               </div>
               <div class="senddetail-cell-detail--box flex border-bottom-grey" >
                 <div class="office-info">
-                  <p>营业厅：  {{item.descript}}</p>
+                  <p>取件站点：  {{item.descript}}</p>
                   <p>地址：  {{item.district + item.descript}}</p>
                   <p>电话： {{item.mobile}} </p>
                 </div>
@@ -199,7 +199,6 @@ export default {
 .scroll-container {
   padding: 0 1rem;
 }
-
 .box2-wrap {
   height: 300px;
   overflow: hidden;
@@ -291,7 +290,7 @@ export default {
     }
   }
   &-scroller {
-    padding-top: 54px;
+    padding-top: 42px;
   }
   &-cell {
     padding-bottom: 8rem;

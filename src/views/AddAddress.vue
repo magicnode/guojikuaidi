@@ -2,13 +2,13 @@
   <div class="addaddress">
     <div class="addaddress-container">
       <group>
-         <x-input title="姓名" v-model="name" placeholder="请填写您的真实姓名" required></x-input>
+         <x-input title="姓名" v-model="name" max="20" placeholder="请填写您的真实姓名" required></x-input>
          <x-input title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
          <x-address class="quyu" title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
-         <x-input title="地址" v-model="address" placeholder="请详细到门牌号" required></x-input>
+         <x-input title="地址" v-model="address"  max="80" placeholder="请详细到门牌号 (限80字)" required></x-input>
        </group>
        <group>
-         <x-switch title="设为默认地址" v-model="value"></x-switch>
+         <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
        </group>
        <div class="addaddress-container-add">
          <p @click.stop="saveAddress">保存</p>
@@ -79,7 +79,7 @@ export default {
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
+<style lang="less">
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 .addaddress {
@@ -92,15 +92,18 @@ export default {
       }
     }
     .quyu {
+      font-size: 1.5rem;
       .weui-label {
         text-align: left;
         padding-left: .6rem;
       }
       .vux-popup-picker-select {
         color: #666;
+        span {
+          font-size: 1.5rem;
+        }
       }
     }
-
     &-add {
       margin-top: 10rem;
       padding: 1rem 1rem;
@@ -113,7 +116,6 @@ export default {
         border-radius: 6px;
       }
     }
-
     .g-radio {
       padding: 1rem;
       padding-right: 0;
@@ -129,6 +131,28 @@ export default {
         transform-origin: 0 0;
         -webkit-transform: scaleY(0.5);
         transform: scaleY(0.5);
+      }
+    }
+  }
+}
+
+.mj-switch {
+  padding: 10px 15px!important;
+  .weui-cell__ft {
+    .weui-switch {
+      width: 40px!important;
+      height: 20px!important;
+      &:checked {
+        border-color: @dark-yellow;
+        background-color: @dark-yellow;
+      }
+      &:before {
+        width: 40px;
+        height: 20px;
+      }
+      &:after {
+        width: 20px;
+        height: 18px;
       }
     }
   }

@@ -153,23 +153,27 @@ export const actions = {
         commit(types.SET_SMSCODE, {smscode: data.obj})
         return {
           text: data.mess,
-          type: 'success'
+          type: 'success',
+          width: '18rem'
         }
       } else if (code === 201) {
         return {
           text: data.mess,
-          type: 'warn'
+          type: 'warn',
+          width: '18rem'
         }
       }
       return {
         text: '发送短信失败',
-        type: 'warn'
+        type: 'warn',
+        width: '18rem'
       }
     } catch (err) {
       console.error(err)
       return {
         text: '网络错误',
-        type: 'warn'
+        type: 'warn',
+        width: '18rem'
       }
     }
   },

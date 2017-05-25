@@ -2,13 +2,13 @@
   <div class="addaddress">
     <div class="addaddress-container">
       <group>
-         <x-input title="姓名" v-model="name" placeholder="请填写您的真实姓名" required></x-input>
+         <x-input title="姓名" v-model="name" max="20" placeholder="请填写您的真实姓名" required></x-input>
          <x-input title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
          <x-address class="quyu" required title="地区" raw-value v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
-         <x-input title="地址" v-model="address" placeholder="请详细到门牌号" required></x-input>
+         <x-input title="地址" v-model="address" max="80" placeholder="请详细到门牌号 (限80字)" required></x-input>
        </group>
        <group>
-         <x-switch title="设为默认地址" v-model="value"></x-switch>
+         <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
        </group>
        <div class="addaddress-container-add">
          <p @click.stop="confirm">保存</p>
@@ -141,4 +141,5 @@ export default {
     }
   }
 }
+
 </style>
