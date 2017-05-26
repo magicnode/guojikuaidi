@@ -6,10 +6,10 @@
   </div>
 </template>
 <script>
-import {address as addressApi} from '@/api'
+import {address as addressApi, brand as brandApi} from '@/api'
 import pic from '../assets/images/new/officedefault.png'
 
-const setOfficeMaker = function ({position, info, error}) {
+const setOfficeMaker = function ({position, info, error, brand}) {
   let map = new window.AMap.Map('iCenter', {
     resizeEnable: true,
     zoom: 13,
@@ -49,26 +49,10 @@ const setOfficeMaker = function ({position, info, error}) {
         })
       })
     })
-    // setTimeout(function () {
-    //   window.AMap.plugin(['AMap.Walking'], function () {
-    //     const walking = new window.AMap.Walking()
-    //     walking.search(new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat()), new window.AMap.LngLat(position[0], position[1]), function (status, result) {
-    //       if (status === 'complete') {
-    //         (new window.Lib.AMap.WalkingRender()).autoRender({
-    //           data: result,
-    //           map: map,
-    //           panel: 'panel'
-    //         })
-    //       }
-    //     })
-    //   })
-    // }, 2000)
     window.AMap.event.addListener(geolocation, 'error', function () {
       console.log('定位失败')
     })
   })
-  // alert(new window.AMap.Walking())
-  console.log(window.AMap)
   window.AMapUI.loadUI(['overlay/SimpleInfoWindow'], function (SimpleInfoWindow) {
     const marker = new window.AMap.Marker({
       map: map,
@@ -79,12 +63,15 @@ const setOfficeMaker = function ({position, info, error}) {
     const photo = '<div class="officeimg"><img src="' + pic + '"></div>'
     const infoWindow = new SimpleInfoWindow({
       infoTitle: '<span>"妙寄"全网站点: ' + info.name + '</strong>',
-      infoBody: photo + '<div class="office-detail"><p><p>所在区域：' + info.address + '</p><p>详细地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p></p></div>' + error,
+      infoBody: photo + '<div class="office-detail"><p><p>所在区域: ' + info.address + '<button type="" class="navigation-btn">导航</button></p><p>详细地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p></p>' + brand + '</div>' + error,
       offset: new window.AMap.Pixel(0, -31)
     })
     function openInfoWin () {
       infoWindow.open(map, marker.getPosition())
     }
+    // function closeInfoWin () {
+    //   infoWindow.close(map, marker.getPosition())
+    // }
     window.AMap.event.addListener(marker, 'click', function () {
       openInfoWin()
     })
@@ -119,7 +106,6 @@ export default {
       })
       if (res.status === 200) {
         const data = res.data
-        // console.log('office data', data)
         this.province = data.province
         this.city = data.city
         this.district = data.district
@@ -139,7 +125,21 @@ export default {
         if (!this.longitude && !this.latitude) {
           error = '</br><p>定位失败，为您定位到<a href="http://www.mijihome.cn/phone/index.html#/index">上海圈嘀科技公司</a></p>'
         }
-        setOfficeMaker({position, info, error})
+        const brandRes = await this.$http({
+          method: 'get',
+          url: brandApi.index,
+          params: {
+            id: userId
+          }
+        })
+        let brand = ''
+        if (brandRes.status !== 200) {
+          brand = ''
+        } else {
+          let data = brandRes.data
+          brand = '<p>此站点引入的快递品牌有: ' + data + '</p>'
+        }
+        setOfficeMaker({position, info, error, brand})
       } else {
         this.$vux.toast.show({
           text: '获取站点信息失败',
@@ -182,7 +182,23 @@ export default {
 .amap-ui-smp-ifwn-container {
   font-size: 1.4rem;
 }
+
 .amap-ui-smp-ifwn-def-tr-close {
   font-size: 2.2rem;
+}
+
+.navigation-btn {
+  display: none;
+  float: right;
+  width: 4.6rem;
+  font-size: 1.4rem;
+  text-align: center;
+  padding: .2rem .4rem;
+  border-radius: 5px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  color: white;
+  border: none;
+  background: @dark-yellow;
 }
 </style>

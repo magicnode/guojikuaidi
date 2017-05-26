@@ -1,6 +1,6 @@
 <template>
   <div class="mj">
-    <transition name="bounce">
+    <transition name="">
       <router-view></router-view>
     </transition>
     <mj-footer></mj-footer>
@@ -12,16 +12,17 @@ import MJFooter from '@/components/Footer'
 export default {
   name: 'contains',
   created () {
-    // if (process.env.NODE_ENV === 'development') {
-    //   window.localStorage.setItem('mj_code', code)
-    //   window.localStorage.setItem('mj_init', 'done')
-    //   window.localStorage.setItem('mj_headimgurl', '//wx.qlogo.cn/mmopen/zYCT2SFoRZOlR2cj0EFrkNWbEBzsW8jxnPN7RFOEePukrWG3ItP6icX1jKXYliaVibBMUnAprSDPqPttLuApDx8Yz4aCJt22XOP/0')
-    //   window.localStorage.setItem('mj_mobile', '17317272575')
-    //   window.localStorage.setItem('mj_nickname', '呃嗯丶')
-    //   window.localStorage.setItem('mj_openid', 'oCk9ywj1vT0B3ltw2m3dfE6FnHzI')
-    //   window.localStorage.setItem('mj_userId', '8')
-    //   return
-    // }
+    if (process.env.NODE_ENV === 'development') {
+      window.localStorage.setItem('mj_init', 'done')
+      window.localStorage.setItem('mj_headimgurl', '//wx.qlogo.cn/mmopen/zYCT2SFoRZOlR2cj0EFrkNWbEBzsW8jxnPN7RFOEePukrWG3ItP6icX1jKXYliaVibBMUnAprSDPqPttLuApDx8Yz4aCJt22XOP/0')
+      window.localStorage.setItem('mj_nickname', '呃嗯丶')
+      window.localStorage.setItem('mj_openid', 'oCk9ywj1vT0B3ltw2m3dfE6FnHzI')
+      window.localStorage.setItem('mj_mobile', '17317272575')
+      window.localStorage.setItem('mj_userId', '8')
+      // window.localStorage.setItem('mj_mobile', '15800665186')
+      // window.localStorage.setItem('mj_userId', '12')
+      return
+    }
     // 获取路径参数
     // function GetQueryString (name) {
     //   const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)')
@@ -90,10 +91,10 @@ export default {
 }
 
 .expand-enter-active {
-  animation: expand-in .5s;
+  animation: expand-in .9s;
 }
 .expand-leave-active {
-  animation: expand-out .7s;
+  animation: expand-out 1.2s;
 }
 @keyframes expand-in {
   0% {
@@ -112,7 +113,6 @@ export default {
     transform: scale(1);
   }
 }
-
 @keyframes expand-out {
   0% {
     margin-top: 1rem;
@@ -143,6 +143,5 @@ export default {
     transform: scaleX(.8) scaleY(0) translateX(-1000px);
   }
 }
-
 
 </style>

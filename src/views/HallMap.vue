@@ -8,7 +8,7 @@
 <script>
 import axios from 'axios'
 import { mapGetters, mapActions } from 'vuex'
-import {site as siteApi} from '@/api'
+import {site as siteApi, brand as brandApi} from '@/api'
 import pic from '../assets/images/new/officedefault.png'
 
 let instance = axios.create({
@@ -66,8 +66,23 @@ export default {
             draggable: false
           })
           marker.setMap(mapObj)
-          window.AMap.event.addListener(marker, 'click', function (data) {
+          const userId = info.userId
+          window.AMap.event.addListener(marker, 'click', async function (data) {
             let info = data.target.G.info
+            const brandRes = await axios({
+              method: 'get',
+              url: brandApi.index,
+              params: {
+                id: userId
+              }
+            })
+            let brand = ''
+            if (brandRes.status !== 200) {
+              brand = ''
+            } else {
+              let data = brandRes.data
+              brand = '<p>此站点引入的快递品牌有: ' + data + '</p>'
+            }
             window.AMapUI.loadUI(['overlay/SimpleInfoWindow'], function (SimpleInfoWindow) {
               const marker = new window.AMap.Marker({
                 map: mapObj,
@@ -79,12 +94,11 @@ export default {
               const officeBtnId = 'userId' + info.userId
               const infoWindow = new SimpleInfoWindow({
                 infoTitle: '<span>妙寄全网站点: ' + info.name || '' + '</span>',
-                infoBody: photo + '<div class="office-detail"><p class="office-info"><p>具体地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p><p>是否选择该站点为寄件站点?</p><p class="div-confirm-btn"><button type="" id="' + officeBtnId + '" class="confirm-btn">确定</button></p></p></div>',
+                infoBody: photo + '<div class="office-detail"><p class="office-info"><p>具体地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p>' + brand + '<p>是否选择该站点为寄件站点?</p><p class="div-confirm-btn"><button type="" id="' + officeBtnId + '" class="confirm-btn">确定</button></p></p></div>',
                 offset: new window.AMap.Pixel(0, -31)
               })
               setTimeout(function () {
                 const btn = window.document.getElementById(officeBtnId)
-                console.log('btn', btn)
                 btn.addEventListener('click', function () {
                   info = JSON.stringify(info)
                   window.localStorage.removeItem('mj_addressInfo')
@@ -100,18 +114,23 @@ export default {
               })
               openInfoWin()
             })
-            // window.AMap.plugin(['AMap.Walking'], function () {
-            //   const walking = new window.AMap.Walking()
-            //   walking.search(new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat()), new window.AMap.LngLat(info.longitude, info.latitude), function (status, result) {
-            //     if (status === 'complete') {
-            //       (new window.Lib.AMap.WalkingRender()).autoRender({
-            //         data: result,
-            //         map: mapObj,
-            //         panel: 'panel'
-            //       })
-            //     }
-            //   })
-            // })
+            window.AMap.plugin(['AMap.Walking'], function () {
+              // const walking = new window.AMap.Walking()
+              const walking = new window.AMap.Walking()
+              walking.clear()
+              // new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat())
+              // new window.AMap.LngLat(121.345506, 31.222795)
+              const positionlat = new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat())
+              walking.search(positionlat, new window.AMap.LngLat(info.longitude, info.latitude), function (status, result) {
+                if (status === 'complete') {
+                  (new window.Lib.AMap.WalkingRender()).autoRender({
+                    data: result,
+                    map: mapObj,
+                    panel: 'panel'
+                  })
+                }
+              })
+            })
             return
           })
         }

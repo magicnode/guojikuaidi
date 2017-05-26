@@ -33,12 +33,12 @@
         <div class="sendqr-detail-box">
           <span class="sendqr-detail-box__title">快递品牌</span>
           <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.brand}}</span>
+          <span class="sendqr-detail-box__content">{{data.brandId | brandtype}}</span>
         </div>
         <div class="sendqr-detail-box">
           <span class="sendqr-detail-box__title">快递类型</span>
           <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.type | sendstatus}}</span>
+          <span class="sendqr-detail-box__content">{{data.type | pickupstate}}</span>
         </div>
       </div>
     </div>
@@ -58,6 +58,8 @@ export default {
     if (result.type !== 'success') {
       this.$vux.toast.show(result)
     }
+    console.log('res', result)
+    console.log('res', this.data)
   },
   mounted () {
     window.document.title = '寄件明细'

@@ -109,6 +109,7 @@ export default {
   },
   mounted () {
     window.document.title = '到点寄件'
+    console.log('brasnd', this.brand)
   },
   computed: {
     ...mapGetters({
@@ -175,25 +176,19 @@ export default {
       if (this.loading) return
       let addressInfo = window.localStorage.getItem('mj_addressInfo')
       addressInfo = JSON.parse(addressInfo)
-      if (!this.expresstype) {
-        this.showToast({text: '请选择快递品牌', type: 'warn'})
-        return
-      }
       if (!addressInfo.id) {
         this.showToast({text: '请选择寄件站点', type: 'warn'})
         return
       }
-      if (!this.describe) {
-        this.showToast({text: '请输入物品描述', type: 'warn'})
-        return
-      }
+      // if (this.expresstype === '空') {
+      // }
       this.$vux.loading.show({
         text: '正在提交'
       })
       // 提交寄件
       const timestamp = 'time' + new Date().getTime()
       const result = await this.createSend({
-        brand: this.expresstype,
+        brand: this.expresstype === '空' ? '' : this.expresstype,
         describe: this.describe,
         note: this.label,
         office: addressInfo.userId,
@@ -347,7 +342,7 @@ label {
       &__link {
         flex: 2;
         padding: 0 0;
-        padding-right: 1rem;
+        padding-right: 15px;
         text-align: right;
         height: 5rem;
         line-height: 5rem;

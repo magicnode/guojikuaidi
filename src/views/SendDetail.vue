@@ -3,8 +3,8 @@
     <div class="senddetail-container">
       <div class="senddetail-container-tab">
         <tab active-color='#ff750f'>
-          <tab-item selected @on-item-click="changeShow('wait')">待寄件</tab-item>
-          <tab-item @on-item-click="changeShow('ready')">已寄件</tab-item>
+          <tab-item :selected="show ==='wait'" @on-item-click="changeShow('wait')">待寄件</tab-item>
+          <tab-item :selected="show ==='ready'" @on-item-click="changeShow('ready')">已寄件</tab-item>
         </tab>
       </div>
       <div class="senddetail-cell" v-show="show === 'wait'">
@@ -44,6 +44,9 @@ export default {
     if (!this.data.init) {
       this.initSendList()
     }
+    const {type} = this.$route.query
+    const localtype = window.localStorage.getItem('mj_senddetail_switch_type')
+    this.show = type || localtype || 'wait'
   },
   mounted () {
     window.document.title = '寄件列表'
@@ -65,6 +68,7 @@ export default {
       'cancleSend'
     ]),
     changeShow (type) {
+      window.localStorage.setItem('mj_senddetail_switch_type', type)
       this.show = type
     },
     showToast (data) {

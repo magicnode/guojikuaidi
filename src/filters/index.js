@@ -5,7 +5,7 @@ export const addOne = function (num) {
 export const sendstatus = function (val) {
   // 状态1.等待接单，2.中转中，3.已派送，4.已签收 5. 已取消
   const sendsta = {
-    1: '待接单',
+    1: '待寄件',
     2: '中转中',
     3: '已派送',
     4: '已签收',
@@ -17,12 +17,33 @@ export const sendstatus = function (val) {
 export const pickupstatus = function (val) {
   // 状态1.等待接单，2.中转中，3.已派送，4.已签收
   const sendsta = {
-    1: '待接单',
+    1: '待取件',
     2: '中转中',
     3: '已派送',
     4: '已签收'
   }
   return sendsta[val]
+}
+
+export const expressstate = function (val) {
+  if (!val) {
+    return ''
+  }
+  const states = {
+    0: '等待数据',
+    1: '成功',
+    2: '未接听',
+    3: '空号',
+    4: '线路故障',
+    5: '失败',
+    101: '已到件',
+    102: '上架',
+    103: '分派',
+    301: '已签收',
+    302: '已拒收',
+    201: '问题件'
+  }
+  return states[val]
 }
 
 export const formatdate = function (date) {
@@ -52,7 +73,7 @@ export const formatedatestamp = function (timpstamp) {
 }
 
 const BRAND_TYPE = {
-  '0': '全部品牌',
+  '0': '品牌未选择',
   '2': '优速',
   '3': '龙邦',
   '4': '速尔',
@@ -121,7 +142,7 @@ export const brandtype = function (val) {
   }
   val = val.toString()
   if (!BRAND_TYPE[val]) {
-    return '快递'
+    return '品牌未选择'
   }
   return BRAND_TYPE[val]
 }

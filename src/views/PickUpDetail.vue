@@ -59,7 +59,7 @@ export default {
     this.qr = picApi.pickupqr + '?orderSn=' + query.orderSn + '&userId=' + userId || window.localStorage.getItem('mj_userId')
     this.query = query
     const office = await this.$http.post(addressApi.officelocation + '?userId=' + query.userId)
-    console.log('asdas', office.data)
+    console.log('query', query)
     if (office.status !== 200) {
       this.$vux.toast.show({
         text: '获取站点信息失败',

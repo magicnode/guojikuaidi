@@ -15,8 +15,8 @@
           收
         </div>
         <div class="senditem-box__address">
-          <p>{{item.name}}  {{item.receiptAddress.mobile}}</p>
-          <p class="senditem-box__address--detail">{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}}</p>
+          <p>{{item.receiptAddress ? item.receiptAddress.name : ''}}  {{item.receiptAddress ? item.receiptAddress.mobile : ''}}</p>
+          <p class="senditem-box__address--detail">{{item.receiptAddress ? item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address : ''}}</p>
         </div>
         <span class="senditem-box__state">{{item.type | sendstatus}}</span>
       </div>
@@ -33,23 +33,28 @@
   <div v-else-if="item.type !== 1 && item.type !== 5">
     <div class="senditem">
       <div class="senditem-box">
-        <span class="senditem-box__office"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.order}}</span>
+        <span class="senditem-box__office">
+         <span class="senditem-box__office--info">
+          寄件站点: {{item.office | officeinfo}}
+         </span>
+         <img src="../assets/images/new/pic_ico_map.png" alt="item.office.descript" @click="watchOffice(item.officeId)">
+        </span>
       </div>
       <div class="senditem-box flex">
         <div class="senditem-box__icon">
           收
         </div>
-        <div>
-          <p>{{item.name}}  {{item.receiptAddress.mobile}}</p>
-          <p>{{item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address}}</p>
+        <div class="senditem-box__address">
+          <p>{{item.receiptAddress ? item.receiptAddress.name : ''}}  {{item.receiptAddress ? item.receiptAddress.mobile : ''}}</p>
+          <p class="senditem-box__address--detail">{{item.receiptAddress ? item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address : ''}}</p>
         </div>
         <span class="senditem-box__state">{{item.type | sendstatus}}</span>
       </div>
       <div class="senditem-box flex" style="justify-content: space-between;">
         <p class="senditem-box__time">{{item.createTime}}</p>
-        <span class="senditem-box__price">{{'￥' + item.price}}</span>
         <div class="senditem-box__btn">
-          <button type="" class="cancle-btn" @click="goPath(item, 'ready')">查看订单</button>
+          <span class="senditem-box__price">{{'￥' + item.price}}</span>
+          <button type="" class="cancle-btn" @click="goPath(item, 'ready')">查看详情</button>
         </div>
       </div>
     </div>
@@ -149,7 +154,6 @@ export default {
 .cancle-btn {
   .normal-btn;
   color: #999;
-  margin-right: .3rem;
   border: 1px solid #999;
   background: transparent;
 }
@@ -158,6 +162,7 @@ export default {
   .normal-btn;
   color: white;
   border: none;
+  border: 1px solid @dark-yellow;
   background: @dark-yellow;
 }
 
@@ -196,6 +201,7 @@ export default {
       right: 2.7rem;
     }
     &__price {
+      padding-right: 1rem;
       font-size: 1.4rem;
       color: @dark-yellow;
     }

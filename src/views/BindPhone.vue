@@ -180,24 +180,27 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
-.btn-get {
+.btn-normal {
   border-radius: 5px;
+  padding: .3rem .3rem;
+  font-size: 1.5rem;
+}
+
+.btn-get {
+  .btn-normal;
   color: @dark-yellow;
   border: 1px solid @dark-yellow;
-  background: transparent;
-  padding: .3rem .3rem;
-  font-size: 1.2rem;
+  background: transparent
 }
 
 .btn-get-disable {
-  border-radius: 5px;
+  .btn-normal;
   color: @greybtn;
   border: 1px solid @greybtn;
-  padding: .3rem .3rem;
-  font-size: 1.2rem;
 }
 
 .btn-login {
+  font-size: 1.5rem;
   width: 100%;
   border-radius: 5px;
   padding: 1rem;
@@ -238,6 +241,7 @@ export default {
           padding: .4rem;
           border: none;
           height: 2.6rem;
+          font-size: 1.5rem;
         }
       }
     }

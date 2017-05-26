@@ -16,7 +16,8 @@
           <!-- custom refresh spinner, use default `spinner` & viewBox 0,0,64,64 class -->
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
           <div class="senddetail-cell-detail" v-for="item in pickup" :key="item.createTime">
-              <div class="senddetail-cell-detail--box border-bottom-grey">
+            <mj-pickupitem :item="item"></mj-pickupitem>
+   <!--            <div class="senddetail-cell-detail--box border-bottom-grey">
                 <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}}</span>
                 <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
               </div>
@@ -35,7 +36,7 @@
                 <div>
                   <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去取件</button>
                 </div>
-              </div>
+              </div> -->
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
           <div style="height: 50px;">

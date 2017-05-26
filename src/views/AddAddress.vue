@@ -2,10 +2,12 @@
   <div class="addaddress">
     <div class="addaddress-container">
       <group>
-         <x-input title="姓名" v-model="name" max="20" placeholder="请填写您的真实姓名" required></x-input>
+         <x-input title="姓名" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
          <x-input title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
-         <x-address class="quyu" title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
-         <x-input title="地址" v-model="address"  max="80" placeholder="请详细到门牌号 (限80字)" required></x-input>
+         <x-address v-if="pagetype === 'add'" class="quyu" required title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
+         <x-address class="quyu" v-if="pagetype === 'edit'" required title="地区" raw-value v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
+         <x-textarea type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :autosize="true" :show-counter="false" v-model="address" :rows="1" required>
+         </x-textarea>
        </group>
        <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
@@ -17,7 +19,7 @@
   </div>
 </template>
 <script>
-import { XInput, XSwitch, XAddress, ChinaAddressV3Data, Radio, Value2nameFilter as value2name } from 'vux'
+import { XInput, XSwitch, XTextarea, XAddress, ChinaAddressV3Data, Radio, Value2nameFilter as value2name } from 'vux'
 import { mapActions } from 'vuex'
 
 export default {
@@ -26,15 +28,30 @@ export default {
     XInput,
     XSwitch,
     XAddress,
-    Radio
+    Radio,
+    XTextarea
   },
   created () {
+    const query = this.$route.query
+    this.pagetype = query.pagetype || 'add'
+    console.log('eidt', query)
+    if (this.pagetype === 'edit') {
+      this.id = query.id
+      this.name = query.name
+      this.mobile = query.mobile
+      this.address = query.address
+      this.location = [query.province, query.city, query.district]
+      if (query.checked === 1) {
+        this.value = true
+      }
+    }
   },
   mounted () {
     window.document.title = '添加地址'
   },
   data () {
     return {
+      pagetype: 'add',
       addressData: ChinaAddressV3Data,
       name: '',
       mobile: '',
@@ -45,13 +62,44 @@ export default {
   },
   methods: {
     ...mapActions([
-      'addAddress'
+      'addAddress',
+      'eidtAddress'
     ]),
     checkMobile (num) {
-      const reg = /^1[1|3|4|5|7|8|9][0-9]\d{4,8}$/
+      const reg = /^1[1|3|4|5|7|8|9][0-9]\d{8}$/
       return reg.test(num)
     },
-    async saveAddress () {
+    edit () {
+      const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
+      this.$vux.confirm.show({
+        title: '确定修改地址吗?',
+        onCancel () {
+        },
+        async onConfirm () {
+          const rel = value2name(_this.location, ChinaAddressV3Data).split(' ')
+          const checked = _this.value ? 1 : 2
+          let {addressType} = _this.$route.query
+          if (!_this.name || !_this.mobile || !_this.address || !_this.location) {
+            _this.$vux.toast.show({
+              text: '请将信息填写完整',
+              type: 'warn'
+            })
+            return
+          }
+          if (!_this.checkMobile(_this.mobile)) {
+            _this.$vux.toast.show({
+              text: '手机号格式不对，请重新填写',
+              type: 'warn',
+              width: '30rem'
+            })
+            return
+          }
+          _this.eidtAddress({id: _this.id, address: _this.address, province: rel[0], city: rel[1], district: rel[2], mobile: _this.mobile, name: _this.name, checked, addressType})
+          _this.$router.go(-1)
+        }
+      })
+    },
+    async add () {
       const rel = value2name(this.location, ChinaAddressV3Data).split(' ')
       const checked = this.value ? 1 : 2
       let {type} = this.$route.query
@@ -74,6 +122,13 @@ export default {
       }
       await this.addAddress({address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
       this.$router.go(-1)
+    },
+    async saveAddress () {
+      if (this.pagetype === 'add') {
+        this.add()
+      } else {
+        this.edit()
+      }
     }
   }
 }

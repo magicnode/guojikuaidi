@@ -19,7 +19,7 @@
               <div class="flex address-container-list__item--info" @click="selectAddress(item)">
                 <div>
                   <p>{{item.name + '  '}} {{item.mobile}}</p>
-                  <p class="location" style="font-size:1.4rem;">{{item.province + item.city + ' ' + item.district + item.address}}</p>
+                  <p class="location">{{item.district + item.address}}</p>
                 </div>
                <img v-show="!pick" src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
               </div>
@@ -32,13 +32,13 @@
                   <img src="../assets/images/add_ico_nor.png" alt="">
                   <span>设为默认</span>
                 </span>
-                <span class="edit" @click="goPath('/address/edit', item)">
+                <span class="edit" @click="goPath('/address/add', item, {pagetype: 'edit'})">
                   <img src="../assets/images/add_ico_cha.png" alt="">
                   <span>编辑</span>
                 </span>
               </div>
           </div>
-          <div class="address-container-add" @click="goPath('/address/add', {type: addressType})">
+          <div class="address-container-add" @click="goPath('/address/add', {type: addressType, pagetype: 'add'})">
             <p>新增地址</p>
           </div>
         </scroller>
@@ -57,7 +57,8 @@ export default {
       this.showToast()
     }
     const {type, pick} = this.$route.query
-    this.addressType = type || 'send'
+    const localtype = window.localStorage.getItem('mj_address_page_switch_type')
+    this.addressType = type || localtype || 'send'
     this.pick = pick === '1'
   },
   mounted () {
@@ -77,7 +78,13 @@ export default {
     })
   },
   methods: {
-    goPath (path, query) {
+    goPath (path, query, plus) {
+      if (plus) {
+        Object.assign(query, plus)
+        // Object.keys(plus).forEach(key => {
+        //   query[key] = plus[key]
+        // })
+      }
       this.$router.push({path, query})
     },
     showToast () {
@@ -103,6 +110,7 @@ export default {
       this.$router.go(-1)
     },
     changeShow (type) {
+      window.localStorage.setItem('mj_address_page_switch_type', type)
       this.addressType = type
     },
     ...mapActions([
@@ -217,6 +225,19 @@ export default {
           .location {
             color: #999;
             font-size: 1.4rem;
+            width: 21rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: left;
+            @media (max-width:320px) {
+              width: 21rem;
+            }
+            @media (min-width:360px) {
+              width: 25rem;
+            }
+            @media (min-width:400px) {
+              width: 28rem;
+            }
           }
           p {
             text-align: left;

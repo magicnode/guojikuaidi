@@ -1,7 +1,7 @@
 // wu cong
 // let url = 'http://1a699l6063.imwork.net/WeChatService/'
 // xiao hang
-// let url = 'http://192.168.0.201:8890/WeChatService/'
+// let url = 'http://192.168.0.201:8888/WeChatService/'
 // online app 云端服务
 let url = 'http://app.quandikeji.com/WeChatService/'
 

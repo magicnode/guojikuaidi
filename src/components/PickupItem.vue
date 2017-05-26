@@ -2,7 +2,7 @@
   <div class="pickupitem">
     <div class="pickupitem-box">
       <span class="pickupitem-box__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}}</span>
-      <span class="pickupitem-box__state clearfixed">{{item.state | pickupstate}}</span>
+      <span class="pickupitem-box__state clearfixed">{{item.state | expressstate}}</span>
     </div>
     <div class="pickupitem-box flex">
       <div class="pickupitem-box__office">
