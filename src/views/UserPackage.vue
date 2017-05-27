@@ -8,7 +8,7 @@
         </tab>
       </div>
       <div class="senddetail-cell" v-show="show === 'pickup'">
-        <scroller 
+        <scroller
           :on-refresh="refreshPickup"
           :on-infinite="infinitePickup"
           ref="my_scroller_pickup"
@@ -17,26 +17,6 @@
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
           <div class="senddetail-cell-detail" v-for="item in pickup" :key="item.createTime">
             <mj-pickupitem :item="item"></mj-pickupitem>
-   <!--            <div class="senddetail-cell-detail--box border-bottom-grey">
-                <span class="senddetail-cell-detail__title"><img :src="item.brandId | brandimg" :alt="item.brandId | brandtype"> {{item.orderSn}}</span>
-                <span class="wait-senddetail clearfixed">{{item.state | pickupstate}}</span>
-              </div>
-              <div class="senddetail-cell-detail--box flex border-bottom-grey" >
-                <div class="office-info">
-                  <p>取件站点：  {{item.descript}}</p>
-                  <p>地址：  {{item.district + item.descript}}</p>
-                  <p>电话： {{item.mobile}} </p>
-                </div>
-                <div class="address-icon">
-                  <img src="../assets/images/new/pic_ico_map.png" alt="" @click="watchOffice(item.userId)">
-                </div>
-              </div>
-              <div class="senddetail-cell-detail--box flex" style="justify-content: space-between;">
-                <p class="time">{{item.createTime | formatedatestamp}}</p>
-                <div>
-                  <button type="" class="gosend-btn" @click="goPath(item, 'wait')">去取件</button>
-                </div>
-              </div> -->
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
           <div style="height: 50px;">
@@ -101,10 +81,14 @@ export default {
   },
   mounted () {
     window.document.title = '我的包裹'
+    this.scrollBy()
   },
   data () {
     return {
     }
+  },
+  updated () {
+    this.saveScrollTop()
   },
   methods: {
     ...mapActions([
@@ -116,6 +100,7 @@ export default {
     ]),
     changeShow (type) {
       this.$store.commit('SET_PACKAGE_TYPE', {type})
+      this.scrollBy()
     },
     async refreshPickup (done) {
       const mobile = this.user.mobile
@@ -189,7 +174,23 @@ export default {
     },
     watchOffice (userId) {
       this.$router.push({path: '/office/location', query: {userId}})
+    },
+    saveScrollTop () {
+      window.localStorage.setItem('mj_package_pickup_scroll_top', this.$refs.my_scroller_pickup.getPosition().top)
+      window.localStorage.setItem('mj_package_send_scroll_top', this.$refs.my_scroller_send.getPosition().top)
+    },
+    scrollBy () {
+      const _this = this
+      const top1 = window.localStorage.getItem('mj_package_pickup_scroll_top')
+      const top2 = window.localStorage.getItem('mj_package_send_scroll_top')
+      setTimeout(function () {
+        _this.$refs.my_scroller_pickup.scrollBy(0, top1, true)
+        _this.$refs.my_scroller_send.scrollBy(0, top2, true)
+      }, 100)
     }
+  },
+  beforeDestroy () {
+    this.saveScrollTop()
   }
 }
 </script>

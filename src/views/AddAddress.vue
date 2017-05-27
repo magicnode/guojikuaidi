@@ -2,18 +2,18 @@
   <div class="addaddress">
     <div class="addaddress-container">
       <group>
-         <x-input title="姓名" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-         <x-input title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
-         <x-address v-if="pagetype === 'add'" class="quyu" required title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
+         <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="姓名" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
+         <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
+         <x-address @on-focus="fixBtn" @on-blur="removeFixBtn" v-if="pagetype === 'add'" class="quyu" required title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
          <x-address class="quyu" v-if="pagetype === 'edit'" required title="地区" raw-value v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
-         <x-textarea type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :autosize="true" :show-counter="false" v-model="address" :rows="1" required>
+         <x-textarea @on-focus="fixBtn" @on-blur="removeFixBtn" type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :autosize="true" :show-counter="false" v-model="address" :rows="1" required>
          </x-textarea>
        </group>
        <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
        </group>
        <div class="addaddress-container-add">
-         <p @click.stop="saveAddress">保存</p>
+         <p class="addaddress-container-add--btn" @click.stop="saveAddress">保存</p>
        </div>
     </div>
   </div>
@@ -47,7 +47,11 @@ export default {
     }
   },
   mounted () {
-    window.document.title = '添加地址'
+    let title = '添加地址'
+    if (this.pagetype !== 'add') {
+      title = '编辑地址'
+    }
+    window.document.title = title
   },
   data () {
     return {
@@ -129,12 +133,31 @@ export default {
       } else {
         this.edit()
       }
+    },
+    fixBtn () {
+      const Btn = window.document.getElementsByClassName('addaddress-container-add')[0]
+      console.log('btn', Btn)
+      const classname = Btn.className
+      setTimeout(function () {
+        Btn.className = classname.replace(/fixed-fill/g, '')
+        Btn.className += ' fixed-fill'
+      }, 500)
+      console.log('btn', Btn)
+    },
+    removeFixBtn () {
+      const Btn = window.document.getElementsByClassName('addaddress-container-add')[0]
+      console.log('btn', Btn)
+      const classname = Btn.className
+      setTimeout(function () {
+        Btn.className = classname.replace(/fixed-fill/g, '')
+      }, 500)
+      console.log('btn', Btn)
     }
   }
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
+<style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 .addaddress {
@@ -191,25 +214,4 @@ export default {
   }
 }
 
-.mj-switch {
-  padding: 10px 15px!important;
-  .weui-cell__ft {
-    .weui-switch {
-      width: 40px!important;
-      height: 20px!important;
-      &:checked {
-        border-color: @dark-yellow;
-        background-color: @dark-yellow;
-      }
-      &:before {
-        width: 40px;
-        height: 20px;
-      }
-      &:after {
-        width: 20px;
-        height: 18px;
-      }
-    }
-  }
-}
 </style>

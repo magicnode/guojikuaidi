@@ -25,16 +25,6 @@ export default {
   name: 'usercenter',
   async created () {
     this.$store.commit('SET_PAGE', {page: 'usercenter'})
-    if (!this.openid || this.userid === '' || !this.userid) {
-      return this.$router.push({path: '/init', query: {page: 3}})
-    }
-    if (!this.user.mobile) {
-      const userinfo = await this.setUserInfo({openid: this.openid})
-      this.$vux.toast.show(userinfo)
-      if (userinfo.type === 'text') {
-        return this.$router.push({path: '/bindphone', query: {page: 3}})
-      }
-    }
   },
   computed: {
     ...mapGetters({
@@ -92,13 +82,7 @@ export default {
           console.log('no loginout')
         },
         onConfirm () {
-          window.localStorage.removeItem('mj_openid')
-          window.localStorage.removeItem('mj_code')
-          window.localStorage.removeItem('mj_nickname')
-          window.localStorage.removeItem('mj_headimgurl')
-          window.localStorage.removeItem('mj_userId')
-          window.localStorage.removeItem('mj_mobile')
-          window.localStorage.removeItem('mj_init')
+          window.localStorage.clear()
           _this.$router.push({path: '/init', query: {page: 3}})
         }
       })

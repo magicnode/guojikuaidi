@@ -62,7 +62,7 @@ export default {
           let marker = new window.AMap.Marker({
             info: data[i],
             position: [info.longitude, info.latitude],
-            offset: new window.AMap.Pixel(-17, -42),
+            // offset: new window.AMap.Pixel(-17, -42),
             draggable: false
           })
           marker.setMap(mapObj)
@@ -83,29 +83,15 @@ export default {
               let data = brandRes.data
               brand = '<p>此站点引入的快递品牌有: ' + data + '</p>'
             }
+            let officeBtnId = ''
             window.AMapUI.loadUI(['overlay/SimpleInfoWindow'], function (SimpleInfoWindow) {
-              const marker = new window.AMap.Marker({
-                map: mapObj,
-                zIndex: 9999999,
-                position: [info.longitude, info.latitude],
-                draggable: false
-              })
+              officeBtnId = 'userId' + info.userId
               const photo = '<div class="officeimg"><img src="' + pic + '"></div>'
-              const officeBtnId = 'userId' + info.userId
               const infoWindow = new SimpleInfoWindow({
-                infoTitle: '<span>妙寄全网站点: ' + info.name || '' + '</span>',
-                infoBody: photo + '<div class="office-detail"><p class="office-info"><p>具体地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p>' + brand + '<p>是否选择该站点为寄件站点?</p><p class="div-confirm-btn"><button type="" id="' + officeBtnId + '" class="confirm-btn">确定</button></p></p></div>',
+                infoTitle: '<span>"妙寄"全网站点: ' + info.name || '' + '</span>',
+                infoBody: photo + '<div class="office-detail"><p class="office-info"><p>具体地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p>' + brand + '<p>是否选择该站点为寄件站点?</p><p class="div-confirm-btn"><button type="button" id="' + officeBtnId + '" class="confirm-btn hide">确定</button></p></p></div>',
                 offset: new window.AMap.Pixel(0, -31)
               })
-              setTimeout(function () {
-                const btn = window.document.getElementById(officeBtnId)
-                btn.addEventListener('click', function () {
-                  info = JSON.stringify(info)
-                  window.localStorage.removeItem('mj_addressInfo')
-                  window.localStorage.setItem('mj_addressInfo', info)
-                  window.history.go(-1)
-                })
-              }, 1000)
               function openInfoWin () {
                 infoWindow.open(mapObj, marker.getPosition())
               }
@@ -114,23 +100,35 @@ export default {
               })
               openInfoWin()
             })
-            window.AMap.plugin(['AMap.Walking'], function () {
-              // const walking = new window.AMap.Walking()
-              const walking = new window.AMap.Walking()
-              walking.clear()
-              // new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat())
-              // new window.AMap.LngLat(121.345506, 31.222795)
-              const positionlat = new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat())
-              walking.search(positionlat, new window.AMap.LngLat(info.longitude, info.latitude), function (status, result) {
-                if (status === 'complete') {
-                  (new window.Lib.AMap.WalkingRender()).autoRender({
-                    data: result,
-                    map: mapObj,
-                    panel: 'panel'
-                  })
-                }
-              })
-            })
+            // 设置按钮绑定事件
+            setTimeout(function () {
+              const btn = window.document.getElementById(officeBtnId)
+              btn.addEventListener('click', function (event) {
+                event.stopPropagation()
+                info = JSON.stringify(info)
+                window.localStorage.removeItem('mj_addressInfo')
+                window.localStorage.setItem('mj_addressInfo', info)
+                window.history.go(-1)
+              }, true)
+              btn.className = btn.className.replace(/hide/g, '')
+            }, 500)
+            // window.AMap.plugin(['AMap.Walking'], function () {
+            //   // const walking = new window.AMap.Walking()
+            //   const walking = new window.AMap.Walking()
+            //   walking.clear()
+            //   // new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat())
+            //   // new window.AMap.LngLat(121.345506, 31.222795)
+            //   const positionlat = new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat())
+            //   walking.search(positionlat, new window.AMap.LngLat(info.longitude, info.latitude), function (status, result) {
+            //     if (status === 'complete') {
+            //       (new window.Lib.AMap.WalkingRender()).autoRender({
+            //         data: result,
+            //         map: mapObj,
+            //         panel: 'panel'
+            //       })
+            //     }
+            //   })
+            // })
             return
           })
         }
@@ -178,6 +176,18 @@ export default {
 <style lang="less">
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
+.amap-ui-smp-ifwn-container {
+  max-width: 22rem;
+  @media (max-width:320px) {
+    max-width: 22rem;
+  }
+  @media (min-width:360px) {
+    max-width: 42rem;
+  }
+  @media (min-width:400px) {
+    max-width: 47rem;
+  }
+}
 .normal-btn {
   width: 6.6rem;
   font-size: 1.4rem;

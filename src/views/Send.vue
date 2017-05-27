@@ -61,7 +61,7 @@
       <div class="send-container-select">
         <group>
           <cell title="寄件列表" link="/send/detail" is-link style="padding:1rem 2.2rem;padding-left:11px;">
-            <img slot="icon" class="send-icon" style="display:block;margin-right:5px;" src="../assets/images/new/sen_ico_lis.png" />
+            <img slot="icon" class="send-icon" style="display:block;margin-right:.8rem;" src="../assets/images/new/sen_ico_lis.png" />
           </cell>
         </group>
       </div>
@@ -85,16 +85,6 @@ export default {
   },
   async created () {
     this.$store.commit('SET_PAGE', {page: 'send'})
-    if (!this.openid || this.userid === '' || !this.userid) {
-      return this.$router.push({path: '/init', query: {page: 2}})
-    }
-    if (!this.user.mobile) {
-      const userinfo = await this.setUserInfo({openid: this.openid})
-      this.$vux.toast.show(userinfo)
-      if (userinfo.type === 'text') {
-        return this.$router.push({path: '/bindphone', query: {page: 2}})
-      }
-    }
     if (!this.sendAddress['id'] && !this.pickupAddress['id']) {
       this.setDefaultAddress()
     }
@@ -109,7 +99,6 @@ export default {
   },
   mounted () {
     window.document.title = '到点寄件'
-    console.log('brasnd', this.brand)
   },
   computed: {
     ...mapGetters({
@@ -200,7 +189,7 @@ export default {
       this.$vux.loading.hide()
       if (result) {
         this.showToast({text: '提交成功'})
-        this.$router.push({path: '/send/detail'})
+        this.$router.push({path: '/send/detail', query: {type: 'wait'}})
         window.localStorage.removeItem('mj_send_describe')
         window.localStorage.removeItem('mj_send_note')
         return
@@ -318,6 +307,7 @@ label {
       }
       &__intro {
         flex: 1;
+        margin-right: 0.5rem;
         span {
           font-size: 1.8rem;
           width: 4rem;
@@ -340,6 +330,7 @@ label {
         }
       }
       &__link {
+        white-space: nowrap;
         flex: 2;
         padding: 0 0;
         padding-right: 15px;

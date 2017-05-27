@@ -43,6 +43,13 @@ export const actions = {
       })
       if (res.status === 200) {
         const data = res.data
+        if (data.length <= 0) {
+          return {
+            text: '没有数据',
+            type: 'success',
+            stop: true
+          }
+        }
         query.page = query.page + 1
         commit(types.SET_PICKUP_SIGN, {data, query})
         return {
@@ -73,7 +80,7 @@ export const actions = {
         if (resdata.length <= 0) {
           return {
             text: '没有数据了~',
-            type: 'text',
+            type: 'success',
             stop: true
           }
         }
@@ -107,7 +114,8 @@ export const actions = {
         if (data.length <= 0) {
           return {
             text: '没有数据',
-            type: 'text'
+            type: 'success',
+            stop: true
           }
         }
         query.page = query.page + 1
@@ -140,7 +148,7 @@ export const actions = {
         if (resdata.length <= 0) {
           return {
             text: '没有数据了~',
-            type: 'text',
+            type: 'success',
             stop: true
           }
         }

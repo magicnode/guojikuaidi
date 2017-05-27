@@ -3,16 +3,17 @@
     <div class="senddetail-container">
       <div class="senddetail-container-tab">
         <tab active-color='#ff750f'>
-          <tab-item selected @on-item-click="changeShow('wait')">待取件</tab-item>
-          <tab-item @on-item-click="changeShow('sign')">已完成</tab-item>
+          <tab-item :selected="pageType === 'wait'" @on-item-click="changeShow('wait')">待取件</tab-item>
+          <tab-item :selected="pageType === 'sign'" @on-item-click="changeShow('sign')">已完成</tab-item>
         </tab>
       </div>
-      <div class="senddetail-cell" v-show="show === 'wait'">
+      <div class="senddetail-cell" v-show="pageType === 'wait'">
         <scroller 
           :on-refresh="refreshWait"
           :on-infinite="infiniteWait"
           ref="my_scroller_1"
-          class="senddetail-scroller">
+          class="senddetail-scroller pickup-wait-scroller"
+          >
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
           <div class="senddetail-cell-detail" v-for="item in wait" :key="item.createTime">
               <mj-pickupitem :item="item"></mj-pickupitem>
@@ -23,12 +24,13 @@
         </scroller>
       </div>
       <!-- 已取件 -->
-      <div class="senddetail-cell" v-show="show === 'sign'">
+      <div class="senddetail-cell" v-show="pageType === 'sign'">
         <scroller 
           :on-refresh="refreshSign"
           :on-infinite="infiniteSign"
           ref="my_scroller_2"
-          class="senddetail-scroller">
+          class="senddetail-scroller pickup-sign-scroller"
+          >
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
           <div class="senddetail-cell-detail" v-for="item in sign" :key="item.createTime">
               <mj-pickupitem :item="item"></mj-pickupitem>
@@ -53,20 +55,10 @@ export default {
     Spinner
   },
   async created () {
+    const {type} = this.$route.query
+    const localtype = window.localStorage.getItem('mj_pickup_page_switch_type')
+    this.pageType = type || localtype || 'wait'
     this.$store.commit('SET_PAGE', {page: 'pickup'})
-    if (!this.openid || this.userid === '' || !this.userid) {
-      return this.$router.push({path: '/init', query: {page: 1}})
-    }
-    if (!this.user.mobile) {
-      const userinfo = await this.setUserInfo({openid: this.openid})
-      this.$vux.toast.show(userinfo)
-      if (userinfo.type === 'text') {
-        return this.$router.push({path: '/bindphone', query: {page: 1}})
-      } else if (userinfo.type === 'warn') {
-        return this.$router.push({path: '/nouser'})
-      }
-    }
-    console.log('qrsd', this.wait)
   },
   computed: {
     ...mapGetters({
@@ -81,18 +73,22 @@ export default {
   },
   mounted () {
     window.document.title = '取件列表'
+    this.scrollBy()
   },
   data () {
     return {
       n: 10,
-      show: 'wait',
       nowait: false,
       pullupEnabled: true,
       signstatus: {
         pullupStatus: 'default',
         pulldownStatus: 'default'
-      }
+      },
+      pageType: 'wait'
     }
+  },
+  updated () {
+    this.saveScrollTop()
   },
   methods: {
     ...mapActions([
@@ -103,7 +99,9 @@ export default {
       'setUserInfo'
     ]),
     changeShow (type) {
-      this.show = type
+      window.localStorage.setItem('mj_pickup_page_switch_type', type)
+      this.pageType = type
+      this.scrollBy()
     },
     async refreshWait (done) {
       const mobile = this.user.mobile
@@ -179,7 +177,23 @@ export default {
         type: data.type || 'warn',
         width: '18rem'
       })
+    },
+    saveScrollTop () {
+      window.localStorage.setItem('mj_pickup_page_wait_scroll_top', this.$refs.my_scroller_1.getPosition().top)
+      window.localStorage.setItem('mj_pickup_page_sign_scroll_top', this.$refs.my_scroller_2.getPosition().top)
+    },
+    scrollBy () {
+      const _this = this
+      const top1 = window.localStorage.getItem('mj_pickup_page_wait_scroll_top')
+      const top2 = window.localStorage.getItem('mj_pickup_page_sign_scroll_top')
+      setTimeout(function () {
+        _this.$refs.my_scroller_1.scrollBy(0, top1, true)
+        _this.$refs.my_scroller_2.scrollBy(0, top2, true)
+      }, 100)
     }
+  },
+  beforeDestroy () {
+    this.saveScrollTop()
   }
 }
 </script>

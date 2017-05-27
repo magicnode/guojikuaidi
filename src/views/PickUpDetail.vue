@@ -2,8 +2,14 @@
   <div class="pickupqr">
    <div class="container">
      <div class="pickupqr-img">
-       <img class="pickupqr-container-qr" :src="qr" />
-       <p>取件时，请向店员出示此二维码</p>
+       <div class="pickupqr-img--wait" v-show="state !== '301'">
+         <img :src="qr" />
+         <p>取件时，请向店员出示此二维码</p>
+       </div>
+       <div class="pickupqr-img--sign" v-show="state === '301'">
+         <img src="../assets/images/new/rec_ico_rig.png" />
+         <p>快递已经签收</p>
+       </div>
      </div>
      <div class="pickupqr-detail">
        <div class="pickupqr-detail-box">
@@ -60,6 +66,7 @@ export default {
     this.query = query
     const office = await this.$http.post(addressApi.officelocation + '?userId=' + query.userId)
     console.log('query', query)
+    this.state = query.state || '101'
     if (office.status !== 200) {
       this.$vux.toast.show({
         text: '获取站点信息失败',
@@ -79,7 +86,8 @@ export default {
       qr: '',
       office: {},
       query: {},
-      tel: ''
+      tel: '',
+      state: ''
     }
   },
   methods: {
@@ -106,12 +114,25 @@ export default {
     .btg;
     background: white;
     padding: 1rem;
-    img {
-      width: 15rem;
+    &--wait {
+      img {
+        width: 15rem;
+      }
+      p {
+        font-size: 1.4rem;
+        color: @greyfont;
+      }
     }
-    p {
-      font-size: 1.4rem;
-      color: @greyfont;
+    &--sign {
+      img {
+        width: 8rem;
+        height: auto;
+      }
+      p {
+        padding-top: 1.5rem;
+        font-size: 1.8rem;
+        color: @dark-yellow;
+      }
     }
   }
   &-detail {

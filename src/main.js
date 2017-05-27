@@ -15,6 +15,8 @@ import PickupItem from './components/PickupItem.vue'
 import SendItem from './components/SendItem.vue'
 import MJSpinner from './components/MJSpinner.vue'
 
+import window from 'window'
+
 FastClick.attach(document.body)
 
 Vue.use(VueScroller)
@@ -35,21 +37,57 @@ Vue.component('mj-spinner', MJSpinner)
 Vue.component('mj-pickupitem', PickupItem)
 Vue.component('mj-senditem', SendItem)
 
+function SwitchfullPath (fullPath) {
+  let page = ''
+  switch (fullPath) {
+    case '/pickup':
+      page = 1
+      break
+    case '/send':
+      page = 2
+      break
+    case '/usercenter':
+      page = 3
+      break
+    default:
+      page = 3
+      break
+  }
+  return page
+}
+
 router.beforeEach(function (to, from, next) {
-  // let jumpSrc = 'http://112.74.34.241:3000/pics/random?show=1'
-  // const timestamp = new Date().getTime()
-  // jumpSrc = jumpSrc + '&timestamp=' + timestamp
-  // store.commit('updateJumpSrc', {jumpSrc})
-  // store.commit('updateLoadingStatus', {isLoading: true})
-  // store.commit('updateJumpStatus', {isJump: false})
+  // login auth
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    const local = window.localStorage
+    const openid = local.getItem('mj_openid')
+    const userid = local.getItem('mj_userId')
+    if (!openid || userid === '' || !userid) {
+      const fullPath = to.fullPath
+      const page = SwitchfullPath(fullPath)
+      next({
+        path: '/init',
+        query: { page }
+      })
+    }
+  }
+  // mobile auth
+  if (to.matched.some(record => record.meta.requiresMobile)) {
+    const local = window.localStorage
+    const mobile = local.getItem('mj_mobile')
+    if (!mobile || mobile === '') {
+      const fullPath = to.fullPath
+      const page = SwitchfullPath(fullPath)
+      next({
+        path: '/bindphone',
+        query: { page }
+      })
+    }
+  }
   next()
 })
 
 router.afterEach((to, from) => {
-  // store.commit('updateLoadingStatus', {isLoading: false})
-  // setTimeout(function () {
-  //   store.commit('updateJumpStatus', {isJump: false})
-  // }, 500)
 })
 
 Object.keys(filters).forEach(key => {

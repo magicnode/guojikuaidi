@@ -15,44 +15,6 @@ const setOfficeMaker = function ({position, info, error, brand}) {
     zoom: 13,
     center: position
   })
-  let selfPosition = ''
-  map.plugin('AMap.Geolocation', function () {
-    let geolocation = new window.AMap.Geolocation({
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0,
-      noIpLocate: 0,
-      convert: true,
-      showButton: true,
-      buttonPosition: 'LB',
-      buttonOffset: new window.AMap.Pixel(10, 20),
-      showMarker: true,
-      showCircle: true,
-      panToLocation: false,
-      zoomToAccuracy: false,
-      GeoLocationFirst: true
-    })
-    map.addControl(geolocation)
-    geolocation.getCurrentPosition()
-    window.AMap.event.addListener(geolocation, 'complete', function (data) {
-      selfPosition = data.position
-      window.AMap.plugin(['AMap.Walking'], function () {
-        const walking = new window.AMap.Walking()
-        walking.search(new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat()), new window.AMap.LngLat(position[0], position[1]), function (status, result) {
-          if (status === 'complete') {
-            (new window.Lib.AMap.WalkingRender()).autoRender({
-              data: result,
-              map: map,
-              panel: 'panel'
-            })
-          }
-        })
-      })
-    })
-    window.AMap.event.addListener(geolocation, 'error', function () {
-      console.log('定位失败')
-    })
-  })
   window.AMapUI.loadUI(['overlay/SimpleInfoWindow'], function (SimpleInfoWindow) {
     const marker = new window.AMap.Marker({
       map: map,
@@ -76,8 +38,59 @@ const setOfficeMaker = function ({position, info, error, brand}) {
       openInfoWin()
     })
     openInfoWin()
+    // 给导航按钮添加事件
+    setTimeout(function () {
+      const navBtn = window.document.getElementsByClassName('navigation-btn')[0]
+      navBtn.addEventListener('click', function (event) {
+        event.stopPropagation()
+      }, true)
+    }, 500)
   })
 }
+
+// 导航按钮绑定事件
+// function Navigation (btn, position, map) {
+//   let selfPosition = ''
+//   map.plugin('AMap.Geolocation', function () {
+//     let geolocation = new window.AMap.Geolocation({
+//       enableHighAccuracy: true,
+//       timeout: 10000,
+//       maximumAge: 0,
+//       noIpLocate: 0,
+//       convert: true,
+//       showButton: true,
+//       buttonPosition: 'LB',
+//       buttonOffset: new window.AMap.Pixel(10, 20),
+//       showMarker: true,
+//       showCircle: true,
+//       panToLocation: false,
+//       zoomToAccuracy: false,
+//       GeoLocationFirst: true
+//     })
+//     map.addControl(geolocation)
+//     geolocation.getCurrentPosition()
+//     window.AMap.event.addListener(geolocation, 'complete', function (data) {
+//       selfPosition = data.position
+//       window.AMap.plugin(['AMap.Walking'], function () {
+//         const walking = new window.AMap.Walking()
+//         walking.search(new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat()), new window.AMap.LngLat(position[0], position[1]), function (status, result) {
+//           if (status === 'complete') {
+//             (new window.Lib.AMap.WalkingRender()).autoRender({
+//               data: result,
+//               map: map,
+//               panel: 'panel'
+//             })
+//           }
+//         })
+//       })
+//     })
+//     window.AMap.event.addListener(geolocation, 'error', function () {
+//       console.log('定位失败')
+//     })
+//   })
+// }
+
+// Navigation()
 
 export default {
   name: 'send',
@@ -153,7 +166,7 @@ export default {
       this.$vux.toast.show({
         text: '无法获取站点信息, 网络请求错误',
         type: 'warn',
-        width: '26rem'
+        width: '25rem'
       })
     }
   },

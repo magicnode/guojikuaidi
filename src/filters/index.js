@@ -158,6 +158,9 @@ export const pickupstate = function (val) {
     1: '到付件',
     2: '代收货款'
   }
+  if (!val) {
+    return states[0]
+  }
   return states[val]
 }
 

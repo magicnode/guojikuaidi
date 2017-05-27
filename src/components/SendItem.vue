@@ -83,7 +83,6 @@ export default {
     }
   },
   created () {
-    // console.log('item', this.item)
   },
   methods: {
     ...mapActions([
@@ -154,6 +153,7 @@ export default {
 .cancle-btn {
   .normal-btn;
   color: #999;
+  margin-right: 0.4rem;
   border: 1px solid #999;
   background: transparent;
 }
@@ -181,7 +181,6 @@ export default {
         height: 2.5rem;
         float: right;
         vertical-align: middle;
-        // border-radius: 6px;
       }
       &--info {
         font-size: 1.5rem;
@@ -194,7 +193,7 @@ export default {
       }
     }
     &__state {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       color: @dark-yellow;
       padding-top: .3rem;
       position: absolute;

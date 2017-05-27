@@ -81,3 +81,31 @@
 		font-size: 1.4rem;
 	}
 }
+
+.fixed-fill {
+	position: fixed;
+	bottom: 0;
+	width: 94%;
+}
+
+.mj-switch {
+  padding: 10px 15px!important;
+  .weui-cell__ft {
+    .weui-switch {
+      width: 40px!important;
+      height: 20px!important;
+      &:checked {
+        border-color: @dark-yellow;
+        background-color: @dark-yellow;
+      }
+      &:before {
+        width: 40px;
+        height: 20px;
+      }
+      &:after {
+        width: 20px;
+        height: 18px;
+      }
+    }
+  }
+}

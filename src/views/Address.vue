@@ -3,7 +3,7 @@
     <div class="address-container">
       <div class="address-container-tab">
         <tab active-color='#ff750f'>
-          <tab-item :selected="addressType ==='send'" @on-item-click="changeShow('send')">寄件地址</tab-item>
+          <tab-item :selected="addressType === 'send'" @on-item-click="changeShow('send')">寄件地址</tab-item>
           <tab-item :selected="addressType === 'pickup'" @on-item-click="changeShow('pickup')">收件地址</tab-item>
         </tab>
       </div>

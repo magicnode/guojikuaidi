@@ -17,7 +17,10 @@
     <div class="pickupitem-box flex" style="justify-content: space-between;">
       <p class="pickupitem-box__time">{{item.createTime | formatedatestamp}}</p>
       <div class="pickupitem-box__btn" v-show="item.state !== '301' && item.state !== '302' && item.state !== '201'">
-        <button type="" class="" @click="goPath(item, 'wait')">去取件</button>
+        <button type="" class="pickupitem-box__btn--get" @click="goPath(item, 'wait')">去取件</button>
+      </div>
+      <div class="pickupitem-box__btn" v-show="item.state === '301' || item.state === '302' || item.state === '201'">
+        <button type="button" class="pickupitem-box__btn--detail" @click="goPath(item, 'wait')">查看详情</button>
       </div>
     </div>
   </div>
@@ -98,7 +101,8 @@ export default {
     &__state {
       float: right;
       color: @dark-yellow;
-      padding-top: .3rem;
+      padding-top: .5rem;
+      font-size: 1.3rem;
     }
     &__office {
       color: #999;
@@ -124,9 +128,15 @@ export default {
       color: #333;
     }
     &__btn {
-      button {
+      &--detail {
         .normal-btn;
-        border: none;
+        color: #999;
+        border: 1px solid #999;
+        background: transparent;
+      }
+      &--get {
+        .normal-btn;
+        border: 1px solid @dark-yellow;
         background: @dark-yellow;
         color: white;
       }

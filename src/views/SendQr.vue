@@ -38,7 +38,7 @@
         <div class="sendqr-detail-box">
           <span class="sendqr-detail-box__title">快递类型</span>
           <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.type | pickupstate}}</span>
+          <span class="sendqr-detail-box__content">{{data.expresstype | pickupstate}}</span>
         </div>
       </div>
     </div>
@@ -58,7 +58,6 @@ export default {
     if (result.type !== 'success') {
       this.$vux.toast.show(result)
     }
-    console.log('res', result)
     console.log('res', this.data)
   },
   mounted () {
