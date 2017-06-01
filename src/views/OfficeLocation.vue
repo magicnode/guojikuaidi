@@ -31,66 +31,78 @@ const setOfficeMaker = function ({position, info, error, brand}) {
     function openInfoWin () {
       infoWindow.open(map, marker.getPosition())
     }
-    // function closeInfoWin () {
-    //   infoWindow.close(map, marker.getPosition())
-    // }
+    function closeInfoWin () {
+      infoWindow.close(map, marker.getPosition())
+    }
     window.AMap.event.addListener(marker, 'click', function () {
       openInfoWin()
     })
     openInfoWin()
-    // 给导航按钮添加事件
+    const walking = new window.AMap.Walking({
+      map: map,
+      panel: 'panel'
+    })
+    // 给导航按钮添加事件, more按钮添加高度控制点击事件
     setTimeout(function () {
       const navBtn = window.document.getElementsByClassName('navigation-btn')[0]
       navBtn.addEventListener('click', function (event) {
         event.stopPropagation()
+        closeInfoWin()
+        Navigation(position, map, walking)
       }, true)
-    }, 500)
+      const more = window.document.getElementsByClassName('more')[0]
+      const brandDiv = window.document.getElementsByClassName('pull-brand')[0]
+      more.addEventListener('click', function (event) {
+        event.stopPropagation()
+        const oldName = more.className
+        const oldBrandName = brandDiv.className
+        const isUpside = /upside/g
+        if (isUpside.test(oldName)) {
+          more.className = oldName.replace(isUpside, '')
+          brandDiv.className += ' h2rem'
+        } else {
+          more.className += ' upside'
+          brandDiv.className = oldBrandName.replace('h2rem', '')
+        }
+      }, true)
+    }, 600)
   })
 }
 
 // 导航按钮绑定事件
-// function Navigation (btn, position, map) {
-//   let selfPosition = ''
-//   map.plugin('AMap.Geolocation', function () {
-//     let geolocation = new window.AMap.Geolocation({
-//       enableHighAccuracy: true,
-//       timeout: 10000,
-//       maximumAge: 0,
-//       noIpLocate: 0,
-//       convert: true,
-//       showButton: true,
-//       buttonPosition: 'LB',
-//       buttonOffset: new window.AMap.Pixel(10, 20),
-//       showMarker: true,
-//       showCircle: true,
-//       panToLocation: false,
-//       zoomToAccuracy: false,
-//       GeoLocationFirst: true
-//     })
-//     map.addControl(geolocation)
-//     geolocation.getCurrentPosition()
-//     window.AMap.event.addListener(geolocation, 'complete', function (data) {
-//       selfPosition = data.position
-//       window.AMap.plugin(['AMap.Walking'], function () {
-//         const walking = new window.AMap.Walking()
-//         walking.search(new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat()), new window.AMap.LngLat(position[0], position[1]), function (status, result) {
-//           if (status === 'complete') {
-//             (new window.Lib.AMap.WalkingRender()).autoRender({
-//               data: result,
-//               map: map,
-//               panel: 'panel'
-//             })
-//           }
-//         })
-//       })
-//     })
-//     window.AMap.event.addListener(geolocation, 'error', function () {
-//       console.log('定位失败')
-//     })
-//   })
-// }
-
-// Navigation()
+function Navigation (position, map, walking) {
+  let selfPosition = ''
+  map.plugin('AMap.Geolocation', function () {
+    let geolocation = new window.AMap.Geolocation({
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+      noIpLocate: 0,
+      convert: true,
+      showButton: true,
+      buttonPosition: 'LB',
+      buttonOffset: new window.AMap.Pixel(10, 20),
+      showMarker: true,
+      showCircle: true,
+      panToLocation: true,
+      zoomToAccuracy: false,
+      GeoLocationFirst: true
+    })
+    map.addControl(geolocation)
+    geolocation.getCurrentPosition()
+    window.AMap.event.addListener(geolocation, 'complete', function (data) {
+      selfPosition = data.position
+      walking.clear()
+      // 本地经纬度，测试用
+      // walking.search([121.345506, 31.222795], new window.AMap.LngLat(position[0], position[1]))
+      walking.search(new window.AMap.LngLat(selfPosition.getLng(), selfPosition.getLat()), new window.AMap.LngLat(position[0], position[1]))
+    })
+    window.AMap.event.addListener(geolocation, 'error', function () {
+      console.log('定位失败')
+      alert('定位失败!')
+    })
+  })
+}
 
 export default {
   name: 'send',
@@ -150,7 +162,7 @@ export default {
           brand = ''
         } else {
           let data = brandRes.data
-          brand = '<p>此站点引入的快递品牌有: ' + data + '</p>'
+          brand = '<p class="pull-brand h2rem"><span class="more"><span></span></span>站点引入的品牌: ' + data + '</p>'
         }
         setOfficeMaker({position, info, error, brand})
       } else {
@@ -201,7 +213,7 @@ export default {
 }
 
 .navigation-btn {
-  display: none;
+  // display: none;
   float: right;
   width: 4.6rem;
   font-size: 1.4rem;
@@ -213,5 +225,45 @@ export default {
   color: white;
   border: none;
   background: @dark-yellow;
+}
+
+#panel {
+  top: 15px;
+  z-index: 999;
+  position: absolute;
+  background-color: white;
+  max-height: 100%;
+  overflow-y: auto;
+  right: 14px;
+  width: 282px;
+}
+
+.upside {
+  transform: rotateZ(180deg);
+}
+
+.h2rem {
+  height: 2rem;
+  overflow: hidden;
+}
+
+.hauto {
+  height: auto;
+}
+
+.pull-brand {
+  span.more{
+    float: right;
+    width: 0;
+    height: 0;
+    border-width: 1.3rem 0.6rem 0;
+    border-style: solid;
+    border-color: @dark-yellow transparent transparent;
+    margin: 0.2rem .1rem;
+    position: relative;
+    transition: transform .6s;
+    span{
+    }
+  }
 }
 </style>

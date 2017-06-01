@@ -72,7 +72,7 @@ export default {
   width: 6rem;
   font-size: 1.4rem;
   text-align: center;
-  padding: .5rem .5rem;
+  padding: .5rem 0;
   border-radius: 5px;
   box-sizing: border-box;
   white-space: nowrap;

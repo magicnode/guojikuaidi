@@ -30,7 +30,7 @@
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">快递类型</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span class="pickupqr-detail-box__content">{{query.expresstype | pickupstate}}</span>
+         <span :class="{'darkyellow': (query.expresstype === '0'), 'lightyellow': (query.expresstype !== '0')}" class="pickupqr-detail-box__content" >{{query.expresstype | pickupstate}}</span>
        </div>
      </div>
      <div class="pickupqr-detail">
@@ -43,7 +43,7 @@
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">地址</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span class="pickupqr-detail-box__content">{{office.province + office.city + '市' + office.district}}</span>
+         <span class="pickupqr-detail-box__content">{{office.province + office.city + '市' + office.district + office.descript}}</span>
        </div>
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">电话</span>
@@ -65,7 +65,6 @@ export default {
     this.qr = picApi.pickupqr + '?orderSn=' + query.orderSn + '&userId=' + userId || window.localStorage.getItem('mj_userId')
     this.query = query
     const office = await this.$http.post(addressApi.officelocation + '?userId=' + query.userId)
-    console.log('query', query)
     this.state = query.state || '101'
     if (office.status !== 200) {
       this.$vux.toast.show({
@@ -107,6 +106,15 @@ export default {
 .bgyellow {
   background-color: @dark-yellow;
 }
+
+.darkyellow {
+  color: @dark-yellow;
+}
+
+.lightyellow {
+  color: @yellow!important;
+}
+
 .pickupqr {
   .container {
   }
@@ -175,7 +183,9 @@ export default {
         font-size: 1.6rem;
         color: @dark-yellow;
         margin-left: 1rem;
-        white-space: nowrap;
+        white-space: pre-wrap;
+        max-width: 62%;
+        text-align: left;
         a {
           color: @dark-yellow;
         }

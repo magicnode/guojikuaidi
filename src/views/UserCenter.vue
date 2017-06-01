@@ -161,16 +161,14 @@ export default {
 
   &-orderfunc {
     flex-wrap: wrap;
-    border-top: 1px solid @borderbt;
     &-box {
       justify-content: space-between;
       padding: 1.2rem .5rem;
       padding-left: 1rem;
       box-sizing: border-box;
       background: #fff;
-      border-right: 1px solid @borderbt;
-      border-left: 1px solid @borderbt;
-      border-bottom: 1px solid @borderbt;
+      border: 1px solid @borderbt;
+      border-top-width: 0;
       &--info {
         flex: 3;
         text-align: left;

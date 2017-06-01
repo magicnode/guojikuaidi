@@ -58,7 +58,6 @@ export default {
     if (result.type !== 'success') {
       this.$vux.toast.show(result)
     }
-    console.log('res', this.data)
   },
   mounted () {
     window.document.title = '寄件明细'
@@ -96,6 +95,13 @@ export default {
 }
 .bgyellow {
   background-color: @dark-yellow;
+}
+.darkyellow {
+  color: @dark-yellow;
+}
+
+.lightyellow {
+  color: @yellow!important;
 }
 .sendqr {
   .container {
@@ -140,7 +146,7 @@ export default {
           font-size: 1.4rem;
           width: 20rem;
           overflow: hidden;
-          white-space: nowrap;
+          white-space: pre-line;
           text-overflow: ellipsis;
           @media (max-width:320px) {
             width: 16rem;

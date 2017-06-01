@@ -169,5 +169,4 @@ export const officeinfo = function (office) {
     return ''
   }
   return office.district + ' ' + office.descript
-  // return office.descript
 }
