@@ -2,13 +2,18 @@
   <div class="pickupqr">
    <div class="container">
      <div class="pickupqr-img">
+       <router-link :to="{path: '/express/route', query: {orderSn: query.orderSn, brand: query.brandId}}" class="express-router__link">查看路由</router-link>
        <div class="pickupqr-img--wait" v-show="state !== '301'">
          <img :src="qr" />
-         <p>取件时，请向店员出示此二维码</p>
+         <p>
+           取件时，请向店员出示此二维码
+         </p>
        </div>
        <div class="pickupqr-img--sign" v-show="state === '301'">
          <img src="../assets/images/new/rec_ico_rig.png" />
-         <p>快递已经签收</p>
+         <p>
+            快递已经签收
+         </p>
        </div>
      </div>
      <div class="pickupqr-detail">
@@ -30,7 +35,7 @@
        <div class="pickupqr-detail-box">
          <span class="pickupqr-detail-box__title">快递类型</span>
          <span class="pickupqr-detail-box__yin">:</span>
-         <span :class="{'darkyellow': (query.expresstype === '0'), 'lightyellow': (query.expresstype !== '0')}" class="pickupqr-detail-box__content" >{{query.expresstype | pickupstate}}</span>
+         <span :class="{'darkyellow': (Number(query.expresstype) === 0), 'lightyellow': (Number(query.expresstype) !== 0)}" class="pickupqr-detail-box__content" >{{query.expresstype | pickupstate}}</span>
        </div>
      </div>
      <div class="pickupqr-detail">
@@ -112,7 +117,7 @@ export default {
 }
 
 .lightyellow {
-  color: @yellow!important;
+  color: @red!important;
 }
 
 .pickupqr {
@@ -142,6 +147,15 @@ export default {
         color: @dark-yellow;
       }
     }
+    button {
+      text-align: center;
+      border: none;
+      background: @dark-yellow;
+      padding: .2rem 0.3rem;
+      color: white;
+      border-radius: 5px;
+      margin-left: 6px;
+    }
   }
   &-detail {
     .btopg;
@@ -152,6 +166,7 @@ export default {
       .btg;
       background: white;
       padding: .7rem 2rem;
+      padding-right: 0;
       &__icon {
         flex: 1;
         span {
@@ -184,7 +199,7 @@ export default {
         color: @dark-yellow;
         margin-left: 1rem;
         white-space: pre-wrap;
-        max-width: 62%;
+        max-width: 80%;
         text-align: left;
         a {
           color: @dark-yellow;

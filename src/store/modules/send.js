@@ -58,11 +58,11 @@ export const getters = {
   getQrSend: state => state.qr_send
 }
 
-function gettimestamp (time) {
-  const arr = time.split(/\s/)
-  time = arr[0] + ' ' + arr[1].replace(/-/g, ':')
-  return new Date(time).getTime()
-}
+// function gettimestamp (time) {
+//   const arr = time.split(/\s/)
+//   time = arr[0] + ' ' + arr[1].replace(/-/g, ':')
+//   return new Date(time).getTime()
+// }
 
 // actions
 export const actions = {
@@ -85,10 +85,10 @@ export const actions = {
           }
         }
         wait.sort(function (a, b) {
-          return gettimestamp(b.createTime) - gettimestamp(a.createTime)
+          return b.createTime - a.createTime
         })
         ready.sort(function (a, b) {
-          return gettimestamp(b.createTime) - gettimestamp(a.createTime)
+          return b.createTime - a.createTime
         })
         data.wait = wait
         data.ready = ready

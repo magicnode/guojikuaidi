@@ -170,3 +170,38 @@ export const officeinfo = function (office) {
   }
   return office.district + ' ' + office.descript
 }
+
+export const getMinute = function (date) {
+  const newdate = new Date(date)
+  const hour = newdate.getHours()
+  let minute = newdate.getMinutes()
+  if (minute < 10) {
+    minute = '0' + minute
+  }
+  return hour + ':' + minute
+}
+
+export const getDate = function (date) {
+  const newdate = new Date(date)
+  const year = newdate.getFullYear()
+  const redate = newdate.getDate()
+  const month = newdate.getMonth() + 1
+  return year + '-' + month + '-' + redate
+}
+
+export const brandlogo = function (logo) {
+  return 'http://or5r7gpy3.bkt.clouddn.com/' + logo
+}
+
+export const paytype = function (key) {
+  // 支付方式 1:支付宝支付 2:微信支付  3:余额支付  4:线下现金支付
+  key = key || 0
+  const types = {
+    0: '未知',
+    1: '支付宝',
+    2: '微信',
+    3: '余额',
+    4: '线下现金'
+  }
+  return types[key]
+}

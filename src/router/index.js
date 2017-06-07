@@ -154,5 +154,12 @@ export default new Router({
     path: '/customer/service',
     name: 'CustomerService',
     component: require('@/views/CustomerService')
+  }, {
+    path: '/express/route',
+    name: 'ExpressRoute',
+    component: require('@/views/ExpressRoute'),
+    meta: {
+      intro: '快递路由信息'
+    }
   }]
 })

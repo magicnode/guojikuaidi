@@ -65,7 +65,7 @@ router.beforeEach(function (to, from, next) {
     if (!openid || userid === '' || !userid) {
       const fullPath = to.fullPath
       const page = SwitchfullPath(fullPath)
-      next({
+      return next({
         path: '/init',
         query: { page }
       })
@@ -78,13 +78,13 @@ router.beforeEach(function (to, from, next) {
     if (!mobile || mobile === '') {
       const fullPath = to.fullPath
       const page = SwitchfullPath(fullPath)
-      next({
+      return next({
         path: '/bindphone',
         query: { page }
       })
     }
   }
-  next()
+  return next()
 })
 
 router.afterEach((to, from) => {

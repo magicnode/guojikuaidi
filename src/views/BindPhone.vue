@@ -183,7 +183,7 @@ export default {
 .btn-normal {
   border-radius: 5px;
   padding: .3rem .3rem;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .btn-get {
@@ -241,7 +241,7 @@ export default {
           padding: .4rem;
           border: none;
           height: 2.6rem;
-          font-size: 1.5rem;
+          font-size: 1.4rem;
         }
       }
     }

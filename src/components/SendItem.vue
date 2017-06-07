@@ -21,7 +21,7 @@
         <span class="senditem-box__state">{{item.type | sendstatus}}</span>
       </div>
       <div class="senditem-box flex" style="justify-content: space-between;">
-        <p class="senditem-box__time">{{item.createTime}}</p>
+        <p class="senditem-box__time">{{item.createTime | formatedatestamp}}</p>
         <div>
           <button v-show="item.type !== 5 && !readonly" type="" class="cancle-btn" @click="cancle(item)">取消订单</button>
           <button v-show="item.type !== 5" type="" class="gosend-btn" @click="goPath(item, 'wait')">去寄件</button>
@@ -51,7 +51,7 @@
         <span class="senditem-box__state">{{item.type | sendstatus}}</span>
       </div>
       <div class="senditem-box flex" style="justify-content: space-between;">
-        <p class="senditem-box__time">{{item.createTime}}</p>
+        <p class="senditem-box__time">{{item.createTime | formatedatestamp}}</p>
         <div class="senditem-box__btn">
           <span class="senditem-box__price">{{'￥' + item.price}}</span>
           <button type="" class="cancle-btn" @click="goPath(item, 'ready')">查看详情</button>
@@ -233,6 +233,9 @@ export default {
           width: 20rem;
         }
       }
+    }
+    &__time {
+      font-size: 1.2rem;
     }
   }
 }

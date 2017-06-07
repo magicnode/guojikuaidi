@@ -25,7 +25,7 @@ const setOfficeMaker = function ({position, info, error, brand}) {
     const photo = '<div class="officeimg"><img src="' + pic + '"></div>'
     const infoWindow = new SimpleInfoWindow({
       infoTitle: '<span>"妙寄"全网站点: ' + info.name + '</strong>',
-      infoBody: photo + '<div class="office-detail"><p><p>所在区域: ' + info.address + '<button type="" class="navigation-btn">导航</button></p><p>详细地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p></p>' + brand + '</div>' + error,
+      infoBody: photo + '<div class="office-detail"><div class="first-line"><button type="" class="navigation-btn">导航</button><p class="office-detail__more">详细<span class="more"><span></span></span></p></div><div class="office-detail__content contenthide"><p>所在区域: ' + info.address + '</p><p>详细地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p></p>' + brand + '</div></div>' + error,
       offset: new window.AMap.Pixel(0, -31)
     })
     function openInfoWin () {
@@ -50,19 +50,20 @@ const setOfficeMaker = function ({position, info, error, brand}) {
         closeInfoWin()
         Navigation(position, map, walking)
       }, true)
+      const detailmore = window.document.getElementsByClassName('office-detail__more')[0]
       const more = window.document.getElementsByClassName('more')[0]
-      const brandDiv = window.document.getElementsByClassName('pull-brand')[0]
-      more.addEventListener('click', function (event) {
+      const contentDiv = window.document.getElementsByClassName('office-detail__content')[0]
+      detailmore.addEventListener('click', function (event) {
         event.stopPropagation()
         const oldName = more.className
-        const oldBrandName = brandDiv.className
+        const oldBrandName = contentDiv.className
         const isUpside = /upside/g
         if (isUpside.test(oldName)) {
           more.className = oldName.replace(isUpside, '')
-          brandDiv.className += ' h2rem'
+          contentDiv.className += ' contenthide'
         } else {
           more.className += ' upside'
-          brandDiv.className = oldBrandName.replace('h2rem', '')
+          contentDiv.className = oldBrandName.replace('contenthide', '')
         }
       }, true)
     }, 600)
@@ -162,7 +163,7 @@ export default {
           brand = ''
         } else {
           let data = brandRes.data
-          brand = '<p class="pull-brand h2rem"><span class="more"><span></span></span>站点引入的品牌: ' + data + '</p>'
+          brand = '<p class="pull-brand">接入品牌: ' + data + '</p>'
         }
         setOfficeMaker({position, info, error, brand})
       } else {
@@ -212,9 +213,39 @@ export default {
   font-size: 2.2rem;
 }
 
+.office-detail {
+  padding-top: .2rem;
+  &__more {
+    float: right;
+  }
+  &__content {
+    transition: all .2s ease;;
+    padding-top: 1rem;
+  }
+}
+
+.contenthide {
+  transform: scale(0);
+  height: 0;
+}
+
+.first-line {
+  span.more{
+    float: right;
+    width: 0;
+    height: 0;
+    border-width: 1.7rem .8rem 0;
+    border-style: solid;
+    border-color: @dark-yellow transparent transparent;
+    margin: 0.2rem .1rem;
+    position: relative;
+    transition: transform .6s;
+    span{
+    }
+  }
+}
+
 .navigation-btn {
-  // display: none;
-  float: right;
   width: 4.6rem;
   font-size: 1.4rem;
   text-align: center;

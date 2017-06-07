@@ -1,7 +1,14 @@
 <template>
   <div class="send">
     <div class="send-container">
-      <div class="send-container-address flex">
+      <div class="send-container-select go-sendlist">
+        <group>
+          <cell title="寄件列表" link="/send/detail" is-link style="padding:1rem 2.2rem;padding-left:11px;">
+            <img slot="icon" class="send-icon" style="display:block;margin-right:.8rem;" src="../assets/images/new/sen_ico_lis.png" />
+          </cell>
+        </group>
+      </div>
+      <div class="send-container-address flex" style="border-bottom: 1px solid #dedede;">
         <div class="send-container-address__intro">
           <span class="bgblue">寄</span>
         </div>
@@ -54,15 +61,8 @@
           </selector>
           <x-textarea type="text" title="物品描述" :show-counter="false" :max="max" :autosize="true" placeholder="描述你的物品 (200字限制)" :rows="1" v-model="describe" @on-focus="hideFooter" @on-blur="onChangeText('describe')">
           </x-textarea>
-          <x-textarea type="text" title="备注" :max="max" placeholder="添加备注 (200字限制)" :autosize="true" :show-counter="false" v-model="note" :rows="1" @on-focus="hideFooter" @on-blur="onChangeText('note')">
+          <x-textarea type="text" title="备注" :max="max" placeholder="添加备注 (200字限制)" :autosize="true" :show-counter="false" v-model="label" :rows="1" @on-focus="hideFooter" @on-blur="onChangeText('note')">
           </x-textarea>
-        </group>
-      </div>
-      <div class="send-container-select">
-        <group>
-          <cell title="寄件列表" link="/send/detail" is-link style="padding:1rem 2.2rem;padding-left:11px;">
-            <img slot="icon" class="send-icon" style="display:block;margin-right:.8rem;" src="../assets/images/new/sen_ico_lis.png" />
-          </cell>
         </group>
       </div>
       <div class="div-btn-sub"> 
@@ -165,14 +165,12 @@ export default {
       if (this.loading) return
       let addressInfo = window.localStorage.getItem('mj_addressInfo')
       addressInfo = JSON.parse(addressInfo)
-      if (!addressInfo.id) {
+      if (!addressInfo) {
         this.showToast({text: '请选择寄件站点', type: 'warn'})
         return
       }
-      // if (this.expresstype === '空') {
-      // }
       this.$vux.loading.show({
-        text: '正在提交'
+        text: '  '
       })
       // 提交寄件
       const timestamp = 'time' + new Date().getTime()
@@ -239,6 +237,16 @@ export default {
     text-align: right;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+.go-sendlist {
+  margin-bottom: 1.17647059em;
+  .weui-cell {
+    margin-top: 0!important;
+  }
+  .weui-cells {
+    margin-top: 0!important;
   }
 }
 

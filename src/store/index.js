@@ -8,6 +8,7 @@ import * as send from './modules/send'
 import * as pickup from './modules/pickup'
 import * as address from './modules/address'
 import * as userpackage from './modules/package'
+import * as express from './modules/express'
 import {brand as brandApi} from '@/api'
 
 Vue.use(Vuex)
@@ -23,7 +24,8 @@ const store = new Vuex.Store({
     send,
     pickup,
     address,
-    userpackage
+    userpackage,
+    express
   },
   state: {
     title: '妙寄',

@@ -13,8 +13,8 @@
         <span class="arrow-left"></span>
       </div>
     </div>
-    <div class="" style="padding:2rem 0;"> 
-      <button class="btn-sub" @click="loginout">刷新状态</button>
+    <div class="refresh">
+      <button :class="{'roate-change': isReresh}" class="btn-sub" @click="loginout"></button>
     </div>
   </div>
 </template>
@@ -58,7 +58,8 @@ export default {
         name: '客服中心',
         path: '/customer/service',
         show: true
-      }]
+      }],
+      isReresh: false
     }
   },
   methods: {
@@ -83,7 +84,10 @@ export default {
         },
         onConfirm () {
           window.localStorage.clear()
-          _this.$router.push({path: '/init', query: {page: 3}})
+          _this.isReresh = true
+          setTimeout(function () {
+            _this.$router.push({path: '/init', query: {page: 3}})
+          }, 1100)
         }
       })
     }
@@ -91,7 +95,7 @@ export default {
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
+<style lang="less" scoped>
 @import '../assets/styles/colors.less';
 
 .flex {
@@ -99,16 +103,55 @@ export default {
   align-items: center;
 }
 
-.btn-sub {
-  color: white;
-  border: none;
-  padding: 1rem 1rem;
-  font-size: 1.8rem;
-  width: 100%;
-  background-color: @dark-yellow;
-  border: none;
-  border-radius: 5px;
+.refresh {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  .btn-sub {
+    color: white;
+    border: none;
+    padding: .1rem .2rem;
+    font-size: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: url('../assets/images/new/refresh.png') no-repeat;
+    background-size: 100% 100%;
+    border: none;
+    border-radius: 5px;
+    transition: all 1s;
+  }
 }
+
+.roate-change {
+  animation: roate 1s;
+}
+
+@keyframes roate {
+  0% {
+    transform: scale(1.5) rotate(0deg);
+  }
+  50% {
+    transform: scale(.5) rotate(36000deg);
+  }
+  100% {
+    transform: scale(1) rotate(720000000000deg);
+  }
+}
+
+// @keyframes roate {
+//   0% {
+//     transform: scale(2) rotate(0deg);
+//   }
+//   50% {
+//     transform: scale(2.5) rotate(36000deg);
+//   }
+//   80% {
+//     transform: scale(.5) rotate(46000000deg);
+//   }
+//   100% {
+//     transform: scale(1) rotate(720000000000deg);
+//   }
+// }
 
 .usercenter-padding {
   padding: 1rem;

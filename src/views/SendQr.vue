@@ -2,8 +2,15 @@
   <div class="sendqr">
     <div class="container">
       <div class="sendqr-img">
-        <img class="sendqr-container-qr" :src="qr" />
-        <p>寄件时，请向店员出示此二维码</p>
+        <router-link :to="{path: '/express/route', query: {orderSn: data.order, brand: data.brandId}}" class="express-router__link" v-show="data.type !== 1">查看路由</router-link>
+        <div class="sendqr-img--wait" v-show="data.type === 1">
+          <img :src="qr" />
+          <p>寄件时，请向店员出示此二维码</p>
+        </div>
+        <div class="sendqr-img--sign" v-show="data.type !== 1">
+          <img src="../assets/images/new/rec_ico_rig.png" />
+          <p>快递已经寄出</p>
+        </div>
       </div>
       <div class="sendqr-detail">
         <div class="sendqr-detail-box">
@@ -39,6 +46,21 @@
           <span class="sendqr-detail-box__title">快递类型</span>
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">{{data.expresstype | pickupstate}}</span>
+        </div>
+        <div class="sendqr-detail-box" v-show="data.describe">
+          <span class="sendqr-detail-box__title">物品描述</span>
+          <span class="sendqr-detail-box__yin">:</span>
+          <span class="sendqr-detail-box__content">{{data.describe}}</span>
+        </div>
+        <div class="sendqr-detail-box" v-show="data.note">
+          <span class="sendqr-detail-box__title">寄件备注</span>
+          <span class="sendqr-detail-box__yin">:</span>
+          <span class="sendqr-detail-box__content">{{data.note}}</span>
+        </div>
+        <div class="sendqr-detail-box" v-show="data.pay_type">
+          <span class="sendqr-detail-box__title">支付方式</span>
+          <span class="sendqr-detail-box__yin">:</span>
+          <span class="sendqr-detail-box__content">{{data.pay_type | paytype}}</span>
         </div>
       </div>
     </div>
@@ -101,7 +123,7 @@ export default {
 }
 
 .lightyellow {
-  color: @yellow!important;
+  color: @red!important;
 }
 .sendqr {
   .container {
@@ -110,12 +132,34 @@ export default {
     .btg;
     background: white;
     padding: 1rem;
-    img {
-      width: 15rem;
+    &--wait {
+      img {
+        width: 15rem;
+      }
+      p {
+        font-size: 1.4rem;
+        color: @greyfont;
+      }
     }
-    p {
-      font-size: 1.4rem;
-      color: @greyfont;
+    &--sign {
+      img {
+        width: 8rem;
+        height: auto;
+      }
+      p {
+        padding-top: 1.5rem;
+        font-size: 1.8rem;
+        color: @dark-yellow;
+      }
+    }
+    button {
+      text-align: center;
+      border: none;
+      background: @dark-yellow;
+      padding: 0 0.3rem;
+      color: white;
+      border-radius: 5px;
+      margin-left: 6px;
     }
   }
   &-detail {

@@ -121,7 +121,7 @@ export default {
             } else {
               let data = brandRes.data
               // brand = '<p>此站点引入的快递品牌有: ' + data + '</p>'
-              brand = '<p class="pull-brand h2rem"><span class="more"><span></span></span>站点引入的品牌: ' + data + '</p>'
+              brand = '<p class="pull-brand">接入品牌: ' + data + '</p>'
             }
             let officeBtnId = ''
             window.AMapUI.loadUI(['overlay/SimpleInfoWindow'], function (SimpleInfoWindow) {
@@ -129,7 +129,7 @@ export default {
               const photo = '<div class="officeimg"><img src="' + pic + '"></div>'
               const infoWindow = new SimpleInfoWindow({
                 infoTitle: '<span>"妙寄"全网站点: ' + info.name || '' + '</span>',
-                infoBody: photo + '<div class="office-detail"><p class="office-info"><p>具体地址: ' + info.descript + '<button type="" id="navigation' + officeBtnId + '" class="navigation-btn">导航</button></p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p>' + brand + '<p>是否选择该站点为寄件站点?</p><p class="div-confirm-btn"><button type="button" id="' + officeBtnId + '" class="confirm-btn hide">确定</button></p></p></div>',
+                infoBody: photo + '<div class="office-detail"><div class="first-line"><button type="" id="navigation' + officeBtnId + '" class="navigation-btn">导航</button><p class="office-detail__more">详细<span class="more"><span></span></span></p></div><div class="office-detail__content contenthide"><p>详细地址: ' + info.descript + '</p><p>电话号码: <a href="tel:' + info.mobile + '">' + info.mobile + '</a></p></p>' + brand + '</div><p class="confirm-p">是否选择该站点为寄件站点?<button type="button" id="' + officeBtnId + '" class="confirm-btn hide">确定</button></p></div>',
                 offset: new window.AMap.Pixel(0, -31)
               })
               function openInfoWin () {
@@ -153,19 +153,21 @@ export default {
                   closeInfoWin()
                   Navigation(position, mapObj, walking)
                 }, true)
+                // 详细按钮
+                const detailmore = window.document.getElementsByClassName('office-detail__more')[0]
                 const more = window.document.getElementsByClassName('more')[0]
-                const brandDiv = window.document.getElementsByClassName('pull-brand')[0]
-                more.addEventListener('click', function (event) {
+                const contentDiv = window.document.getElementsByClassName('office-detail__content')[0]
+                detailmore.addEventListener('click', function (event) {
                   event.stopPropagation()
                   const oldName = more.className
-                  const oldBrandName = brandDiv.className
+                  const oldBrandName = contentDiv.className
                   const isUpside = /upside/g
                   if (isUpside.test(oldName)) {
                     more.className = oldName.replace(isUpside, '')
-                    brandDiv.className += ' h2rem'
+                    contentDiv.className += ' contenthide'
                   } else {
                     more.className += ' upside'
-                    brandDiv.className = oldBrandName.replace('h2rem', '')
+                    contentDiv.className = oldBrandName.replace('contenthide', '')
                   }
                 }, true)
               }, 600)
@@ -246,10 +248,10 @@ export default {
   }
 }
 .normal-btn {
-  width: 7.6rem;
+  width: 5.6rem;
   font-size: 1.4rem;
   text-align: center;
-  padding: .3rem .4rem;
+  padding: .2rem .2rem;
   border-radius: 5px;
   box-sizing: border-box;
   white-space: nowrap;
@@ -257,14 +259,14 @@ export default {
 
 .confirm-btn {
   .normal-btn;
+  float: right;
   color: white;
   border: none;
   background: @dark-yellow;
 }
 
-.div-confirm-btn {
-  text-align: center;
-  padding: .5rem;
+.confirm-p {
+  padding-top: 1rem;
   padding-bottom: 0;
 }
 

@@ -34,7 +34,6 @@ export default {
   created () {
     const query = this.$route.query
     this.pagetype = query.pagetype || 'add'
-    console.log('eidt', query)
     if (this.pagetype === 'edit') {
       this.id = query.id
       this.name = query.name

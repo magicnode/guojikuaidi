@@ -6,9 +6,9 @@
     </div>
     <div class="pickupitem-box flex">
       <div class="pickupitem-box__office">
-        <p>取件站点：  {{item.name}}</p>
-        <p>地址：  {{item.city + '市' + item.district + item.descript}}</p>
-        <p>电话： {{item.mobile}} </p>
+        <p>取件站点 : {{item.name}}</p>
+        <p>取件地址 : {{item.city + '市' + item.district + item.descript}}</p>
+        <p>取件电话 : {{item.mobile}} </p>
       </div>
       <div class="pickupitem-box__address">
         <img src="../assets/images/new/pic_ico_map.png" alt="" @click="watchOffice(item.userId)">
@@ -67,7 +67,6 @@ export default {
   border-bottom: 1px solid @borderbt;
 }
 
-
 .normal-btn {
   width: 6rem;
   font-size: 1.4rem;
@@ -110,6 +109,8 @@ export default {
       p {
         font-size: 1.4rem;
         padding: .2rem;
+        padding-left: 0;
+        text-align: left;
       }
     }
     &__address {

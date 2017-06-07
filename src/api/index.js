@@ -61,3 +61,8 @@ export const wx = {
   },
   webtoken: 'https://api.weixin.qq.com/sns/oauth2/access_token'
 }
+
+export const express = {
+  // url = url + 'brand=' + brand + '&orderSn=' + orderSn
+  route: 'http://app.quandikeji.com:8088/quandiExpressSite1.4.0/Logistics/queryLogisticsInfoForJson'
+}
