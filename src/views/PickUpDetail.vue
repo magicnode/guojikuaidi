@@ -46,12 +46,12 @@
          <img style="width: 1.4rem;padding: 0 1rem;position: absolute;right: 6px;" src="../assets/images/new/pic_ico_map.png" alt="地址" @click="watchOffice(query.userId)">
        </div>
        <div class="pickupqr-detail-box">
-         <span class="pickupqr-detail-box__title">地址</span>
+         <span class="pickupqr-detail-box__title">取件地址</span>
          <span class="pickupqr-detail-box__yin">:</span>
          <span class="pickupqr-detail-box__content">{{office.province + office.city + '市' + office.district + office.descript}}</span>
        </div>
        <div class="pickupqr-detail-box">
-         <span class="pickupqr-detail-box__title">电话</span>
+         <span class="pickupqr-detail-box__title">取件电话</span>
          <span class="pickupqr-detail-box__yin">:</span>
          <span class="pickupqr-detail-box__content"><a :href="tel">{{office.mobile}}</a></span>
        </div>
@@ -159,7 +159,8 @@ export default {
   }
   &-detail {
     .btopg;
-    margin-top: 16px;
+    // margin-top: 16px;
+    margin-top: 1.17647059em;
     box-sizing: border-box;
     &-box {
       .flex;
@@ -199,8 +200,9 @@ export default {
         color: @dark-yellow;
         margin-left: 1rem;
         white-space: pre-wrap;
-        max-width: 80%;
+        max-width: 68%;
         text-align: left;
+        overflow: hidden;
         a {
           color: @dark-yellow;
         }

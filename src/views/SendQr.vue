@@ -62,6 +62,11 @@
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">{{data.pay_type | paytype}}</span>
         </div>
+        <div class="sendqr-detail-box" v-show="data.price">
+          <span class="sendqr-detail-box__title">支付金额</span>
+          <span class="sendqr-detail-box__yin">:</span>
+          <span class="sendqr-detail-box__content">{{'￥' +data.price}}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -132,6 +137,7 @@ export default {
     .btg;
     background: white;
     padding: 1rem;
+    padding-bottom: 2.5rem;
     &--wait {
       img {
         width: 15rem;
@@ -143,11 +149,12 @@ export default {
     }
     &--sign {
       img {
-        width: 8rem;
+        padding: 2.5rem;
+        padding-bottom: 0.8rem;
+        width: 6rem;
         height: auto;
       }
       p {
-        padding-top: 1.5rem;
         font-size: 1.8rem;
         color: @dark-yellow;
       }
@@ -164,7 +171,7 @@ export default {
   }
   &-detail {
     .btopg;
-    margin-top: 20px;
+    margin-top: 1.17647059em;
     box-sizing: border-box;
     &-box {
       .flex;

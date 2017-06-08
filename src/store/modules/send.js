@@ -6,7 +6,7 @@ import * as types from '../mutation-types'
 
 let local = window.localStorage
 let instance = axios.create({
-  timeout: 3000
+  timeout: 5000
 })
 
 export const state = {

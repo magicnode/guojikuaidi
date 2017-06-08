@@ -17,6 +17,7 @@
           <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
             <mj-senditem :item="item"></mj-senditem>
           </div>
+          <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
         </scroller>
       </div>
       <!-- 已寄件 -->
@@ -30,6 +31,7 @@
           <div class="senddetail-cell-detail" v-for="item in data['ready']" :key="item.id">
             <mj-senditem :item="item"></mj-senditem>
           </div>
+          <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
         </scroller>
       </div>
     </div>
@@ -41,9 +43,6 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'senddetail',
   created () {
-    if (!this.data.init) {
-      this.initSendList()
-    }
     const {type} = this.$route.query
     const localtype = window.localStorage.getItem('mj_senddetail_switch_type')
     this.show = type || localtype || 'wait'
@@ -77,11 +76,6 @@ export default {
         type: data.type || 'warn',
         width: '20rem'
       })
-    },
-    async initSendList () {
-      const result = await this.setSend()
-      if (result.type === 'success') return
-      this.showToast(result)
     },
     goPath (item, type) {
       this.$router.push({path: 'qr', query: item})
@@ -121,17 +115,22 @@ export default {
     refresh (done) {
       const _this = this
       setTimeout(async function () {
-        _this.initSendList()
+        const result = await _this.setSend()
+        if (result.type !== 'success') {
+          _this.showToast(result)
+        }
         done(true)
       }, 1200)
     },
     infinite (done) {
-      done(true)
       const _this = this
       setTimeout(async function () {
-        _this.initSendList()
+        const result = await _this.setSend()
+        if (result.type !== 'success') {
+          _this.showToast(result)
+        }
         done(true)
-      }, 1200)
+      }, 1500)
     }
   }
 }

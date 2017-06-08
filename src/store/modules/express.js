@@ -29,7 +29,6 @@ export const actions = {
       })
       if (res.status === 200) {
         const data = res.data
-        console.log(data)
         commit(types.SET_EXPRESS_ROTUE, {data})
         return {
           type: 'success',
