@@ -55,6 +55,16 @@
          <span class="pickupqr-detail-box__yin">:</span>
          <span class="pickupqr-detail-box__content"><a :href="tel">{{office.mobile}}</a></span>
        </div>
+       <div class="pickupqr-detail-box" v-show="query.pay_type">
+         <span class="pickupqr-detail-box__title">支付方式</span>
+         <span class="pickupqr-detail-box__yin">:</span>
+         <span class="pickupqr-detail-box__content">{{query.pay_type | paytype}}</span>
+       </div>
+       <div class="pickupqr-detail-box" v-show="query.deal_num">
+         <span class="pickupqr-detail-box__title">支付金额</span>
+         <span class="pickupqr-detail-box__yin">:</span>
+         <span class="pickupqr-detail-box__content">{{'￥' + query.deal_num}}</span>
+       </div>
      </div>
    </div>
   </div>

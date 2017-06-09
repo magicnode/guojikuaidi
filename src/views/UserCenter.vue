@@ -123,35 +123,27 @@ export default {
 }
 
 .roate-change {
-  animation: roate 1s;
+  animation: roate 1s ease both alternate;
+  animation-iteration-count: 1;
+  animation-delay: -0.1s;
+  animation-fill-mode: forwards;
+  // animation-direction: reverse;
 }
 
 @keyframes roate {
   0% {
-    transform: scale(1.5) rotate(0deg);
+    transform: scale(2.5) rotate(0deg);
   }
   50% {
-    transform: scale(.5) rotate(36000deg);
+    transform: scale(1) rotate(36000deg);
+  }
+  70% {
+    transform: scale(1.5) rotate(7200000deg);
   }
   100% {
-    transform: scale(1) rotate(720000000000deg);
+    transform: scale(1) rotate(720000000deg);
   }
 }
-
-// @keyframes roate {
-//   0% {
-//     transform: scale(2) rotate(0deg);
-//   }
-//   50% {
-//     transform: scale(2.5) rotate(36000deg);
-//   }
-//   80% {
-//     transform: scale(.5) rotate(46000000deg);
-//   }
-//   100% {
-//     transform: scale(1) rotate(720000000000deg);
-//   }
-// }
 
 .usercenter-padding {
   padding: 1rem;

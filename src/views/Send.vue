@@ -100,6 +100,11 @@ export default {
   mounted () {
     window.document.title = '到点寄件'
   },
+  beforeDestroy () {
+    // 离开本页面时，要移除footer class中的hide
+    const footer = window.document.getElementsByTagName('footer')[0]
+    footer.className = footer.className.replace(/hide/g, '')
+  },
   computed: {
     ...mapGetters({
       brand: 'getAllBrand',

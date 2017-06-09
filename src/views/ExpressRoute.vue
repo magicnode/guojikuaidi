@@ -5,8 +5,8 @@
           <img :src="route.expressBrandLogo | brandlogo" :alt="route.expressBrand">
         </div>
         <div class="logisticsresult-title-brand">
-          <p>{{route.expressBrand}}</p>
-          <p>{{'快递单号  ' + route.orderSn}}</p>
+          <p>快递品牌: {{brand | brandtype}}</p>
+          <p>{{'快递单号: ' + route.orderSn}}</p>
         </div>
       </div>
       <div class="wrapper">
@@ -35,6 +35,7 @@ export default {
   async created () {
     this.$vux.loading.show({text: ' '})
     const query = this.$route.query
+    this.brand = query.brand
     const res = await this.setExpressRoute(query)
     if (res.type !== 'success') {
       this.$vux.loading.hide()
@@ -48,6 +49,7 @@ export default {
   },
   data () {
     return {
+      brand: ''
     }
   },
   computed: {
@@ -70,6 +72,14 @@ export default {
 
 .isfirstPart {
   color: @dark-yellow;
+  .line {
+    &:before {
+      background: @dark-yellow!important;
+    }
+    &-div {
+      background: @dark-yellow!important;
+    }
+  }
 }
 
 .logisticsresult {
@@ -91,7 +101,7 @@ export default {
       p {
         color: white;
         &:first-child {
-          font-size:  1.6rem;
+          font-size:  1.4rem;
           margin: 0;
           padding: .6rem 0;
         }
@@ -149,14 +159,14 @@ export default {
         display: inline-block;
         width: 12px;
         height: 12px;
-        background: @dark-yellow;
+        background: #999;
         border-radius: 50%;
       }
       &-div {
         height: 5rem;
         width: 2px;
         margin-left: 38%;
-        background: @dark-yellow;
+        background: #999;
       }
     }
   }
