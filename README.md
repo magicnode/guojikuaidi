@@ -1,6 +1,3 @@
-# vux
-妙寄公众号
-
 > A Vue.js project
 
 ## Build Setup
@@ -52,3 +49,6 @@ post
 openid
 
 mobile
+=======
+# guojikuaidi
+guojikuaidi wechat
