@@ -1,9 +1,6 @@
 <template>
   <div id="app">
     <router-view></router-view>
-<!--     <transition name="pic">
-      <img class="loading-img" v-show="isJump" :src="jumpSrc" alt="">
-    </transition> -->
     <loading v-model="isLoading"></loading>
   </div>
 </template>
@@ -92,7 +89,7 @@ select,option,textarea {
   animation: pic-out .5s;
 }
 .weui-dialog__btn_primary {
-    color: @dark-yellow;
+    color: @red;
 }
 
 @keyframes pic-in {

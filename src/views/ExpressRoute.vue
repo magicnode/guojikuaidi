@@ -2,7 +2,7 @@
     <div class="logisticsresult">
       <div class="logisticsresult-title">
         <div class="logisticsresult-title-img">
-          <img :src="route.expressBrandLogo | brandlogo" :alt="route.expressBrand">
+          <img :src="brand | brandlogo" :alt="brand | brandtype">
         </div>
         <div class="logisticsresult-title-brand">
           <p>快递品牌: {{brand | brandtype}}</p>

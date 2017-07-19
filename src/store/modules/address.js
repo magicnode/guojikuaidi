@@ -100,15 +100,19 @@ export const actions = {
         }
       })
       if (res.status === 200) {
-        console.log('data rs', res.request.responseURL)
         dispatch('changeAddress')
+        return {
+          type: 'success',
+          info: '添加地址成功',
+          width: '18rem'
+        }
       }
     } catch (e) {
       console.error(e)
       let result = {
         type: 'warn',
         info: '添加地址失败',
-        width: '15rem'
+        width: '18rem'
       }
       commit(types.SET_ADDRESS_RES, {result})
     }

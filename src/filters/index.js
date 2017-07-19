@@ -190,7 +190,38 @@ export const getDate = function (date) {
 }
 
 export const brandlogo = function (logo) {
-  return 'http://or5r7gpy3.bkt.clouddn.com/' + logo
+  const BRAND_IMG_PINYIN = {
+    '0': '全部品牌',
+    '2': 'yousu.png',
+    '3': 'longbang.png',
+    '4': 'suer.png',
+    '5': 'kuaijie.png',
+    '6': 'quanfeng.png',
+    '7': 'baishi.png',
+    '8': 'tiantian.png',
+    '9': 'zhongtong.png',
+    '10': 'yunda.png',
+    '11': 'shentong.png',
+    '12': 'yuantong.png',
+    '13': 'shunfeng.png',
+    '14': 'ems.png',
+    '15': 'guotong.png',
+    '16': 'mayibang.png',
+    '17': 'yuancheng.png',
+    '18': 'zhaijisong.png',
+    '19': 'kuayue.png',
+    '20': 'jingdong.png',
+    '21': 'dada.png',
+    '22': 'wanxiang.png',
+    '23': 'miaoji.png',
+    '24': 'zhongtie.png',
+    '27': 'pinjun.png',
+    '26': 'anneng.png',
+    '28': 'ririshun.png',
+    '29': 'rufengda.png',
+    '71': 'gaotiekuaiyun.png'
+  }
+  return 'http://or5r7gpy3.bkt.clouddn.com/' + BRAND_IMG_PINYIN[logo]
 }
 
 export const paytype = function (key) {

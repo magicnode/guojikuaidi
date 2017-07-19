@@ -17,12 +17,10 @@
 
 <script>
 import {mapGetters} from 'vuex'
-import pickupPng from '../assets/images/new/nav_rec_nor.png'
-import acpickupPng from '../assets/images/new/nav_rec_che.png'
 import sendPng from '../assets/images/new/nav_sen_nor.png'
-import acsendPng from '../assets/images/new/nav_ivo_che.png'
+import acsendPng from '../assets/images/nav_ivo_che.png'
 import minePng from '../assets/images/new/nav_min_nor.png'
-import acminePng from '../assets/images/new/nav_min_che.png'
+import acminePng from '../assets/images/nav_min_che.png'
 
 export default {
   name: 'footer',
@@ -40,12 +38,6 @@ export default {
   data () {
     return {
       foot: [{
-        name: '收件',
-        path: '/pickup',
-        icon: pickupPng,
-        activeicon: acpickupPng,
-        key: 'pickup'
-      }, {
         name: '寄件',
         path: '/send',
         icon: sendPng,
@@ -82,11 +74,10 @@ footer {
   ul {
     width: 100%;
     overflow: hidden;
-    padding: .6rem 0;
     display: flex;
     li {
-      width: 17%;
-      padding: 0.1rem;
+      flex: 1;
+      padding: .4rem .1rem;
       list-style: none;
       text-align: center;
       font-size: 0.3rem;
@@ -94,19 +85,24 @@ footer {
       margin: 0 auto;
       text-decoration: none;
       display: block;
+      border-right: 1px solid #ececec;
+      box-sizing: border-box;
+      &:last-child {
+        border-right-width: 0;
+      }
       p {
         font-size: 1.4rem;
         color: #999;
       }
       img {
-        width: 2.2rem;
+        width: 2.4rem;
         height: 2.2rem;
         display: block;
         margin: 0 auto;
       }
       div.footer-active {
         p {
-          color: @dark-yellow;
+          color: @red;
         }
       }
       div.footer-unactive {

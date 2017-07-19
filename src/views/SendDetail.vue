@@ -2,7 +2,7 @@
   <div class="senddetail">
     <div class="senddetail-container">
       <div class="senddetail-container-tab">
-        <tab active-color='#ff750f'>
+        <tab active-color='#eb1d21'>
           <tab-item :selected="show ==='wait'" @on-item-click="changeShow('wait')">待寄件</tab-item>
           <tab-item :selected="show ==='ready'" @on-item-click="changeShow('ready')">已寄件</tab-item>
         </tab>

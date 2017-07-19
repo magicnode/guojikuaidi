@@ -17,12 +17,12 @@
            <span v-show="getting === true" style="white-space: nowrap;font-size: 1.2rem;">{{time + ' s 后可重新获取'}}</span>
          </div>
        </div>
-       <div class="input mobile">
+       <div class="input mobile" @click="foucsOnCode">
          <div>
            <img src="../assets/images/new/bin_ico_ver.png" alt="phone">
          </div>
          <div>
-           <input style="max-width: 10rem;" type="text" name="mobile" v-model="code" placeholder="输入验证码" />
+           <input style="max-width: 10rem;" id="inputCode" type="text" name="mobile" v-model="code" placeholder="输入验证码" />
          </div>
          <div class="getcode">
            <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
@@ -50,6 +50,9 @@ export default {
       time: 30
     }
   },
+  mounted () {
+    window.document.title = '手机绑定'
+  },
   computed: {
     ...mapGetters({
       'openid': 'getOpenId',
@@ -74,6 +77,9 @@ export default {
         }
         _this.time--
       }, 1000)
+    },
+    foucsOnCode () {
+      window.document.getElementById('inputCode').focus()
     },
     async getCode () {
       if (!this.mobile) {
@@ -167,7 +173,6 @@ export default {
             _this.$router.push({path: '/usercenter'})
             break
         }
-        return
       } else {
         this.$vux.toast.show(userinfo)
         return

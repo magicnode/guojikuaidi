@@ -1,11 +1,11 @@
 <template>
   <div class="usercenter">
     <div class="usercenter-info"> 
-      <img :src="user.headimgurl" :alt="user.nickname">
+      <img :src="user.headimgurl" :alt="user.nickname" @click="usershow = true">
       <p>{{user.nickname}}</p>
     </div>
     <div class="usercenter-orderfunc">
-      <div class="usercenter-orderfunc-box flex" v-for="item in orderfunc" @click="goPath(item.path)" v-if="item.show">
+      <div class="usercenter-orderfunc-box flex" v-for="item in orderfunc" @click="goPath(item.path, item.func)" v-if="item.show">
         <div class="usercenter-orderfunc-box--info">
           <img :src="item.src" alt="">
           <span>{{item.name}}</span>
@@ -13,18 +13,50 @@
         <span class="arrow-left"></span>
       </div>
     </div>
-    <div class="refresh">
+    <div class="refresh hide">
       <button :class="{'roate-change': isReresh}" class="btn-sub" @click="loginout"></button>
+    </div>
+    <div v-transfer-dom>
+      <x-dialog v-model="dialogshow" class="dialog-demo" hide-on-blur>
+        <div class="customer-service flex">
+          <p>客服热线:&nbsp;&nbsp;</p>
+          <p><a href="tel:4008201563">400-820-1563</a></p>
+        </div>
+        <div @click="dialogshow = false">
+          <span class="vux-close"></span>
+        </div>
+      </x-dialog>
+    </div>
+
+    <div v-transfer-dom>
+      <x-dialog v-model="usershow" class="user-dialog" hide-on-blur>
+        <div class="img-box" :style="'background-image:url(' + user.headimgurl + ')'">
+        </div>
+        <div class="user-info">
+          <p>微信昵称: {{user.nickname}}</p>
+          <p>手机号: {{user.mobile}}</p>
+        </div>
+        <div @click="usershow = false">
+          <span class="vux-close user-close"></span>
+        </div>
+      </x-dialog>
     </div>
   </div>
 </template>
 <script>
+import { XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'usercenter',
   async created () {
     this.$store.commit('SET_PAGE', {page: 'usercenter'})
+  },
+  directives: {
+    TransferDom
+  },
+  components: {
+    XDialog
   },
   computed: {
     ...mapGetters({
@@ -38,6 +70,7 @@ export default {
   },
   data () {
     return {
+      usershow: false,
       isShow: false,
       orderfunc: [{
         src: require('../assets/images/new/min_ico_add.png'),
@@ -56,15 +89,16 @@ export default {
       }, {
         src: require('../assets/images/new/min_ico_cus.png'),
         name: '客服中心',
-        path: '/customer/service',
+        func: 'showDialog',
         show: true
       }],
-      isReresh: false
+      isReresh: false,
+      dialogshow: false
     }
   },
   methods: {
-    goPath (path) {
-      if (!path) {
+    goPath (path, func) {
+      if (!path && !func) {
         this.$vux.toast.show({
           text: '暂未开放',
           type: 'warn',
@@ -72,8 +106,17 @@ export default {
         })
         return
       }
-      this.$router.push({path})
-      return
+      if (!path && func) {
+        this[func]()
+        return
+      }
+      if (path) {
+        this.$router.push({path})
+        return
+      }
+    },
+    showDialog () {
+      this.dialogshow = true
     },
     loginout () {
       const _this = this
@@ -97,7 +140,50 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
-
+@import '~vux/src/styles/close';
+.dialog-demo {
+  .weui-dialog{
+    padding: 1rem 1rem 8px 1rem;
+    border-radius: 8px;
+  }
+  .dialog-title {
+    line-height: 30px;
+    color: #666;
+  }
+  .customer-service {
+    padding: 1rem;
+    font-size: 1.6rem;
+    a {
+      color: @red;
+    }
+  }
+  .vux-close {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+}
+.user-dialog {
+  .img-box {
+    height: 350px;
+    overflow: hidden;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    filter: blur(15px);
+  }
+  .user-info {
+    position: absolute;
+    top: 0;
+    padding: 15px;
+    p {
+      color: white;
+      font-size: 1.4rem;
+      text-align: left;
+    }
+  }
+  .user-close {
+    padding: 10px 0;
+  }
+}
 .flex {
   display: flex;
   align-items: center;
@@ -158,16 +244,16 @@ export default {
   padding: 1.2rem;
   &-info {
     padding: 2rem;
-    background: @dark-yellow;
+    background: @greybg;
     overflow: hidden;
     position: relative;
-    height: 12rem;
+    height: 11rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     img {
-      width: 7.5rem;
+      width: 7.2rem;
       border-radius: 50%;
     }
     p {

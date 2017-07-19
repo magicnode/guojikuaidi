@@ -83,7 +83,7 @@ function Navigation (position, map, walking) {
       showButton: true,
       buttonPosition: 'LB',
       buttonOffset: new window.AMap.Pixel(10, 20),
-      showMarker: true,
+      showMarker: false,
       showCircle: true,
       panToLocation: true,
       zoomToAccuracy: false,
@@ -93,6 +93,14 @@ function Navigation (position, map, walking) {
     geolocation.getCurrentPosition()
     window.AMap.event.addListener(geolocation, 'complete', function (data) {
       selfPosition = data.position
+      // 定位成功后在 当前位置上打上标记
+      let mymarker = new window.AMap.Marker({
+        icon: 'http://7xqh0b.com1.z0.glb.clouddn.com/biaoji2.png',
+        title: '我的位置',
+        position: [selfPosition.lng, selfPosition.lat]
+      })
+      mymarker.setMap(map)
+
       walking.clear()
       // 本地经纬度，测试用
       // walking.search([121.345506, 31.222795], new window.AMap.LngLat(position[0], position[1]))

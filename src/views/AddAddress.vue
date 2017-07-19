@@ -6,7 +6,7 @@
          <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
          <x-address @on-focus="fixBtn" @on-blur="removeFixBtn" v-if="pagetype === 'add'" class="quyu" required title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
          <x-address class="quyu" v-if="pagetype === 'edit'" required title="地区" raw-value v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
-         <x-textarea @on-focus="fixBtn" @on-blur="removeFixBtn" type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :autosize="true" :show-counter="false" v-model="address" :rows="1" required>
+         <x-textarea @on-focus="fixBtn" @on-blur="removeFixBtn" type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="address" :rows="1" :height="address.length + 22" required>
          </x-textarea>
        </group>
        <group>
@@ -123,7 +123,10 @@ export default {
         })
         return
       }
-      await this.addAddress({address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
+      const res = await this.addAddress({address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
+      if (res.type !== 'success') {
+        return this.$vux.toast.show(res)
+      }
       this.$router.go(-1)
     },
     async saveAddress () {
@@ -135,23 +138,21 @@ export default {
     },
     fixBtn () {
       const Btn = window.document.getElementsByClassName('addaddress-container-add')[0]
-      console.log('btn', Btn)
       const classname = Btn.className
       setTimeout(function () {
         Btn.className = classname.replace(/fixed-fill/g, '')
         Btn.className += ' fixed-fill'
       }, 500)
-      console.log('btn', Btn)
     },
     removeFixBtn () {
       const Btn = window.document.getElementsByClassName('addaddress-container-add')[0]
-      console.log('btn', Btn)
       const classname = Btn.className
       setTimeout(function () {
         Btn.className = classname.replace(/fixed-fill/g, '')
       }, 500)
-      console.log('btn', Btn)
     }
+  },
+  watch: {
   }
 }
 </script>

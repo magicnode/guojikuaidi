@@ -29,11 +29,12 @@ export default {
     this.$vux.toast.show({
       type: 'text',
       width: '18rem',
-      time: '4000',
+      time: '1500',
       text: '正在为您跳转，请稍候'
     })
     let localStorage = window.localStorage
     const code = localStorage.getItem('mj_code')
+    const openid = localStorage.getItem('mj_openid')
     if (code) {
       // 通过code获取openid
       const openidres = await this.setOpenid({appid, code, secret})
@@ -48,11 +49,11 @@ export default {
       }
       // 通过openid获取用户信息
       let openid = openidres.openid
+      window.localStorage.removeItem('mj_code')
       await this.getUserInfoByOpenid({openid})
       return
     }
     // 从localstorage中获取openid
-    const openid = localStorage.getItem('mj_openid')
     if (openid) {
       // 通过openid从数据库中查询用户数据
       await this.getUserInfoByOpenid({openid})
