@@ -1,37 +1,38 @@
 <template>
   <div class="bind">
-     <div class="bind-container">
-       <div class="logo">
-          <img src="../assets/images/new/bin_log.png" alt="妙寄图标">
+    <canvas id="Mycanvas" width="541" height="780" style="opacity: .5"></canvas>
+    <div class="bind-container">
+     <div class="logo">
+       <h1>国际快递</h1>
+     </div>
+     <div class="input mobile">
+       <div>
+         <img src="../assets/images/new/bin_ico_pho.png" alt="phone">
        </div>
-       <div class="input mobile">
-         <div>
-           <img src="../assets/images/new/bin_ico_pho.png" alt="phone">
-         </div>
-         <div>
-           <input style="max-width: 10rem;" type="text" name="mobile" v-model="mobile" placeholder="输入手机号" />
-         </div>
-         <div class="getcode">
-           <button v-show="getting === false && (mobile.toString().length < 11) === true" type="" class="button btn-get-disable">获取验证码</button>
-           <button v-show="getting === false && (mobile.toString().length >= 11) ===true" type="" class="button btn-get" @click="getCode">获取验证码</button>
-           <span v-show="getting === true" style="white-space: nowrap;font-size: 1.2rem;">{{time + ' s 后可重新获取'}}</span>
-         </div>
+       <div>
+         <input style="max-width: 10rem;" type="text" name="mobile" v-model="mobile" placeholder="输入手机号" />
        </div>
-       <div class="input mobile" @click="foucsOnCode">
-         <div>
-           <img src="../assets/images/new/bin_ico_ver.png" alt="phone">
-         </div>
-         <div>
-           <input style="max-width: 10rem;" id="inputCode" type="text" name="mobile" v-model="code" placeholder="输入验证码" />
-         </div>
-         <div class="getcode">
-           <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
-          </div>
-       </div>
-       <div class="check" style="padding-top: 4rem;">
-         <button class="button btn-login" @click="submitPhone">确定</button>
+       <div class="getcode">
+         <button v-show="getting === false && (mobile.toString().length < 11) === true" type="" class="button btn-get-disable">获取验证码</button>
+         <button v-show="getting === false && (mobile.toString().length >= 11) ===true" type="" class="button btn-get" @click="getCode">获取验证码</button>
+         <span v-show="getting === true" style="white-space: nowrap;font-size: 1.2rem;">{{time + ' s 后可重新获取'}}</span>
        </div>
      </div>
+     <div class="input mobile" @click="foucsOnCode">
+       <div>
+         <img src="../assets/images/new/bin_ico_ver.png" alt="phone">
+       </div>
+       <div>
+         <input style="max-width: 10rem;" id="inputCode" type="text" name="mobile" v-model="code" placeholder="输入验证码" />
+       </div>
+       <div class="getcode">
+         <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
+        </div>
+     </div>
+     <div class="check" style="padding-top: 4rem;">
+       <button class="button btn-login" @click="submitPhone">确定</button>
+     </div>
+    </div>
   </div>
 </template>
 <script>
@@ -52,6 +53,104 @@ export default {
   },
   mounted () {
     window.document.title = '手机绑定'
+    // canvas 动画效果
+    // 定义画布宽高和生成点的个数
+    let WIDTH = window.innerWidth
+    let HEIGHT = window.innerHeight
+    let POINT = 35
+
+    let canvas = document.getElementById('Mycanvas')
+    canvas.width = WIDTH
+    canvas.height = HEIGHT
+    let context = canvas.getContext('2d')
+    context.strokeStyle = 'rgba(0,0,0,0.2)'
+    context.strokeWidth = 1
+    context.fillStyle = 'rgba(0,0,0,0.1)'
+    let circleArr = []
+
+    // 线条：开始xy坐标，结束xy坐标，线条透明度
+    function Line (x, y, _x, _y, o) {
+      this.beginX = x
+      this.beginY = y
+      this.closeX = _x
+      this.closeY = _y
+      this.o = o
+    }
+    // 点：圆心xy坐标，半径，每帧移动xy的距离
+    function Circle (x, y, r, moveX, moveY) {
+      this.x = x
+      this.y = y
+      this.r = r
+      this.moveX = moveX
+      this.moveY = moveY
+    }
+    // 生成max和min之间的随机数
+    function num (max, _min) {
+      let min = arguments[1] || 0
+      return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+    // 绘制原点
+    function drawCricle (cxt, x, y, r, moveX, moveY) {
+      let circle = new Circle(x, y, r, moveX, moveY)
+      cxt.beginPath()
+      cxt.arc(circle.x, circle.y, circle.r, 0, 2 * Math.PI)
+      cxt.closePath()
+      cxt.fill()
+      return circle
+    }
+    // 绘制线条
+    function drawLine (cxt, x, y, _x, _y, o) {
+      let line = new Line(x, y, _x, _y, o)
+      cxt.beginPath()
+      cxt.strokeStyle = 'rgba(0,0,0,' + o + ')'
+      cxt.moveTo(line.beginX, line.beginY)
+      cxt.lineTo(line.closeX, line.closeY)
+      cxt.closePath()
+      cxt.stroke()
+    }
+    // 初始化生成原点
+    function init () {
+      circleArr = []
+      for (let i = 0; i < POINT; i++) {
+        circleArr.push(drawCricle(context, num(WIDTH), num(HEIGHT), num(15, 2), num(10, -10) / 40, num(10, -10) / 40))
+      }
+      draw()
+    }
+    // 每帧绘制
+    function draw () {
+      context.clearRect(0, 0, canvas.width, canvas.height)
+      for (let i = 0; i < POINT; i++) {
+        drawCricle(context, circleArr[i].x, circleArr[i].y, circleArr[i].r)
+      }
+      for (let i = 0; i < POINT; i++) {
+        for (let j = 0; j < POINT; j++) {
+          if (i + j < POINT) {
+            let A = Math.abs(circleArr[i + j].x - circleArr[i].x)
+            let B = Math.abs(circleArr[i + j].y - circleArr[i].y)
+            let lineLength = Math.sqrt(A * A + B * B)
+            let C = 1 / lineLength * 7 - 0.009
+            let lineOpacity = C > 0.03 ? 0.03 : C
+            if (lineOpacity > 0) {
+              drawLine(context, circleArr[i].x, circleArr[i].y, circleArr[i + j].x, circleArr[i + j].y, lineOpacity)
+            }
+          }
+        }
+      }
+    }
+    // 调用执行
+    init()
+    setInterval(function () {
+      for (let i = 0; i < POINT; i++) {
+        let cir = circleArr[i]
+        cir.x += cir.moveX
+        cir.y += cir.moveY
+        if (cir.x > WIDTH) cir.x = 0
+        else if (cir.x < 0) cir.x = WIDTH
+        if (cir.y > HEIGHT) cir.y = 0
+        else if (cir.y < 0) cir.y = HEIGHT
+      }
+      draw()
+    }, 16)
   },
   computed: {
     ...mapGetters({
@@ -193,8 +292,8 @@ export default {
 
 .btn-get {
   .btn-normal;
-  color: @dark-yellow;
-  border: 1px solid @dark-yellow;
+  color: @red;
+  border: 1px solid @red;
   background: transparent
 }
 
@@ -211,7 +310,7 @@ export default {
   padding: 1rem;
   color: white;
   border: none;
-  background: @dark-yellow;
+  background: @red;
 }
 
 .getcode {
@@ -219,10 +318,14 @@ export default {
 }
 
 .bind {
-  background: white;
+  background:#f7fafc;
   height: 100vh;
+  overflow: hidden;
   *height: 62rem;
   &-container {
+    width: 84%;
+    position: fixed;
+    top: 0;
     padding: 2.5rem;
     .logo {
       padding: 1rem;
@@ -247,6 +350,7 @@ export default {
           border: none;
           height: 2.6rem;
           font-size: 1.4rem;
+          background: transparent;
         }
       }
     }

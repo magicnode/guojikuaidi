@@ -206,14 +206,6 @@ export default {
     if (!this.sendAddress['id'] && !this.pickupAddress['id']) {
       this.setDefaultAddress()
     }
-    let addressInfo = window.localStorage.getItem('mj_addressInfo')
-    addressInfo = JSON.parse(addressInfo)
-    this.office = addressInfo ? addressInfo.descript : ''
-    const mjBrand = window.localStorage.getItem('mj_send_brand')
-    this.expresstype = mjBrand || undefined
-    this.describe = window.localStorage.getItem('mj_send_describe')
-    this.note = window.localStorage.getItem('mj_send_note')
-    this.initBrand({id: addressInfo ? addressInfo.userId : 0})
   },
   mounted () {
     window.document.title = '寄件'
@@ -221,6 +213,7 @@ export default {
   beforeDestroy () {
     // 离开本页面时，要移除footer class中的hide
     const footer = window.document.getElementsByTagName('footer')[0]
+    if (!footer) return
     footer.className = footer.className.replace(/hide/g, '')
   },
   computed: {

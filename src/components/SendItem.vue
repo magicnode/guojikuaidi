@@ -7,7 +7,6 @@
          <span class="senditem-box__office--info">
           寄件站点: {{item.office | officeinfo}}
          </span>
-         <img src="../assets/images/new/pic_ico_map.png" alt="item.office.descript" @click="watchOffice(item.officeId)">
         </span>
       </div>
       <div class="senditem-box flex">
@@ -37,7 +36,6 @@
          <span class="senditem-box__office--info">
           寄件站点: {{item.office | officeinfo}}
          </span>
-         <img src="../assets/images/new/pic_ico_map.png" alt="item.office.descript" @click="watchOffice(item.officeId)">
         </span>
       </div>
       <div class="senditem-box flex">
@@ -162,8 +160,8 @@ export default {
   .normal-btn;
   color: white;
   border: none;
-  border: 1px solid @dark-yellow;
-  background: @dark-yellow;
+  border: 1px solid @red;
+  background: @red;
 }
 
 .senditem {
@@ -194,7 +192,7 @@ export default {
     }
     &__state {
       font-size: 1.3rem;
-      color: @dark-yellow;
+      color: @red;
       padding-top: .3rem;
       position: absolute;
       right: 2.7rem;
@@ -202,7 +200,7 @@ export default {
     &__price {
       padding-right: 1rem;
       font-size: 1.4rem;
-      color: @dark-yellow;
+      color: @red;
     }
     &__icon {
       border-radius: 50%;

@@ -190,7 +190,7 @@ export default {
         padding: 1rem 0;
         width: 100%;
         color: white;
-        background: @dark-yellow;
+        background: @red;
         border-radius: 6px;
       }
     }

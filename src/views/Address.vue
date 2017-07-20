@@ -2,7 +2,7 @@
   <div class="address">
     <div class="address-container">
       <div class="address-container-tab">
-        <tab active-color='#ff750f'>
+        <tab active-color='#eb1d21'>
           <tab-item :selected="addressType === 'send'" @on-item-click="changeShow('send')">寄件地址</tab-item>
           <tab-item :selected="addressType === 'pickup'" @on-item-click="changeShow('pickup')">收件地址</tab-item>
         </tab>
@@ -25,7 +25,7 @@
               </div>
               <div class="flex address-container-list__item--func flex">
                 <span class="is-default" v-show="item.checked == 1">
-                  <img src="../assets/images/sen_btn_che.png" alt="">
+                  <img src="../assets/images/add_ico_che.png" alt="">
                   <span>默认地址</span>
                 </span>
                 <span class="not-default" v-show="item.checked == 2" @click.stop="changeChecked(item.id, item.checked)">
@@ -201,7 +201,7 @@ export default {
         font-size: 1.8rem;
         padding: 1rem 0;
         color: white;
-        background: @dark-yellow;
+        background: @red;
         border-radius: 6px;
       }
     }
@@ -258,7 +258,7 @@ export default {
             }
           }
           .is-default {
-            color: #ff6d40;
+            color: #eb1d21;
             img {
               width: 1.2rem;
               vertical-align: text-top;

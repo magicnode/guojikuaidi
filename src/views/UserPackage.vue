@@ -1,30 +1,8 @@
 <template>
   <div class="senddetail">
     <div class="senddetail-container">
-      <div class="senddetail-container-tab">
-        <tab active-color='#ff750f'>
-          <tab-item :selected="show ==='pickup'" @on-item-click="changeShow('pickup')">取件</tab-item>
-          <tab-item :selected="show ==='send'" @on-item-click="changeShow('send')">寄件</tab-item>
-        </tab>
-      </div>
-      <div class="senddetail-cell" v-show="show === 'pickup'">
-        <scroller
-          :on-refresh="refreshPickup"
-          :on-infinite="infinitePickup"
-          ref="my_scroller_pickup"
-          class="senddetail-scroller">
-          <!-- custom refresh spinner, use default `spinner` & viewBox 0,0,64,64 class -->
-          <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="senddetail-cell-detail" v-for="item in pickup" :key="item.createTime">
-            <mj-pickupitem :item="item"></mj-pickupitem>
-          </div>
-          <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
-          <div style="height: 50px;">
-          </div>
-        </scroller>
-      </div>
       <!-- 已寄件 -->
-      <div class="senddetail-cell" v-show="show === 'send'">
+      <div class="senddetail-cell">
         <scroller 
           :on-refresh="refreshSend"
           :on-infinite="infiniteSend"

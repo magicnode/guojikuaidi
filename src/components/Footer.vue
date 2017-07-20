@@ -1,5 +1,5 @@
 <template>
-  <footer>
+  <footer class="footer">
     <ul>
       <li v-for="item in foot" @click="goPath(item.path)" :key="item.key">
         <div class="footer-active" v-if="item.key === page">
