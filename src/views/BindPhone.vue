@@ -27,6 +27,17 @@
        </div>
        <div class="getcode">
          <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
+       </div>
+     </div>
+     <div class="input mobile" @click="foucsOnShenfen">
+       <div>
+         <img src="../assets/images/bin_ico_car.png" alt="phone">
+       </div>
+       <div>
+         <input style="max-width: 10rem;" id="inputShenfen" type="text" name="mobile" v-model="code" placeholder="输入身份证" />
+       </div>
+       <div class="getcode">
+         <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
         </div>
      </div>
      <div class="check" style="padding-top: 4rem;">
@@ -180,6 +191,9 @@ export default {
     foucsOnCode () {
       window.document.getElementById('inputCode').focus()
     },
+    foucsOnShenfen () {
+      window.document.getElementById('inputShenfen').focus()
+    },
     async getCode () {
       if (!this.mobile) {
         this.$vux.toast.show({
@@ -200,7 +214,7 @@ export default {
       }
       if (!this.openid) {
         this.$vux.toast.show({
-          text: 'openid无法获取，请重新登录',
+          text: '请重新登录',
           type: 'text',
           width: '20rem'
         })
@@ -329,7 +343,7 @@ export default {
     padding: 2.5rem;
     .logo {
       padding: 1rem;
-      padding-bottom: 2rem;
+      padding-bottom: 1.2rem;
       img {
         width: 30%;
       }

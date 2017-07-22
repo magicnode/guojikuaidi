@@ -32,12 +32,6 @@
           </div>
         </div>
         <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">寄件站点</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.office.name}}</span>
-          <img style="width: 1.4rem;padding: 0 1rem;position: absolute;right: 6px;" src="../assets/images/new/pic_ico_map.png" alt="地址" @click="watchOffice(data.officeId)">
-        </div>
-        <div class="sendqr-detail-box">
           <span class="sendqr-detail-box__title">快递品牌</span>
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">{{data.brandId | brandtype}}</span>
@@ -46,16 +40,6 @@
           <span class="sendqr-detail-box__title">快递类型</span>
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">{{data.expresstype | pickupstate}}</span>
-        </div>
-        <div class="sendqr-detail-box" v-show="data.describe">
-          <span class="sendqr-detail-box__title">物品描述</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.describe}}</span>
-        </div>
-        <div class="sendqr-detail-box" v-show="data.note">
-          <span class="sendqr-detail-box__title">寄件备注</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.note}}</span>
         </div>
         <div class="sendqr-detail-box" v-show="data.pay_type">
           <span class="sendqr-detail-box__title">支付方式</span>

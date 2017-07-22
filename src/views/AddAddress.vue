@@ -2,16 +2,18 @@
   <div class="addaddress">
     <div class="addaddress-container">
       <group>
-         <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="姓名" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-         <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
-         <x-address @on-focus="fixBtn" @on-blur="removeFixBtn" v-if="pagetype === 'add'" class="quyu" required title="地区" v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
-         <x-address class="quyu" v-if="pagetype === 'edit'" required title="地区" raw-value v-model="location" :list="addressData" placeholder="请选择省市区"></x-address>
-         <x-textarea @on-focus="fixBtn" @on-blur="removeFixBtn" type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="address" :rows="1" :height="address.length + 22" required>
-         </x-textarea>
+        <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="姓名" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
+        <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
+        <div @click="steppickershow = !steppickershow">
+          <x-input disabled title="地区" placeholder="请选择国家、省市区" required></x-input>
+        </div>
+        <x-textarea @on-focus="fixBtn" @on-blur="removeFixBtn" type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="address" :rows="1" :height="address.length + 22" required>
+        </x-textarea>
        </group>
        <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
        </group>
+       <step-location :steppickerShow="steppickershow"></step-location>
        <div class="addaddress-container-add">
          <p class="addaddress-container-add--btn" @click.stop="saveAddress">保存</p>
        </div>
@@ -19,7 +21,7 @@
   </div>
 </template>
 <script>
-import { XInput, XSwitch, XTextarea, XAddress, ChinaAddressV3Data, Radio, Value2nameFilter as value2name } from 'vux'
+import { XInput, XSwitch, XTextarea, XAddress, Picker, ChinaAddressV3Data, Radio, Value2nameFilter as value2name } from 'vux'
 import { mapActions } from 'vuex'
 
 export default {
@@ -29,7 +31,8 @@ export default {
     XSwitch,
     XAddress,
     Radio,
-    XTextarea
+    XTextarea,
+    Picker
   },
   created () {
     const query = this.$route.query
@@ -54,13 +57,22 @@ export default {
   },
   data () {
     return {
+      steppickershow: false,
+      picker: false,
       pagetype: 'add',
       addressData: ChinaAddressV3Data,
       name: '',
       mobile: '',
       location: [],
       address: '',
-      value: false
+      value: false,
+      locations: [
+        ['1', '2', '3'],
+        ['123123', '213123', 'asdas'],
+        ['123123', '213123', 'asdas'],
+        ['123123', '213123', 'asdas']
+      ],
+      addressVal: []
     }
   },
   methods: {
@@ -71,6 +83,9 @@ export default {
     checkMobile (num) {
       const reg = /^1[1|3|4|5|7|8|9][0-9]\d{8}$/
       return reg.test(num)
+    },
+    change (value) {
+      console.log('new Value', value)
     },
     edit () {
       const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向

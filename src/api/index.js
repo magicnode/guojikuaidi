@@ -1,7 +1,8 @@
-// wu cong
+// 吴聪
 // let url = 'http://1a699l6063.imwork.net/WeChatService/'
-// xiao hang
-// let url = 'http://192.168.0.201:8888/WeChatService/'
+// 董浩伟
+// let url = 'http://192.168.0.108:8080/WeChat/'
+let guojiurl = 'http://192.168.0.108:8080/WeChat/'
 // online app 云端服务
 let url = 'http://app.quandikeji.com/WeChatService/'
 
@@ -22,6 +23,10 @@ export const address = {
   checked: url + 'checked',
   default: url + 'GETADDRESSDEFAULT',
   officelocation: url + 'FindStationInfo'
+}
+
+export const geography = {
+  showcountry: guojiurl + 'Country/ShowCountry'
 }
 
 export const send = {

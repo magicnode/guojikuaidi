@@ -14,6 +14,7 @@ import Header from './components/Header.vue'
 import PickupItem from './components/PickupItem.vue'
 import SendItem from './components/SendItem.vue'
 import MJSpinner from './components/MJSpinner.vue'
+import StepLocationPicker from './components/StepLocationPicker.vue'
 
 import window from 'window'
 
@@ -36,6 +37,7 @@ Vue.component('mj-header', Header)
 Vue.component('mj-spinner', MJSpinner)
 Vue.component('mj-pickupitem', PickupItem)
 Vue.component('mj-senditem', SendItem)
+Vue.component('step-location', StepLocationPicker)
 
 function SwitchfullPath (fullPath) {
   let page = ''
