@@ -188,6 +188,12 @@
 <script>
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
+import {sundry as sundryApi} from '@/api'
+import axios from 'axios'
+
+let instance = axios.create({
+  timeout: 5000
+})
 
 export default {
   name: 'send',
@@ -206,6 +212,20 @@ export default {
     if (!this.sendAddress['id'] && !this.pickupAddress['id']) {
       this.setDefaultAddress()
     }
+    // 获取产品类型
+    const cargotype = await instance({
+      method: 'post',
+      url: sundryApi.cargotype
+    })
+    let cargotypeData = cargotype.data.obj
+    cargotypeData = cargotypeData.map(function (elem) {
+      let item = {
+        key: elem.name,
+        value: elem.id
+      }
+      return item
+    })
+    this.productionTypeOption = cargotypeData
   },
   mounted () {
     window.document.title = '寄件'
@@ -248,7 +268,7 @@ export default {
       volume: 1000,
       packageShow: false,
       productionType: undefined,
-      productionTypeOption: ['DHL', 'EHL'],
+      productionTypeOption: [],
       newpackage: {
         order: '',
         weight: '',
@@ -330,7 +350,6 @@ export default {
     },
     async submitSend () {
       if (this.loading) return
-      console.log('asd', this.standard)
       this.$vux.loading.show({
         text: '  '
       })

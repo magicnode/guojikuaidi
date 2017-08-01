@@ -13,7 +13,8 @@
        <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
        </group>
-       <step-location :steppickerShow="steppickershow"></step-location>
+       <step-location :steppickerShow="steppickershow" v-on:listenClose="closeStepLocation">
+       </step-location>
        <div class="addaddress-container-add">
          <p class="addaddress-container-add--btn" @click.stop="saveAddress">保存</p>
        </div>
@@ -80,6 +81,9 @@ export default {
       'addAddress',
       'eidtAddress'
     ]),
+    closeStepLocation (val) {
+      this.steppickershow = val
+    },
     checkMobile (num) {
       const reg = /^1[1|3|4|5|7|8|9][0-9]\d{8}$/
       return reg.test(num)

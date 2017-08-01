@@ -1,10 +1,9 @@
 // 吴聪
 // let url = 'http://1a699l6063.imwork.net/WeChatService/'
 // 董浩伟
-// let url = 'http://192.168.0.108:8080/WeChat/'
-let guojiurl = 'http://192.168.0.108:8080/WeChat/'
+let url = 'http://192.168.0.115:8080/WeChat/'
 // online app 云端服务
-let url = 'http://app.quandikeji.com/WeChatService/'
+// let url = 'http://app.quandikeji.com/WeChatService/'
 
 if (process.env.NODE_ENV !== 'development') {
   url = 'http://app.quandikeji.com/WeChatService/'
@@ -26,7 +25,7 @@ export const address = {
 }
 
 export const geography = {
-  showcountry: guojiurl + 'Country/ShowCountry'
+  showcountry: url + 'Country/ShowCountry'
 }
 
 export const send = {
@@ -53,8 +52,8 @@ export const user = {
   gettoken: function (code, params) {
     return url + 'GetAccessToken?code=' + code + '&params=' + params
   },
-  sendsms: url + 'GetRanCode',
-  bindphone: url + 'Binding',
+  sendsms: url + 'User/ShowranCode',
+  bindphone: url + 'User/AddUserPhone',
   getuserinfo: url + 'UserInfo',
   getwebopenid: url + 'UserOpenId'
 }
@@ -70,4 +69,9 @@ export const wx = {
 export const express = {
   // url = url + 'brand=' + brand + '&orderSn=' + orderSn
   route: 'http://app.quandikeji.com:8088/quandiExpressSite1.4.0/Logistics/queryLogisticsInfoForJson'
+}
+
+// 杂项
+export const sundry = {
+  cargotype: url + 'Cargotype/ShowCargotype'
 }

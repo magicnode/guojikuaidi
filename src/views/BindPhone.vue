@@ -3,7 +3,7 @@
     <canvas id="Mycanvas" width="541" height="780" style="opacity: .5"></canvas>
     <div class="bind-container">
      <div class="logo">
-       <h1>国际快递</h1>
+       <h1 v-once>国际快递</h1>
      </div>
      <div class="input mobile">
        <div>
@@ -34,7 +34,7 @@
          <img src="../assets/images/bin_ico_car.png" alt="phone">
        </div>
        <div>
-         <input style="max-width: 10rem;" id="inputShenfen" type="text" name="mobile" v-model="code" placeholder="输入身份证" />
+         <input style="max-width: 10rem;" id="inputShenfen" type="text" name="mobile" v-model="idcard" placeholder="输入身份证/护照" />
        </div>
        <div class="getcode">
          <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
@@ -58,6 +58,7 @@ export default {
       mobile: '',
       sendmobile: '',
       code: '',
+      idcard: '',
       getting: false,
       time: 30
     }
@@ -223,8 +224,7 @@ export default {
       this.getting = true
       this.setTime()
       const res = await this.smsSend({
-        mobile: this.mobile,
-        openid: this.openid
+        phone: this.mobile
       })
       this.$vux.toast.show(res)
       const mb = this.mobile
@@ -250,8 +250,17 @@ export default {
         })
         return
       }
+      if (!this.idcard) {
+        this.$vux.toast.show({
+          text: '请填入证件号',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      }
       const bindres = await this.bindUser({
         mobile: this.sendmobile,
+        IDcard: this.idcard,
         openid: this.openid
       })
       this.$vux.toast.show(bindres)
@@ -357,7 +366,7 @@ export default {
       div {
         padding: .5rem;
         img {
-          height: 2rem;
+          width: 1.5rem;
         }
         input {
           padding: .4rem;

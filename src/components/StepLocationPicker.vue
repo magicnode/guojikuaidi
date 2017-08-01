@@ -1,7 +1,7 @@
 <template>
   <div class="steplocationpicker" v-show="steppickerShow">
     <div class="steplocationpicker-edit">
-      <div class="steplocationpicker-edit--left" @click="steppickerShow = false">
+      <div class="steplocationpicker-edit--left" @click="close">
         <span>取消</span>
       </div>
       <div class="steplocationpicker-edit--right" v-show="step > 1" @click="step>=0&&step--">
@@ -131,6 +131,9 @@ export default {
   methods: {
     change (value) {
       console.log('new Value', value)
+    },
+    close () {
+      this.$emit('listenClose', false)
     }
   },
   watch: {
@@ -151,6 +154,7 @@ export default {
   bottom: 0;
   width: 100%;
   z-index: 2;
+  background: white;
   &-edit {
     display: flex;
     align-items: center;

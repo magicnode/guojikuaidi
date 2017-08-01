@@ -136,20 +136,19 @@ export const actions = {
       }
     }
   },
-  async smsSend ({commit}, {mobile, openid}) {
+  async smsSend ({commit}, {phone}) {
     try {
       const res = await instance({
         method: 'post',
         url: userApi.sendsms,
         params: {
-          mobile,
-          openid
+          phone
         }
       })
       const data = res.data
       const code = data.code
       console.log('sms data', data)
-      if (code === 200) {
+      if (code === 200 || code === 201) {
         commit(types.SET_SMSCODE, {smscode: data.obj})
         return {
           text: data.mess,
@@ -177,14 +176,15 @@ export const actions = {
       }
     }
   },
-  async bindUser ({dispatch, commit}, {mobile, openid}) {
+  async bindUser ({dispatch, commit}, {mobile, openid, IDcard}) {
     try {
       const res = await instance({
         method: 'post',
         url: userApi.bindphone,
         params: {
           mobile,
-          openid
+          openid,
+          IDcard
         }
       })
       const data = res.data
@@ -202,14 +202,14 @@ export const actions = {
         }
       }
       return {
-        text: '绑定帐号失败',
+        text: data.mess || '绑定帐号失败',
         type: 'warn',
         width: '15rem'
       }
     } catch (err) {
       console.error(err)
       return {
-        text: '绑定帐号失败',
+        text: '网络错误',
         type: 'warn',
         width: '15rem'
       }
