@@ -3,7 +3,7 @@
     <div class="send-container">
       <div class="send-container-select go-sendlist">
         <group>
-          <cell title="寄件列表" link="/send/detail" is-link style="padding:1rem 11px 1rem 11px;">
+          <cell title="寄件列表" link="/send/detail" is-link style="padding:1.2rem 11px;">
             <img slot="icon" class="send-icon" style="display:block;margin-right:.8rem;" src="../assets/images/nav_ivo_che.png" />
           </cell>
         </group>
@@ -150,7 +150,7 @@
           </div>
         </div>
         <p class="dialog-tips">
-          请准确填写重量或体积，以免耽误货物妥投
+          请准确填写重量或体积，以免耽误货物妥投，2.5kg以上产品类型不能为文件
         </p>
         <div @click="dialogshow = false">
           <span class="vux-close"></span>
@@ -188,7 +188,7 @@
 <script>
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
-import {sundry as sundryApi} from '@/api'
+import { sundry as sundryApi, send as sendApi } from '@/api'
 import axios from 'axios'
 
 let instance = axios.create({
@@ -230,12 +230,6 @@ export default {
   mounted () {
     window.document.title = '寄件'
   },
-  beforeDestroy () {
-    // 离开本页面时，要移除footer class中的hide
-    const footer = window.document.getElementsByTagName('footer')[0]
-    if (!footer) return
-    footer.className = footer.className.replace(/hide/g, '')
-  },
   computed: {
     ...mapGetters({
       brand: 'getAllBrand',
@@ -262,10 +256,10 @@ export default {
       loading: false,
       dialogshow: false,
       weight: 55,
-      wide: 10,
-      len: 10,
-      height: 10,
-      volume: 1000,
+      wide: 1,
+      len: 1,
+      height: 1,
+      volume: 1,
       packageShow: false,
       productionType: undefined,
       productionTypeOption: [],
@@ -301,12 +295,6 @@ export default {
       'createSend',
       'setAllBrand'
     ]),
-    async initBrand ({id}) {
-      const result = await this.setAllBrand({id})
-      if (result.type !== 'success') {
-        this.showToast({text: result.text, type: result.type})
-      }
-    },
     longTap (index, $event) {
       const _this = this
       function longPress () {
@@ -349,11 +337,55 @@ export default {
       this.$router.push({path})
     },
     async submitSend () {
-      if (this.loading) return
-      this.$vux.loading.show({
-        text: '  '
-      })
-      this.$vux.loading.hide()
+      try {
+        if (this.loading) return
+        this.$vux.loading.show({
+          text: '正在提交'
+        })
+        // 提交寄件
+        const timestamp = new Date().getTime()
+        let headpackage = []
+        const result = await instance({
+          method: 'post',
+          url: sendApi.create,
+          params: {
+            serialnumber: 'DHL' + timestamp,
+            type: '文件',
+            sku: '123',
+            state: 1,
+            // 寄件地址id
+            mailid: 1,
+            // 下单时间
+            endtime: new Date(),
+            // 收件id
+            Arrivaid: 1,
+            userid: 1,
+            starte: 1,
+            extent: this.len,
+            Widthofitem: this.wide,
+            Objectheight: this.height,
+            bearload: 21,
+            remove: 'asdasd',
+            headpackage
+          }
+        })
+        this.$vux.loading.hide()
+        if (result) {
+          this.showToast({text: '提交成功'})
+          this.$router.push({path: '/send/detail', query: {type: 'wait'}})
+          window.localStorage.removeItem('mj_send_describe')
+          window.localStorage.removeItem('mj_send_note')
+          return
+        } else {
+          this.showToast({text: '提交失败', type: 'warn'})
+          return
+        }
+      } catch (e) {
+        console.error(e)
+        this.$vux.loading.hide()
+        this.showToast({text: '提交失败', type: 'warn'})
+        return
+      }
     },
     showFooter () {
       const footer = window.document.getElementsByTagName('footer')[0]
@@ -369,14 +401,50 @@ export default {
       console.log(1)
     },
     len (val, oldval) {
+      const _this = this
+      if (val > 120) {
+        _this.$vux.toast.show({
+          text: '长度不能大于1.2m',
+          width: '18rem',
+          type: 'warn'
+        })
+        _this.len = oldval
+        return
+      }
       this.volume = this.len * this.height * this.wide
     },
     height (val, oldval) {
+      const _this = this
+      if (val > 120) {
+        _this.$vux.toast.show({
+          text: '高度不能大于1.2m',
+          width: '18rem',
+          type: 'warn'
+        })
+        _this.height = oldval
+        return
+      }
       this.volume = this.len * this.height * this.wide
     },
     wide (val, oldval) {
+      const _this = this
+      if (val > 120) {
+        _this.$vux.toast.show({
+          text: '宽度不能大于1.2m',
+          width: '18rem',
+          type: 'warn'
+        })
+        _this.wide = oldval
+        return
+      }
       this.volume = this.len * this.height * this.wide
     }
+  },
+  beforeDestroy () {
+    // 离开本页面时，要移除footer class中的hide
+    const footer = window.document.getElementsByTagName('footer')[0]
+    if (!footer) return
+    footer.className = footer.className.replace(/hide/g, '')
   }
 }
 </script>

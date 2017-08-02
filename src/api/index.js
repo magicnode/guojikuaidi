@@ -1,7 +1,7 @@
 // 吴聪
 // let url = 'http://1a699l6063.imwork.net/WeChatService/'
 // 董浩伟
-let url = 'http://192.168.0.115:8080/WeChat/'
+let url = 'http://192.168.0.225:8080/DHL/'
 // online app 云端服务
 // let url = 'http://app.quandikeji.com/WeChatService/'
 
@@ -30,7 +30,7 @@ export const geography = {
 
 export const send = {
   index: url + 'findSend',
-  create: url + 'insertSend',
+  create: url + 'OrderInfo/InsertOrderInfo',
   cancle: url + 'end_send'
 }
 

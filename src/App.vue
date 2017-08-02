@@ -117,4 +117,8 @@ select,option,textarea {
 .amap-ui-smp-ifwn-content-body {
   border: none!important;
 }
+
+.weui-toast {
+  z-index: 6000;
+}
 </style>

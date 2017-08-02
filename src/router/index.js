@@ -50,26 +50,26 @@ export default new Router({
       name: 'UserCenter',
       component: require('@/views/UserCenter'),
       meta: {
-        scrollToTop: true,
-        requiresAuth: true,
-        requiresMobile: true
+        scrollToTop: false,
+        requiresAuth: false,
+        requiresMobile: false
       }
     }, {
       path: '/send',
       name: 'Send',
       component: require('@/views/Send'),
       meta: {
-        scrollToTop: true,
-        requiresAuth: true,
-        requiresMobile: true
+        scrollToTop: false,
+        requiresAuth: false,
+        requiresMobile: false
       }
     }, {
       path: '/pickup',
       name: 'PickUp',
       component: require('@/views/PickUp'),
       meta: {
-        requiresAuth: true,
-        requiresMobile: true
+        requiresAuth: false,
+        requiresMobile: false
       }
     }, {
       path: '/pickuptest',
