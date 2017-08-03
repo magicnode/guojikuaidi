@@ -149,6 +149,17 @@
            <input title="" disabled type="number" required v-model="volume" placeholder=""></input>            
           </div>
         </div>
+
+        <div class="dialog-content">
+          <div class="dialog-content--weight">
+            物品类型
+            <select name="">
+              <option value="1">文件</option>
+              <option value="2">包裹</option>
+            </select>
+          </div>
+        </div>
+
         <p class="dialog-tips">
           请准确填写重量或体积，以免耽误货物妥投，2.5kg以上产品类型不能为文件
         </p>
@@ -344,13 +355,38 @@ export default {
         })
         // 提交寄件
         const timestamp = new Date().getTime()
-        let headpackage = []
+        const serialnumber = 'DHL' + timestamp
+        let headpackages = [{
+          serialnumber,
+          amount: 2,
+          price: 12,
+          unit: 'ji',
+          cost: '12',
+          Customerbearing: '4513',
+          CustomsNo: 'asdsa',
+          Englishname: 'asdsa',
+          name: 'asdasd',
+          reovme: 'asd'
+        }, {
+          serialnumber,
+          amount: 5,
+          price: 12,
+          unit: '个',
+          cost: '12',
+          Customerbearing: '4513',
+          CustomsNo: 'asdsa',
+          Englishname: 'asdsa',
+          name: 'asdasd',
+          reovme: 'asd'
+        }]
+        headpackages = JSON.stringify(headpackages)
+        console.log('12321', headpackages)
         const result = await instance({
           method: 'post',
           url: sendApi.create,
           params: {
-            serialnumber: 'DHL' + timestamp,
-            type: '文件',
+            serialnumber,
+            type: '123',
             sku: '123',
             state: 1,
             // 寄件地址id
@@ -358,15 +394,15 @@ export default {
             // 下单时间
             endtime: new Date(),
             // 收件id
-            Arrivaid: 1,
+            arrivaid: 1,
             userid: 1,
             starte: 1,
-            extent: this.len,
-            Widthofitem: this.wide,
-            Objectheight: this.height,
+            extent: 12,
+            widthofitem: 12,
+            objectheight: 22,
             bearload: 21,
             remove: 'asdasd',
-            headpackage
+            headpackages
           }
         })
         this.$vux.loading.hide()
