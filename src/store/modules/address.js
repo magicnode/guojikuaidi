@@ -67,13 +67,14 @@ export const actions = {
       }
     }
   },
-  async addAddress ({commit, dispatch}, {address, province, city, district, mobile, name, checked = 2, userId = local.getItem('mj_userId'), addressType = 1}) {
+  async addAddress ({commit, dispatch}, {nationid, provinnce, city, county, detailedinformation,
+    postcode, iphone, userid = local.getItem('mj_userId'), start = 1, linkman, company, remove, type = 1}) {
     try {
       const res = await instance({
         method: 'post',
         url: addressApi.add,
         params: {
-          address, province, city, district, mobile, name, checked, userId, addressType
+          nationid, provinnce, city, county, detailedinformation, postcode, iphone, userid, start, linkman, company, remove
         }
       })
       if (res.status === 200) {

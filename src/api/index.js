@@ -1,11 +1,9 @@
-// 吴聪
-// let url = 'http://1a699l6063.imwork.net/WeChatService/'
 // 董浩伟
-let url = 'http://192.168.0.225:8080/DHL/'
+// let url = 'http://192.168.0.225:8080/DHL/'
 // 仝舟
 // let url = 'http://192.168.0.125:8066/'
 // online app 云端服务
-// let url = 'http://app.quandikeji.com/WeChatService/'
+let url = 'http://api.didalive.net/DHL/'
 
 if (process.env.NODE_ENV !== 'development') {
   url = 'http://app.quandikeji.com/WeChatService/'
