@@ -12,11 +12,6 @@ let instance = axios.create({
 export const state = {
   data: {},
   query: {
-  },
-  result: {
-    show: false,
-    type: 'success',
-    info: '成功'
   }
 }
 
@@ -28,67 +23,49 @@ export const getters = {
 
 // actions
 export const actions = {
-  changeAddress ({ commit }) {
-    instance.get(addressApi.index, {
-      params: {userId: local.getItem('mj_userId')}
-    })
-    .then((res) => {
-      if (res.status === 200) {
-        let data = res.data
-        let send = []
-        let pickup = []
-        for (let i = 0, len = data.length; i < len; i++) {
-          let item = data[i]
-          if (item.addressType === 1) {
-            send.push(item)
-          } else if (item.addressType === 2) {
-            pickup.push(item)
-          }
+  async changeAddress ({ commit }) {
+    try {
+      const send = await instance({
+        method: 'post',
+        url: addressApi.send,
+        params: {
+          userid: local.getItem('mj_userId')
         }
-        pickup = pickup.sort((v1, v2) => {
-          return v1.checked - v2.checked
-        })
-        send = send.sort((v1, v2) => {
-          return v1.checked - v2.checked
-        })
-        data.send = send
-        data.pickup = pickup
+      })
+      const pickup = await instance({
+        method: 'post',
+        url: addressApi.pickup,
+        params: {
+          userid: local.getItem('mj_userId')
+        }
+      })
+      if (send.status === 200 && pickup.status === 200) {
+        console.log('send', send.data)
+        console.log('pickup', pickup.data)
+        let data = {
+          send: send.data.obj,
+          pickup: pickup.data.obj
+        }
         commit(types.SET_ADDRESS, {data})
-      } else {
-        let result = {
-          show: true,
-          type: 'warn',
-          info: '获取地址信息失败',
+        return {
+          type: 'success',
+          info: '请求成功',
           width: '18rem'
         }
-        commit(types.SET_ADDRESS_RES, {result})
       }
-    })
-    .catch(err => {
-      console.error(err)
-      let result = {
-        show: true,
+      return {
         type: 'warn',
         info: '获取地址信息失败',
         width: '18rem'
       }
-      commit(types.SET_ADDRESS_RES, {result})
-    })
-  },
-  delAddress ({dispatch}, {id}) {
-    instance.get(addressApi.delete, {
-      params: {
-        id
+    } catch (e) {
+      console.error(e)
+      return {
+        type: 'warn',
+        info: '网络错误',
+        width: '18rem'
       }
-    })
-    .then((res) => {
-      if (res.status === 200) {
-        dispatch('changeAddress')
-      }
-    })
-    .catch(err => {
-      console.error(err)
-    })
+    }
   },
   async addAddress ({commit, dispatch}, {address, province, city, district, mobile, name, checked = 2, userId = local.getItem('mj_userId'), addressType = 1}) {
     try {

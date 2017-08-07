@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="steplocationpicker-step" v-show="step === 1">
-      <p>选择国家</p>
+      <p>选择国家--{{countryVal}}</p>
       <picker :data='countryData' v-model='countryVal' :fixed-columns="1" :columns="1"></picker>
     </div>
     <div class="steplocationpicker-step" v-show="step === 2">
@@ -56,45 +56,13 @@ export default {
   data () {
     return {
       step: 1,
-      countryData: [{
-        name: '中国',
-        value: 1,
-        parent: 0
-      }, {
-        name: '美国',
-        value: 2,
-        parent: 0
-      }],
+      countryData: [],
       countryVal: [],
-      provinceData: [{
-        name: '海南',
-        value: 1,
-        parent: 0
-      }, {
-        name: '上海',
-        value: 2,
-        parent: 0
-      }],
+      provinceData: [],
       provinceVal: [],
-      cityData: [{
-        name: '上海',
-        value: 1,
-        parent: 0
-      }, {
-        name: '杭州',
-        value: 2,
-        parent: 0
-      }],
+      cityData: [],
       cityVal: [],
-      countyData: [{
-        name: '闵行区',
-        value: 1,
-        parent: 0
-      }, {
-        name: '西湖区',
-        value: 2,
-        parent: 0
-      }],
+      countyData: [],
       countyVal: []
     }
   },
@@ -117,8 +85,12 @@ export default {
           text: data.mess
         })
       }
-      console.log('data', data)
-      return {}
+      this.countryData = data.obj.map(function (elem) {
+        return {
+          name: elem.name,
+          value: elem.id
+        }
+      })
     } catch (e) {
       console.error(e)
       return this.$vux.toast.show({
@@ -130,15 +102,58 @@ export default {
   },
   methods: {
     change (value) {
-      console.log('new Value', value)
     },
     close () {
       this.$emit('listenClose', false)
     }
   },
   watch: {
-    step (val, oldval) {
-      console.log(val)
+    async step (val, oldval) {
+      if (val === 2) {
+        console.log(11)
+      }
+      switch (val) {
+        case 2:
+          try {
+            console.log('21sa', this.countryVal)
+            const res = await instance({
+              method: 'post',
+              url: geographyApi.showprovince,
+              params: {
+                countryid: Number(this.countryVal)
+              }
+            })
+            if (res.status !== 200) {
+              return this.$vux.toast.show({
+                type: 'warn',
+                text: '获取路由失败'
+              })
+            }
+            const data = res.data
+            if (data.code !== 200) {
+              return this.$vux.toast.show({
+                type: 'warn',
+                text: data.mess
+              })
+            }
+            this.provinceData = data.obj.map(function (elem) {
+              return {
+                name: elem.name,
+                value: elem.id
+              }
+            })
+          } catch (e) {
+            console.error(e)
+            return this.$vux.toast.show({
+              type: 'warn',
+              width: '18rem',
+              text: '网络请求错误'
+            })
+          }
+          break
+        default:
+          break
+      }
     }
   }
 }

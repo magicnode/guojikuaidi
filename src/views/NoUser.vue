@@ -1,8 +1,8 @@
 <template>
   <div class="customservice">
     <div>
-      <div class="customservice-img">
-        <img src="../assets/images/new/ser_ico_log.png" alt="妙寄logo">
+      <div class="customservice-title">
+        <p>国际快递</p>
       </div>
       <div class="customservice-num flex">
         <p>登录失败!</p>
@@ -36,10 +36,12 @@ export default {
 .customservice {
   background: white;
   height: 100vh;
-  &-img {
+  &-title {
     padding: 5rem;
-    img {
-      width: 10rem;
+    p {
+      font-size: 2.8rem;
+      font-weight: 600;
+      color: @red;
     }
   }
   &-num {

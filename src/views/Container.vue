@@ -18,7 +18,7 @@ export default {
       window.localStorage.setItem('mj_nickname', '呃嗯丶')
       window.localStorage.setItem('mj_openid', 'oCk9ywj1vT0B3ltw2m3dfE6FnHzI')
       window.localStorage.setItem('mj_mobile', '17317272575')
-      window.localStorage.setItem('mj_userId', '8')
+      window.localStorage.setItem('mj_userId', '1')
       // chen
       // window.localStorage.setItem('mj_mobile', '15800665186')
       // window.localStorage.setItem('mj_userId', '12')

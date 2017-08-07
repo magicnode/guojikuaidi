@@ -283,21 +283,7 @@ export default {
         price: '',
         unit: ''
       },
-      packageTable: [{
-        weight: 6549,
-        enName: 'Apple',
-        cnName: '苹果',
-        count: 20,
-        price: 15,
-        unit: '颗'
-      }, {
-        weight: 15,
-        enName: 'Banana',
-        cnName: '香蕉',
-        count: 50,
-        price: 16,
-        unit: '挂'
-      }]
+      packageTable: []
     }
   },
   methods: {

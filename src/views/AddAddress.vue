@@ -2,12 +2,14 @@
   <div class="addaddress">
     <div class="addaddress-container">
       <group>
-        <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="姓名" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-        <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
+        <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
+        <x-input type="text" title="公司名" v-model="company" :max="20" placeholder="请填写您的公司名" required></x-input>
+        <x-input type="number" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编" required></x-input>
+        <x-input title="电话" v-model="iphone" placeholder="请输入手机号" required></x-input>
         <div @click="steppickershow = !steppickershow">
           <x-input disabled title="地区" placeholder="请选择国家、省市区" required></x-input>
         </div>
-        <x-textarea @on-focus="fixBtn" @on-blur="removeFixBtn" type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="address" :rows="1" :height="address.length + 22" required>
+        <x-textarea type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required>
         </x-textarea>
        </group>
        <group>
@@ -40,13 +42,9 @@ export default {
     this.pagetype = query.pagetype || 'add'
     if (this.pagetype === 'edit') {
       this.id = query.id
-      this.name = query.name
-      this.mobile = query.mobile
-      this.address = query.address
-      this.location = [query.province, query.city, query.district]
-      if (query.checked === 1) {
-        this.value = true
-      }
+      this.linkname = query.linkname
+      this.iphone = query.iphone
+      this.detailedinformation = query.detaliedinformation
     }
   },
   mounted () {
@@ -61,18 +59,14 @@ export default {
       steppickershow: false,
       picker: false,
       pagetype: 'add',
-      addressData: ChinaAddressV3Data,
-      name: '',
-      mobile: '',
+      query: {},
+      linkman: '',
+      company: '',
+      postcode: '',
+      iphone: '',
       location: [],
-      address: '',
+      detailedinformation: '',
       value: false,
-      locations: [
-        ['1', '2', '3'],
-        ['123123', '213123', 'asdas'],
-        ['123123', '213123', 'asdas'],
-        ['123123', '213123', 'asdas']
-      ],
       addressVal: []
     }
   },
