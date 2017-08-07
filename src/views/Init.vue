@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== 'development') {
   console.log('this is pro app')
   appid = config.pro.appid
   secret = config.pro.appsecret
-  redirectUri = 'http://www.mijihome.cn/redirect/'
+  redirectUri = 'http://guoji.didalive.net/redirect/'
 }
 
 export default {

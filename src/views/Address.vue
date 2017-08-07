@@ -18,8 +18,8 @@
           <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id">
               <div class="flex address-container-list__item--info" @click="selectAddress(item)">
                 <div>
-                  <p>{{item.name + '  '}} {{item.mobile}}</p>
-                  <p class="location">{{item.district + item.address}}</p>
+                  <p>{{item.linkman + '  '}} {{item.iphone}}</p>
+                  <p class="location">{{item.provinnce}} {{item.detaliedinformation}}</p>
                 </div>
                <img v-show="!pick" src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
               </div>
@@ -52,10 +52,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'address',
   created () {
-    this.changeAddress()
-    if (this.result['type'] === 'warn') {
-      this.showToast()
-    }
+    console.log('data', this.data)
     const {type, pick} = this.$route.query
     const localtype = window.localStorage.getItem('mj_address_page_switch_type')
     this.addressType = type || localtype || 'send'
@@ -81,9 +78,6 @@ export default {
     goPath (path, query, plus) {
       if (plus) {
         Object.assign(query, plus)
-        // Object.keys(plus).forEach(key => {
-        //   query[key] = plus[key]
-        // })
       }
       this.$router.push({path, query})
     },
@@ -96,7 +90,11 @@ export default {
       }
     },
     selectAddress (item) {
-      if (!this.pick) return
+      if (!this.pick) {
+        let query = Object.assign(item, {pagetype: 'edit'})
+        this.$router.push({path: '/address/add', query})
+        return
+      }
       if (this.addressType === 'send') {
         this.setSendAddress({sendAddress: item})
       } else {
@@ -112,6 +110,7 @@ export default {
     changeShow (type) {
       window.localStorage.setItem('mj_address_page_switch_type', type)
       this.addressType = type
+      console.log('type', this.addressType)
     },
     ...mapActions([
       'changeAddress',
@@ -170,7 +169,6 @@ export default {
     async refresh (done) {
       const _this = this
       setTimeout(async function () {
-        console.log('refresh address')
         await _this.changeAddress()
         done()
       }, 1200)

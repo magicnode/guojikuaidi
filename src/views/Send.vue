@@ -128,6 +128,9 @@
         <div class="dialog-content">
           <div class="dialog-content--weight">
             产品重量(kg)
+            <div class="dialog-close" @click="dialogshow = false">
+              <span class="vux-close"></span>
+            </div>
           </div>
           <div class="dialog-content--input">
             <group>
@@ -150,21 +153,11 @@
           </div>
         </div>
 
-        <div class="dialog-content">
-          <div class="dialog-content--weight">
-            物品类型
-            <select name="">
-              <option value="1">文件</option>
-              <option value="2">包裹</option>
-            </select>
-          </div>
-        </div>
-
         <p class="dialog-tips">
-          请准确填写重量或体积，以免耽误货物妥投，2.5kg以上产品类型不能为文件
+          请准确填写重量或体积，以免耽误货物妥投
         </p>
-        <div @click="dialogshow = false">
-          <span class="vux-close"></span>
+        <div class="dialog-confirm-btn">
+          <button type="">确定</button>
         </div>
       </x-dialog>
     </div>
@@ -183,7 +176,7 @@
           </group>
           <div class="package-dialog-form__confrim">
             <button type="" class="package-dialog-form__confrim--cancle" @click="packageShow = false">取消</button>
-            <button type="" class="package-dialog-form__confrim--sure">完成</button>
+            <button type="" class="package-dialog-form__confrim--sure" @click="addPackge">完成</button>
           </div>
         </div>
         <div class="package-dialog-tips">
@@ -266,7 +259,8 @@ export default {
       expresstype: undefined,
       loading: false,
       dialogshow: false,
-      weight: 55,
+      // 产品重量
+      weight: 0,
       wide: 1,
       len: 1,
       height: 1,
@@ -283,21 +277,7 @@ export default {
         price: '',
         unit: ''
       },
-      packageTable: [{
-        weight: 6549,
-        enName: 'Apple',
-        cnName: '苹果',
-        count: 20,
-        price: 15,
-        unit: '颗'
-      }, {
-        weight: 15,
-        enName: 'Banana',
-        cnName: '香蕉',
-        count: 50,
-        price: 16,
-        unit: '挂'
-      }]
+      packageTable: []
     }
   },
   methods: {
@@ -330,6 +310,10 @@ export default {
         type,
         width: '18rem'
       })
+    },
+    addPackge () {
+      this.packageTable.push(this.newpackage)
+      this.packageShow = false
     },
     onChange (val) {
       window.localStorage.setItem('mj_send_brand', val)
@@ -488,10 +472,28 @@ export default {
 <style lang="less">
 @import '../assets/styles/colors.less';
 @import '~vux/src/styles/close';
+.dialog-confirm-btn {
+  button {
+    color: white;
+    padding: 0.3rem 0;
+    margin: 1rem;
+    font-size: 1.8rem;
+    width: 30%;
+    background-color: #eb1d21;
+    border: none;
+    border-radius: 5px;
+  }
+}
 .dialog-demo {
   .weui-dialog{
     padding: 1rem 1rem 8px 1rem;
     border-radius: 8px;
+  }
+  .dialog-close {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    background: white;
   }
   .dialog-title {
     line-height: 30px;

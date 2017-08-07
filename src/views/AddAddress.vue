@@ -2,18 +2,20 @@
   <div class="addaddress">
     <div class="addaddress-container">
       <group>
-        <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="姓名" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-        <x-input @on-focus="fixBtn" @on-blur="removeFixBtn" title="电话" v-model="mobile" placeholder="请输入手机号" required></x-input>
+        <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
+        <x-input type="text" title="公司名" v-model="company" :max="20" placeholder="请填写您的公司名" required></x-input>
+        <x-input type="number" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编" required></x-input>
+        <x-input title="电话" v-model="iphone" placeholder="请输入手机号" required></x-input>
         <div @click="steppickershow = !steppickershow">
-          <x-input disabled title="地区" placeholder="请选择国家、省市区" required></x-input>
+          <x-input disabled title="地区" placeholder="请选择国家、省市区" type="text" required v-model="location"></x-input>
         </div>
-        <x-textarea @on-focus="fixBtn" @on-blur="removeFixBtn" type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="address" :rows="1" :height="address.length + 22" required>
+        <x-textarea type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required>
         </x-textarea>
        </group>
        <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
        </group>
-       <step-location :steppickerShow="steppickershow" v-on:listenClose="closeStepLocation">
+       <step-location :steppickerShow="steppickershow" v-on:listenClose="closeStepLocation" v-on:listenConfrim="confirmStep">
        </step-location>
        <div class="addaddress-container-add">
          <p class="addaddress-container-add--btn" @click.stop="saveAddress">保存</p>
@@ -40,13 +42,9 @@ export default {
     this.pagetype = query.pagetype || 'add'
     if (this.pagetype === 'edit') {
       this.id = query.id
-      this.name = query.name
-      this.mobile = query.mobile
-      this.address = query.address
-      this.location = [query.province, query.city, query.district]
-      if (query.checked === 1) {
-        this.value = true
-      }
+      this.linkname = query.linkname
+      this.iphone = query.iphone
+      this.detailedinformation = query.detaliedinformation
     }
   },
   mounted () {
@@ -61,18 +59,15 @@ export default {
       steppickershow: false,
       picker: false,
       pagetype: 'add',
-      addressData: ChinaAddressV3Data,
-      name: '',
-      mobile: '',
-      location: [],
-      address: '',
+      query: {},
+      linkman: '',
+      company: '',
+      postcode: '',
+      iphone: '',
+      location: '',
+      locationid: {},
+      detailedinformation: '',
       value: false,
-      locations: [
-        ['1', '2', '3'],
-        ['123123', '213123', 'asdas'],
-        ['123123', '213123', 'asdas'],
-        ['123123', '213123', 'asdas']
-      ],
       addressVal: []
     }
   },
@@ -83,6 +78,10 @@ export default {
     ]),
     closeStepLocation (val) {
       this.steppickershow = val
+    },
+    confirmStep (val) {
+      this.location = val.show
+      this.locationid = val.val
     },
     checkMobile (num) {
       const reg = /^1[1|3|4|5|7|8|9][0-9]\d{8}$/
@@ -122,11 +121,10 @@ export default {
       })
     },
     async add () {
-      const rel = value2name(this.location, ChinaAddressV3Data).split(' ')
-      const checked = this.value ? 1 : 2
+      // const checked = this.value ? 1 : 2
       let {type} = this.$route.query
       type = type === 'pickup' ? 2 : 1
-      if (!this.name || !this.mobile || !this.address || !this.location) {
+      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
           type: 'warn',
@@ -142,11 +140,12 @@ export default {
         })
         return
       }
-      const res = await this.addAddress({address: this.address, province: rel[0], city: rel[1], district: rel[2], mobile: this.mobile, name: this.name, checked, addressType: type})
+      const locationId = this.locationid
+      const res = await this.addSendAddress({address: this.address, locationId, mobile: this.mobile, type})
       if (res.type !== 'success') {
         return this.$vux.toast.show(res)
       }
-      this.$router.go(-1)
+      // this.$router.go(-1)
     },
     async saveAddress () {
       if (this.pagetype === 'add') {
