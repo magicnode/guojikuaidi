@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="steplocationpicker-step" v-show="step === 1">
-      <p>选择国家</p>
+      <p>选择国家--{{countryVal}}</p>
       <picker :data='countryData' v-model='countryVal' :fixed-columns="1" :columns="1"></picker>
     </div>
     <div class="steplocationpicker-step" v-show="step === 2">
