@@ -3,8 +3,8 @@
     <div class="senddetail-container">
       <div class="senddetail-container-tab">
         <tab active-color='#eb1d21'>
-          <tab-item :selected="show ==='wait'" @on-item-click="changeShow('wait')">待寄件</tab-item>
-          <tab-item :selected="show ==='ready'" @on-item-click="changeShow('ready')">已寄件</tab-item>
+          <tab-item :selected="show ==='wait'" @on-item-click="changeShow('wait')">未完成</tab-item>
+          <tab-item :selected="show ==='ready'" @on-item-click="changeShow('ready')">已完成</tab-item>
         </tab>
       </div>
       <div class="senddetail-cell" v-show="show === 'wait'">

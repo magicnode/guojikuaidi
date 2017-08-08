@@ -1,9 +1,9 @@
 // 董浩伟
-// let url = 'http://192.168.0.225:8080/DHL/'
+// let url = 'http://192.168.0.225:8080/DHL/wx/'
 // 仝舟
-// let url = 'http://192.168.0.125:8066/'
+let url = 'http://192.168.0.125:8066/wx/'
 // online app 云端服务
-let url = 'http://api.didalive.net/DHL/'
+// let url = 'http://api.didalive.net/DHL/'
 
 if (process.env.NODE_ENV !== 'development') {
   url = 'http://app.quandikeji.com/WeChatService/'
@@ -18,7 +18,8 @@ export const address = {
   index: url + 'Mailingaddress/ShowMailingaddressuserid',
   send: url + 'Mailingaddress/ShowMailingaddressuserid',
   pickup: url + 'Consigneeaddress/ShowConsigneeaddressuserid',
-  add: url + 'insertAddress',
+  addsend: url + 'Mailingaddress/InsertMailingaddress',
+  addpickup: url + 'Consigneeaddress/InsertConsigneeaddress',
   update: url + 'updateAddress',
   delete: url + 'deleteAddress',
   checked: url + 'checked',

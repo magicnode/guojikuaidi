@@ -9,6 +9,8 @@ let instance = axios.create({
   timeout: 3000
 })
 
+const mjToken = local.getItem('mj_token')
+
 export const state = {
   data: {},
   query: {
@@ -30,6 +32,9 @@ export const actions = {
         url: addressApi.send,
         params: {
           userid: local.getItem('mj_userId')
+        },
+        headers: {
+          'token': mjToken
         }
       })
       const pickup = await instance({
@@ -37,11 +42,10 @@ export const actions = {
         url: addressApi.pickup,
         params: {
           userid: local.getItem('mj_userId')
-        }
+        },
+        headers: {'token': mjToken}
       })
       if (send.status === 200 && pickup.status === 200) {
-        console.log('send', send.data)
-        console.log('pickup', pickup.data)
         let data = {
           send: send.data.obj,
           pickup: pickup.data.obj
@@ -68,14 +72,26 @@ export const actions = {
     }
   },
   async addAddress ({commit, dispatch}, {nationid, provinnce, city, county, detailedinformation,
-    postcode, iphone, userid = local.getItem('mj_userId'), start = 1, linkman, company, remove, type = 1}) {
+    postcode, iphone, userid = local.getItem('mj_userId'), endtime = new Date().getTime(), start = 1, linkman, idnumber, company, remove, type = 1}) {
     try {
+      let url, params
+      if (type === 1) {
+        url = addressApi.addsend
+        params = {
+          nationid, provinnce, city, county, detailedinformation, postcode, iphone, userid, endtime, start, linkman, company, remove
+        }
+      } else {
+        url = addressApi.addpickup
+        const nation = nationid
+        params = {
+          nation, provinnce, city, county, detaliedinformation: detailedinformation, postcode, iphone, userid, endtime, start, recipients: linkman, idnumber, company, remark: remove
+        }
+      }
       const res = await instance({
         method: 'post',
-        url: addressApi.add,
-        params: {
-          nationid, provinnce, city, county, detailedinformation, postcode, iphone, userid, start, linkman, company, remove
-        }
+        url,
+        params,
+        headers: {'token': mjToken}
       })
       if (res.status === 200) {
         dispatch('changeAddress')

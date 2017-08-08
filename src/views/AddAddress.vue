@@ -5,11 +5,14 @@
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <x-input type="text" title="公司名" v-model="company" :max="20" placeholder="请填写您的公司名" required></x-input>
         <x-input type="number" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编" required></x-input>
+        <x-input v-show="type === 2" type="text" title="证件" v-model="idnumber" :max="20" placeholder="请填写身份证号/护照号" required></x-input>
         <x-input title="电话" v-model="iphone" placeholder="请输入手机号" required></x-input>
         <div @click="steppickershow = !steppickershow">
           <x-input disabled title="地区" placeholder="请选择国家、省市区" type="text" required v-model="location"></x-input>
         </div>
-        <x-textarea type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required>
+        <x-textarea type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="22" required>
+        </x-textarea>
+        <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22" required>
         </x-textarea>
        </group>
        <group>
@@ -40,6 +43,8 @@ export default {
   created () {
     const query = this.$route.query
     this.pagetype = query.pagetype || 'add'
+    const type = query.type
+    this.type = type === 'send' ? 1 : 2
     if (this.pagetype === 'edit') {
       this.id = query.id
       this.linkname = query.linkname
@@ -56,9 +61,11 @@ export default {
   },
   data () {
     return {
+      type: 1,
       steppickershow: false,
       picker: false,
       pagetype: 'add',
+      idnumber: '',
       query: {},
       linkman: '',
       company: '',
@@ -67,6 +74,7 @@ export default {
       location: '',
       locationid: {},
       detailedinformation: '',
+      remove: '',
       value: false,
       addressVal: []
     }
@@ -122,8 +130,6 @@ export default {
     },
     async add () {
       // const checked = this.value ? 1 : 2
-      let {type} = this.$route.query
-      type = type === 'pickup' ? 2 : 1
       if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
@@ -132,7 +138,7 @@ export default {
         })
         return
       }
-      if (!this.checkMobile(this.mobile)) {
+      if (!this.checkMobile(this.iphone)) {
         this.$vux.toast.show({
           text: '手机号格式不对，请重新填写',
           type: 'warn',
@@ -141,10 +147,12 @@ export default {
         return
       }
       const locationId = this.locationid
-      const res = await this.addSendAddress({address: this.address, locationId, mobile: this.mobile, type})
+      const res = await this.addAddress({...locationId, detailedinformation: this.detailedinformation, postcode: this.postcode, iphone: this.iphone, linkman: this.linkman, company: this.company, remove: this.remove, type: this.type, idnumber: this.idnumber})
+      console.log('res', res)
       if (res.type !== 'success') {
         return this.$vux.toast.show(res)
       }
+      this.$vux.toast.show(res)
       // this.$router.go(-1)
     },
     async saveAddress () {

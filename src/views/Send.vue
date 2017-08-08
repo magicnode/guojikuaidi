@@ -199,6 +199,8 @@ let instance = axios.create({
   timeout: 5000
 })
 
+const wx = window.wx
+
 export default {
   name: 'send',
   directives: {
@@ -212,6 +214,20 @@ export default {
     XDialog
   },
   async created () {
+    wx.config({
+      debug: true,
+      appId: 'wxddd3ecf13e8fca82',
+      timestamp: 123456,
+      nonceStr: '',
+      signature: '',
+      jsApiList: [
+        'chooseImage',
+        'showAllNonBaseMenuItem',
+        'closeWindow',
+        'scanQRCode',
+        'chooseWXPay'
+      ]
+    })
     this.$store.commit('SET_PAGE', {page: 'send'})
     if (!this.sendAddress['id'] && !this.pickupAddress['id']) {
       this.setDefaultAddress()

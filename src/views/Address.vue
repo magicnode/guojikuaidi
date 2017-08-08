@@ -18,8 +18,8 @@
           <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id">
               <div class="flex address-container-list__item--info" @click="selectAddress(item)">
                 <div>
-                  <p>{{item.linkman + '  '}} {{item.iphone}}</p>
-                  <p class="location">{{item.provinnce}} {{item.detaliedinformation}}</p>
+                  <p>{{item.linkman}}{{item.recipients}} {{item.iphone}}</p>
+                  <p class="location">{{item.provinnce}} {{item.detailedinformation}} {{item.detaliedinformation}}</p>
                 </div>
                <img v-show="!pick" src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
               </div>
@@ -38,11 +38,11 @@
                 </span>
               </div>
           </div>
-          <div class="address-container-add" @click="goPath('/address/add', {type: addressType, pagetype: 'add'})">
-            <p>新增地址</p>
-          </div>
         </scroller>
       </div>
+    </div>
+    <div class="address-add" @click="goPath('/address/add', {type: addressType, pagetype: 'add'})">
+      <p>新增地址</p>
     </div>
   </div>
 </template>
@@ -193,16 +193,7 @@ export default {
       width: 100%;
       z-index: 1000;
     }
-    &-add {
-      padding: 1rem 1rem;
-      p {
-        font-size: 1.8rem;
-        padding: 1rem 0;
-        color: white;
-        background: @red;
-        border-radius: 6px;
-      }
-    }
+
     &-list {
       &__intro {
         padding: 1rem;
@@ -275,6 +266,20 @@ export default {
           }
         }
       }
+    }
+  }
+  &-add {
+    position: fixed;
+    bottom: 0;
+    padding: .6rem 1.5rem;
+    width: 90.4%;
+    background: white;
+    p {
+      font-size: 1.6rem;
+      padding: .3rem .6rem;
+      color: white;
+      background: @red;
+      border-radius: 3px;
     }
   }
   &-scroller {
