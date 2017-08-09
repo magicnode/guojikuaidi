@@ -121,4 +121,21 @@ select,option,textarea {
 .weui-toast {
   z-index: 6000;
 }
+
+.addaddress {
+  .weui-cell__bd.weui-cell__primary {
+    input {
+      text-align: right;
+    }
+  }
+}
+
+.editaddress {
+  .weui-cell__bd.weui-cell__primary {
+    input {
+      text-align: right;
+    }
+  }
+}
+
 </style>

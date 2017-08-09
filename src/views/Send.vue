@@ -17,15 +17,15 @@
           <div class="send-container-address__info--line">
             <div>
               <span>
-                {{sendAddress['name']}}&nbsp;&nbsp;
+                {{sendAddress['linkman']}}&nbsp;&nbsp;
               </span>
               <span class="address-info">
-                {{sendAddress['mobile']}}    
+                {{sendAddress['iphone']}}    
               </span>
             </div>
           </div>
           <p class="address-detail-info">
-           {{sendAddress['address']}}
+           {{sendAddress['detailedinformation']}}
           </p>
         </div>
         <div class="send-container-address__link">
@@ -42,13 +42,13 @@
         <div class="send-container-address__info">
           <div class="send-container-address__info--line">
             <div>
-              <span>{{pickupAddress['name']}}&nbsp;&nbsp;</span>
+              <span>{{pickupAddress['recipients']}}&nbsp;&nbsp;</span>
               <span class="address-info">
-                {{pickupAddress['mobile']}}
+                {{pickupAddress['iphone']}}
               </span>
             </div>
           </div>
-          <p class="address-detail-info">{{pickupAddress['address']}}</p>
+          <p class="address-detail-info">{{pickupAddress['detaliedinformation']}}</p>
         </div>
         <div class="send-container-address__link">
           <router-link to="/address?type=pickup&pick=1">
@@ -76,13 +76,14 @@
             <button type="" >添加包裹</button>
           </div>
         </div>
+
         <div class="send-container-package__table">
           <table>
             <thead>
               <tr>
                 <th>重量/kg</th>
-                <th>英文品名</th>
                 <th>中文品名</th>
+                <th>英文品名</th>
                 <th>数量</th>
                 <th>单价</th>
                 <th>单位</th>
@@ -91,16 +92,17 @@
             <tbody>
               <tr v-for="item, index in packageTable" @touchstart="longTap(index, $event)">
                 <td>
-                  <input type="number" v-model="item['weight']">
+                  <input type="number" v-model="item['Customerbearing']">
                 </td>
                 <td>
-                  <input type="text" v-model="item['enName']">
+                  <input type="text" v-model="item['name']">
                 </td>
                 <td>
-                  <input type="text" v-model="item['cnName']">
+                  <input type="text" v-model="item['Englishname']">
                 </td>
+
                 <td>
-                  <input type="number" v-model="item['count']">
+                  <input type="text" v-model="item['amount']">
                 </td>
                 <td>
                   <input type="number" v-model="item['price']">
@@ -114,7 +116,7 @@
         </div>
 
         <div class="send-container-package__money">
-          预付运费：￥ <span>360</span>
+          预付运费：￥ <span>{{advance}}</span>
         </div>
       </div>
 
@@ -128,7 +130,7 @@
         <div class="dialog-content">
           <div class="dialog-content--weight">
             产品重量(kg)
-            <div class="dialog-close" @click="dialogshow = false">
+            <div class="dialog-close" @click="dialogClose">
               <span class="vux-close"></span>
             </div>
           </div>
@@ -157,7 +159,7 @@
           请准确填写重量或体积，以免耽误货物妥投
         </p>
         <div class="dialog-confirm-btn">
-          <button type="">确定</button>
+          <button type="" @click.stop="dialogshow = false">确定</button>
         </div>
       </x-dialog>
     </div>
@@ -165,14 +167,20 @@
     <div v-transfer-dom>
       <x-dialog v-model="packageShow" class="package-dialog">
         <h1>添加包裹</h1>
+        <div class="package-close" @click="packageShow = false">
+          <span class="vux-close"></span>
+        </div>
         <div class="package-dialog-form">
           <group>
-            <x-input title="产品序号" type="text" v-model="newpackage['order']" required></x-input>
-            <x-input title="英文品名" type="text" v-model="newpackage['enName']" required></x-input>
-            <x-input title="中文品名" type="text" v-model="newpackage['cnName']" required></x-input>
+            <x-input title="英文品名" type="text" v-model="newpackage['Englishname']" required></x-input>
+            <x-input title="中文品名" type="text" v-model="newpackage['name']" required></x-input>
             <x-input title="产品单价" type="number" v-model="newpackage['price']" required></x-input>
-            <x-input title="数量单位" type="number" v-model="newpackage['count']" required></x-input>
-            <x-input title="产品重量" type="number" v-model="newpackage['weight']" required></x-input>
+            <x-input title="产品价值" type="number" v-model="newpackage['cost']" required></x-input>
+            <x-input title="产品数量" type="number" v-model="newpackage['amount']" required></x-input>
+            <x-input title="海关编号" type="text" v-model="newpackage['CustomsNo']" required></x-input>
+            <x-input title="海关承重" type="number" v-model="newpackage['Customerbearing']" required></x-input>
+            <x-input title="产品单位" type="text" v-model="newpackage['unit']" required></x-input>
+            <x-input title="包裹备注" type="text" v-model="newpackage['reovme']" required></x-input>
           </group>
           <div class="package-dialog-form__confrim">
             <button type="" class="package-dialog-form__confrim--cancle" @click="packageShow = false">取消</button>
@@ -181,9 +189,6 @@
         </div>
         <div class="package-dialog-tips">
           注：单次寄件最多可包含三个包裹，超过三个请分批次寄件
-        </div>
-        <div @click="packageShow = false">
-          <span class="vux-close"></span>
         </div>
       </x-dialog>
     </div>
@@ -199,7 +204,10 @@ let instance = axios.create({
   timeout: 5000
 })
 
-const wx = window.wx
+const localStorage = window.localStorage
+const mjToken = localStorage.getItem('mj_token')
+
+// const wx = window.wx
 
 export default {
   name: 'send',
@@ -214,34 +222,44 @@ export default {
     XDialog
   },
   async created () {
-    wx.config({
-      debug: true,
-      appId: 'wxddd3ecf13e8fca82',
-      timestamp: 123456,
-      nonceStr: '',
-      signature: '',
-      jsApiList: [
-        'chooseImage',
-        'showAllNonBaseMenuItem',
-        'closeWindow',
-        'scanQRCode',
-        'chooseWXPay'
-      ]
-    })
+    // wx.config({
+    //   appId: 'wxddd3ecf13e8fca82',
+    //   timestamp: 123456,
+    //   nonceStr: '',
+    //   signature: '',
+    //   jsApiList: [
+    //     'chooseImage',
+    //     'showAllNonBaseMenuItem',
+    //     'closeWindow',
+    //     'scanQRCode',
+    //     'chooseWXPay'
+    //   ]
+    // })
     this.$store.commit('SET_PAGE', {page: 'send'})
-    if (!this.sendAddress['id'] && !this.pickupAddress['id']) {
-      this.setDefaultAddress()
+    // 获取地址
+    this.sendAddress = JSON.parse(localStorage.getItem('mj_send_sendaddress')) || {
+      linkman: '',
+      iphone: '',
+      detailedinformation: ''
     }
+    this.pickupAddress = JSON.parse(localStorage.getItem('mj_send_pickupaddress')) || {
+      recipients: '',
+      iphone: '',
+      detaliedinformation: ''
+    }
+    // 设置 serial number
+    this.serialnumber = 'DHL' + new Date().getTime()
     // 获取产品类型
     const cargotype = await instance({
       method: 'post',
-      url: sundryApi.cargotype
+      url: sundryApi.cargotype,
+      headers: {'token': mjToken}
     })
     let cargotypeData = cargotype.data.obj
     cargotypeData = cargotypeData.map(function (elem) {
       let item = {
-        key: elem.name,
-        value: elem.id
+        key: elem.id,
+        value: elem.name
       }
       return item
     })
@@ -255,8 +273,6 @@ export default {
       brand: 'getAllBrand',
       address: 'getAddress',
       sendadd: 'getSendAdd',
-      sendAddress: 'getSendAddress',
-      pickupAddress: 'getPickupAddress',
       result: 'getSendResult',
       openid: 'getOpenId',
       user: 'getUserInfo',
@@ -285,15 +301,20 @@ export default {
       productionType: undefined,
       productionTypeOption: [],
       newpackage: {
-        order: '',
-        weight: '',
-        enName: '',
-        cnName: '',
-        count: '',
-        price: '',
-        unit: ''
+        name: '', // 中文名
+        Englishname: '', // 英文名
+        Customerbearing: '', // 海关承重
+        CustomsNo: '', // 海关编号
+        amount: '', // 数量
+        price: '', // 价格
+        cost: '', // 价值
+        unit: '', // 单位
+        reovme: '' // 备注
       },
-      packageTable: []
+      packageTable: [],
+      advance: 0,
+      sendAddress: {},
+      pickupAddress: {}
     }
   },
   methods: {
@@ -328,21 +349,52 @@ export default {
       })
     },
     addPackge () {
+      const _this = this
+      let complete = []
+      console.log('asd', this.newpackage)
+      Object.keys(_this.newpackage).forEach(function (key) {
+        if (!_this.newpackage[key]) {
+          complete.push(false)
+        } else {
+          complete.push(true)
+        }
+      })
+      if (complete.includes(false)) {
+        _this.$vux.toast.show({
+          type: 'warn',
+          text: '请将信息填写完整',
+          width: '16rem',
+          time: '600'
+        })
+        return
+      }
+      this.newpackage['serialnumber'] = this.serialnumber
+      // 超出3个包裹，不允许再加
+      if (this.packageTable.length >= 3) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '最多添加三个包裹',
+          width: '15rem'
+        })
+        this.packageShow = false
+        return
+      }
       this.packageTable.push(this.newpackage)
+      this.newpackage = {
+        name: '', // 中文名
+        Englishname: '', // 英文名
+        Customerbearing: '', // 海关承重
+        CustomsNo: '', // 海关编号
+        amount: '', // 数量
+        price: '', // 价格
+        cost: '', // 价值
+        unit: '', // 单位
+        reovme: '' // 备注
+      }
       this.packageShow = false
     },
     onChange (val) {
-      window.localStorage.setItem('mj_send_brand', val)
-      this.$store.commit('SET_SEND_ADD', {brand: val})
-    },
-    onChangeText (type) {
-      if (type === 'describe' && this.describe) {
-        window.localStorage.setItem('mj_send_describe', this.describe)
-      }
-      if (type === 'note' && this.note) {
-        window.localStorage.setItem('mj_send_note', this.note)
-      }
-      this.showFooter()
+      console.log('val', val)
     },
     goPath (path) {
       this.$router.push({path})
@@ -350,69 +402,54 @@ export default {
     async submitSend () {
       try {
         if (this.loading) return
+        // 提交寄件
+        // 包裹长度要在1~3之间
+        if (!(this.packageTable.length >= 1 && this.packageTable.length <= 3)) {
+          this.$vux.toast.show({
+            text: '包裹最多3个最少1个',
+            width: '18rem',
+            type: 'warn'
+          })
+          return
+        }
         this.$vux.loading.show({
           text: '正在提交'
         })
-        // 提交寄件
-        const timestamp = new Date().getTime()
-        const serialnumber = 'DHL' + timestamp
-        let headpackages = [{
-          serialnumber,
-          amount: 2,
-          price: 12,
-          unit: 'ji',
-          cost: '12',
-          Customerbearing: '4513',
-          CustomsNo: 'asdsa',
-          Englishname: 'asdsa',
-          name: 'asdasd',
-          reovme: 'asd'
-        }, {
-          serialnumber,
-          amount: 5,
-          price: 12,
-          unit: '个',
-          cost: '12',
-          Customerbearing: '4513',
-          CustomsNo: 'asdsa',
-          Englishname: 'asdsa',
-          name: 'asdasd',
-          reovme: 'asd'
-        }]
-        headpackages = JSON.stringify(headpackages)
-        console.log('12321', headpackages)
+        let headpackages = JSON.stringify(this.packageTable)
+        console.log('headpackages', headpackages)
         const result = await instance({
           method: 'post',
           url: sendApi.create,
           params: {
-            serialnumber,
+            serialnumber: this.serialnumber,
             type: '123',
-            sku: '123',
+            sku: '',
             state: 1,
             // 寄件地址id
-            mailid: 1,
+            mailid: this.sendAddress['id'],
             // 下单时间
             endtime: new Date(),
             // 收件id
-            arrivaid: 1,
-            userid: 1,
+            arrivaid: this.pickupAddress['id'],
+            userid: localStorage.getItem('mj_userId'),
             starte: 1,
-            extent: 12,
-            widthofitem: 12,
-            objectheight: 22,
-            bearload: 21,
-            remove: 'asdasd',
+            extent: this.len,
+            widthofitem: this.wide,
+            objectheight: this.height,
+            bearload: this.weight,
+            remove: '111',
             headpackages
-          }
+          },
+          headers: {'token': mjToken}
         })
         this.$vux.loading.hide()
         if (result) {
+          this.serialnumber = 'DHL' + new Date().getTime()
           this.showToast({text: '提交成功'})
-          this.$router.push({path: '/send/detail', query: {type: 'wait'}})
-          window.localStorage.removeItem('mj_send_describe')
-          window.localStorage.removeItem('mj_send_note')
+          // this.$router.push({path: '/send/detail', query: {type: 'waitpay'}})
           return
         } else {
+          this.serialnumber = 'DHL' + new Date().getTime()
           this.showToast({text: '提交失败', type: 'warn'})
           return
         }
@@ -423,18 +460,16 @@ export default {
         return
       }
     },
-    showFooter () {
-      const footer = window.document.getElementsByTagName('footer')[0]
-      footer.className = ''
-    },
-    hideFooter () {
-      const footer = window.document.getElementsByTagName('footer')[0]
-      footer.className = 'hide'
+    dialogClose () {
+      this.weight = 0
+      this.len = 1
+      this.height = 1
+      this.wide = 1
+      this.dialogshow = false
     }
   },
   watch: {
     productionType () {
-      console.log(1)
     },
     len (val, oldval) {
       const _this = this
@@ -558,6 +593,12 @@ export default {
   }
 }
 .package-dialog {
+  .package-close {
+    position: absolute;
+    top: 15px;
+    right: 8px;
+    background: white;
+  }
   .weui-dialog{
     padding: 1rem 1rem 8px 1rem;
     border-radius: 8px;

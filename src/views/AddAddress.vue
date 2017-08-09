@@ -21,13 +21,13 @@
        <step-location :steppickerShow="steppickershow" v-on:listenClose="closeStepLocation" v-on:listenConfrim="confirmStep">
        </step-location>
        <div class="addaddress-container-add">
-         <p class="addaddress-container-add--btn" @click.stop="saveAddress">保存</p>
+         <p class="addaddress-container-add--btn" @click.stop="saveAddress">创建</p>
        </div>
     </div>
   </div>
 </template>
 <script>
-import { XInput, XSwitch, XTextarea, XAddress, Picker, ChinaAddressV3Data, Radio, Value2nameFilter as value2name } from 'vux'
+import { XInput, XSwitch, XTextarea, XAddress, Picker, Radio } from 'vux'
 import { mapActions } from 'vuex'
 
 export default {
@@ -53,11 +53,7 @@ export default {
     }
   },
   mounted () {
-    let title = '添加地址'
-    if (this.pagetype !== 'add') {
-      title = '编辑地址'
-    }
-    window.document.title = title
+    window.document.title = '添加地址'
   },
   data () {
     return {
@@ -98,37 +94,7 @@ export default {
     change (value) {
       console.log('new Value', value)
     },
-    edit () {
-      const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
-      this.$vux.confirm.show({
-        title: '确定修改地址吗?',
-        onCancel () {
-        },
-        async onConfirm () {
-          const rel = value2name(_this.location, ChinaAddressV3Data).split(' ')
-          const checked = _this.value ? 1 : 2
-          let {addressType} = _this.$route.query
-          if (!_this.name || !_this.mobile || !_this.address || !_this.location) {
-            _this.$vux.toast.show({
-              text: '请将信息填写完整',
-              type: 'warn'
-            })
-            return
-          }
-          if (!_this.checkMobile(_this.mobile)) {
-            _this.$vux.toast.show({
-              text: '手机号格式不对，请重新填写',
-              type: 'warn',
-              width: '30rem'
-            })
-            return
-          }
-          _this.eidtAddress({id: _this.id, address: _this.address, province: rel[0], city: rel[1], district: rel[2], mobile: _this.mobile, name: _this.name, checked, addressType})
-          _this.$router.go(-1)
-        }
-      })
-    },
-    async add () {
+    async saveAddress () {
       // const checked = this.value ? 1 : 2
       if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
         this.$vux.toast.show({
@@ -153,14 +119,7 @@ export default {
         return this.$vux.toast.show(res)
       }
       this.$vux.toast.show(res)
-      // this.$router.go(-1)
-    },
-    async saveAddress () {
-      if (this.pagetype === 'add') {
-        this.add()
-      } else {
-        this.edit()
-      }
+      this.$router.go(-1)
     },
     fixBtn () {
       const Btn = window.document.getElementsByClassName('addaddress-container-add')[0]
@@ -190,11 +149,6 @@ export default {
   min-height: 100vh;
   background-color: @bg-grey;
   &-container {
-    .weui-cell__bd.weui-cell__primary {
-      input {
-        text-align: right;
-      }
-    }
     .quyu {
       font-size: 1.5rem;
       .weui-label {

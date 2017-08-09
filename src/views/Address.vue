@@ -15,13 +15,12 @@
           ref="my_scroller_address"
           class="address-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id">
+          <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id" v-show="item.start === 1">
               <div class="flex address-container-list__item--info" @click="selectAddress(item)">
                 <div>
                   <p>{{item.linkman}}{{item.recipients}} {{item.iphone}}</p>
-                  <p class="location">{{item.provinnce}} {{item.detailedinformation}} {{item.detaliedinformation}}</p>
+                  <p class="location"><span class="location-remark">{{item.remove}} {{item.remark}}</span> {{item.detailedinformation}} {{item.detaliedinformation}} </p>
                 </div>
-               <img v-show="!pick" src="../assets/images/add_ico_del.png" alt="" @click="deleteItem(item.id)">
               </div>
               <div class="flex address-container-list__item--func flex">
                 <span class="is-default" v-show="item.checked == 1">
@@ -32,16 +31,20 @@
                   <img src="../assets/images/add_ico_nor.png" alt="">
                   <span>设为默认</span>
                 </span>
-                <span class="edit" @click="goPath('/address/add', item, {pagetype: 'edit'})">
+                <span class="edit" @click.stop="goPath('/address/edit', item, {type: addressType})">
                   <img src="../assets/images/add_ico_cha.png" alt="">
                   <span>编辑</span>
+                </span>
+                <span class="edit" @click.stop="deleteItem(item.id, addressType)">
+                  <img src="../assets/images/add_ico_del.png" alt="删除该地址">
+                  <span>删除</span>
                 </span>
               </div>
           </div>
         </scroller>
       </div>
     </div>
-    <div class="address-add" @click="goPath('/address/add', {type: addressType, pagetype: 'add'})">
+    <div class="address-add" @click="goPath('/address/add', {type: addressType})">
       <p>新增地址</p>
     </div>
   </div>
@@ -52,7 +55,6 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'address',
   created () {
-    console.log('data', this.data)
     const {type, pick} = this.$route.query
     const localtype = window.localStorage.getItem('mj_address_page_switch_type')
     this.addressType = type || localtype || 'send'
@@ -91,50 +93,42 @@ export default {
     },
     selectAddress (item) {
       if (!this.pick) {
-        let query = Object.assign(item, {pagetype: 'edit'})
-        this.$router.push({path: '/address/add', query})
+        // let query = Object.assign(item, {pagetype: 'edit'})
+        // this.$router.push({path: '/address/edit', query})
         return
       }
       if (this.addressType === 'send') {
-        this.setSendAddress({sendAddress: item})
+        window.localStorage.setItem('mj_send_sendaddress', JSON.stringify(item))
       } else {
-        this.setPickupAddress({pickupAddress: item})
+        window.localStorage.setItem('mj_send_pickupaddress', JSON.stringify(item))
       }
-      this.$vux.toast.show({
-        text: '选择地址成功',
-        type: 'success',
-        width: '18rem'
-      })
       this.$router.go(-1)
     },
     changeShow (type) {
       window.localStorage.setItem('mj_address_page_switch_type', type)
       this.addressType = type
-      console.log('type', this.addressType)
     },
     ...mapActions([
       'changeAddress',
-      'delAddress',
+      'eidtAddress',
       'checkedAddress',
       'setSendAddress',
       'setPickupAddress',
       'setDefaultAddress'
     ]),
-    deleteItem (id) {
+    deleteItem (id, addressType) {
       // 显示
       const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
       this.$vux.confirm.show({
         // 组件除show外的属性
         title: '确定删除这一地址吗?',
         onCancel () {
-          console.log(_this)
         },
         onConfirm () {
           _this.$vux.loading.show({
             text: '正在提交'
           })
-          _this.delAddress({id})
-          _this.setDefaultAddress()
+          _this.eidtAddress({id, type: addressType})
           _this.$vux.loading.hide()
           // 显示
           _this.$vux.toast.show({
@@ -177,6 +171,9 @@ export default {
       await this.changeAddress()
       done(true)
     }
+  },
+  beforeDestroy () {
+    window.localStorage.setItem('mj_address_page_switch_type', this.addressType)
   }
 }
 </script>
@@ -227,6 +224,9 @@ export default {
             @media (min-width:400px) {
               width: 28rem;
             }
+            &-remark {
+              color: @red;
+            }
           }
           p {
             text-align: left;
@@ -238,9 +238,10 @@ export default {
         }
         &--func {
           font-size: 1.2rem;
-          justify-content: space-between;
+          justify-content: flex-end;
           .padding;
           .edit {
+            padding: .1rem 1rem;
             img {
               width: 1.2rem;
               vertical-align: middle;

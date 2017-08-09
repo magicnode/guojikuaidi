@@ -1,4 +1,4 @@
-import {address as addressApi} from '@/api'
+import {address as addressApi, geography as geographyApi} from '@/api'
 import axios from 'axios'
 import window from 'window'
 
@@ -46,9 +46,15 @@ export const actions = {
         headers: {'token': mjToken}
       })
       if (send.status === 200 && pickup.status === 200) {
+        let sendData = send.data.obj.sort(function (a, b) {
+          return a.endtime < b.endtime
+        })
+        let pickupData = pickup.data.obj.sort(function (a, b) {
+          return a.endtime < b.endtime
+        })
         let data = {
-          send: send.data.obj,
-          pickup: pickup.data.obj
+          send: sendData,
+          pickup: pickupData
         }
         commit(types.SET_ADDRESS, {data})
         return {
@@ -111,18 +117,39 @@ export const actions = {
       commit(types.SET_ADDRESS_RES, {result})
     }
   },
-  eidtAddress ({dispatch}, {id, address, province, city, district, mobile, name, checked = 2, userId = local.getItem('mj_userId'), addressType = 1}) {
-    instance.get(addressApi.update, {
-      params: {id, address, province, city, district, mobile, name, checked, userId, addressType}
-    })
-    .then((res) => {
+  async eidtAddress ({dispatch}, {id, type = 'send', status = 2}) {
+    try {
+      let url
+      if (type === 'send') {
+        url = addressApi.updatesend
+      } else {
+        url = addressApi.updatepickup
+      }
+      const res = await instance({
+        method: 'post',
+        url,
+        params: {
+          id,
+          status
+        },
+        headers: {'token': mjToken}
+      })
       if (res.status === 200) {
         dispatch('changeAddress')
+        return {
+          type: 'success',
+          info: '添加地址成功',
+          width: '18rem'
+        }
       }
-    })
-    .catch(err => {
-      console.error(err)
-    })
+    } catch (e) {
+      console.error(e)
+      return {
+        type: 'warn',
+        info: '添加地址失败',
+        width: '18rem'
+      }
+    }
   },
   checkedAddress ({commit, dispatch}, {id, addressType}) {
     instance.get(addressApi.checked, {
@@ -157,6 +184,57 @@ export const actions = {
       }
       commit(types.SET_ADDRESS_RES, {result})
     })
+  },
+  async getGeography ({commit}, {countryid, provinceid, cityid, countyid}) {
+    try {
+      countryid = Number(countryid)
+      provinceid = Number(provinceid)
+      cityid = Number(cityid)
+      countyid = Number(countyid)
+      const country = await instance({
+        method: 'post',
+        url: geographyApi.showcountry,
+        headers: {'token': mjToken}
+      })
+      const province = await instance({
+        method: 'post',
+        url: geographyApi.showprovince,
+        params: {
+          countryid
+        },
+        headers: {'token': mjToken}
+      })
+      const city = await instance({
+        method: 'post',
+        url: geographyApi.showcity,
+        params: {
+          provinceid
+        },
+        headers: {'token': mjToken}
+      })
+      const county = await instance({
+        method: 'post',
+        url: geographyApi.showcounty,
+        params: {
+          cityid
+        },
+        headers: {'token': mjToken}
+      })
+      const str = country.data.obj[countryid - 1]['name'] + province.data.obj[provinceid - 1]['name'] + city.data.obj[cityid - 1]['name'] + county.data.obj[countyid - 1]['name']
+      return {
+        type: 'success',
+        text: '获取成功',
+        width: '18rem',
+        data: str
+      }
+    } catch (e) {
+      console.error(e)
+      return {
+        type: 'warn',
+        info: '获取失败',
+        width: '18rem'
+      }
+    }
   }
 }
 

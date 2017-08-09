@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="steplocationpicker-step" v-show="step === 1">
-      <p>选择国家--{{countryVal}}</p>
+      <p>选择国家</p>
       <picker :data='countryData' v-model='countryVal' :fixed-columns="1" :columns="1"></picker>
     </div>
     <div class="steplocationpicker-step" v-show="step === 2">
@@ -41,6 +41,8 @@ import axios from 'axios'
 let instance = axios.create({
   timeout: 3000
 })
+
+const mjToken = window.localStorage.getItem('mj_token')
 
 export default {
   name: 'steplocationpicker',
@@ -73,7 +75,8 @@ export default {
     try {
       const res = await instance({
         method: 'post',
-        url: geographyApi.showcountry
+        url: geographyApi.showcountry,
+        headers: {'token': mjToken}
       })
       if (res.status !== 200) {
         return this.$vux.toast.show({
@@ -136,7 +139,8 @@ export default {
               url: geographyApi.showprovince,
               params: {
                 countryid: Number(this.countryVal)
-              }
+              },
+              headers: {'token': mjToken}
             })
             if (res.status !== 200) {
               return this.$vux.toast.show({
@@ -173,7 +177,8 @@ export default {
               url: geographyApi.showcity,
               params: {
                 provinceid: Number(this.provinceVal)
-              }
+              },
+              headers: {'token': mjToken}
             })
             if (res.status !== 200) {
               return this.$vux.toast.show({
@@ -210,7 +215,8 @@ export default {
               url: geographyApi.showcounty,
               params: {
                 cityid: Number(this.cityVal)
-              }
+              },
+              headers: {'token': mjToken}
             })
             if (res.status !== 200) {
               return this.$vux.toast.show({

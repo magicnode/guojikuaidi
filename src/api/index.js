@@ -1,12 +1,12 @@
 // 董浩伟
 // let url = 'http://192.168.0.225:8080/DHL/wx/'
 // 仝舟
-let url = 'http://192.168.0.125:8066/wx/'
+// let url = 'http://192.168.0.125:8066/wx/'
 // online app 云端服务
-// let url = 'http://api.didalive.net/DHL/'
+let url = 'http://api.didalive.net/WeChatService/wx/'
 
 if (process.env.NODE_ENV !== 'development') {
-  url = 'http://app.quandikeji.com/WeChatService/'
+  url = 'http://app.quandikeji.com/WeChatService/wx/'
 }
 
 export const pic = {
@@ -20,7 +20,8 @@ export const address = {
   pickup: url + 'Consigneeaddress/ShowConsigneeaddressuserid',
   addsend: url + 'Mailingaddress/InsertMailingaddress',
   addpickup: url + 'Consigneeaddress/InsertConsigneeaddress',
-  update: url + 'updateAddress',
+  updatesend: url + 'Mailingaddress/UpdateMailingaddress',
+  updatepickup: url + 'Consigneeaddress/UpdateConsigneeaddress',
   delete: url + 'deleteAddress',
   checked: url + 'checked',
   default: url + 'GETADDRESSDEFAULT',
@@ -80,4 +81,9 @@ export const express = {
 // 杂项
 export const sundry = {
   cargotype: url + 'Cargotype/ShowCargotype'
+}
+
+// 价格查询
+export const price = {
+  order: url + 'Price/ShowPrice'
 }

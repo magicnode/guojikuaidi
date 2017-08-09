@@ -3,32 +3,22 @@
     <div class="senddetail-container">
       <div class="senddetail-container-tab">
         <tab active-color='#eb1d21'>
-          <tab-item :selected="show ==='wait'" @on-item-click="changeShow('wait')">未完成</tab-item>
-          <tab-item :selected="show ==='ready'" @on-item-click="changeShow('ready')">已完成</tab-item>
+          <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">全部</tab-item>
+          <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">待付款</tab-item>
+          <tab-item :selected="show ==='waitdelivery '" @on-item-click="changeShow('waitdelivery')">待收货</tab-item>
+          <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">已完成</tab-item>
+          <tab-item :selected="show ==='cancle'" @on-item-click="changeShow('cancle')">已取消</tab-item>
+          <tab-item :selected="show ==='unusual'" @on-item-click="changeShow('unusual')">异常</tab-item>
         </tab>
       </div>
-      <div class="senddetail-cell" v-show="show === 'wait'">
+      <div class="senddetail-cell">
         <scroller 
           :on-refresh="refresh"
           :on-infinite="infinite"
           ref="my_scroller_senddetail"
           class="senddetail-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="senddetail-cell-detail" v-for="item in data['wait']" :key="item.id">
-            <mj-senditem :item="item"></mj-senditem>
-          </div>
-          <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
-        </scroller>
-      </div>
-      <!-- 已寄件 -->
-      <div class="senddetail-cell" v-show="show === 'ready'">
-        <scroller 
-          :on-refresh="refresh"
-          :on-infinite="infinite"
-          ref="my_scroller_senddetail"
-          class="senddetail-scroller">
-          <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="senddetail-cell-detail" v-for="item in data['ready']" :key="item.id">
+          <div class="senddetail-cell-detail" v-for="item in data" :key="item.id">
             <mj-senditem :item="item"></mj-senditem>
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
@@ -45,7 +35,7 @@ export default {
   created () {
     const {type} = this.$route.query
     const localtype = window.localStorage.getItem('mj_senddetail_switch_type')
-    this.show = type || localtype || 'wait'
+    this.show = type || localtype || 'all'
   },
   mounted () {
     window.document.title = '寄件列表'
