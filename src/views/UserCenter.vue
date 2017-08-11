@@ -80,7 +80,7 @@ export default {
       }, {
         src: require('../assets/images/new/min_ico_pac.png'),
         name: '我的包裹',
-        path: '/send/detail',
+        path: '/order/list',
         show: true
       }, {
         src: require('../assets/images/new/min_ico_rea.png'),

@@ -13,6 +13,7 @@ import * as filters from './filters'
 import Header from './components/Header.vue'
 import PickupItem from './components/PickupItem.vue'
 import SendItem from './components/SendItem.vue'
+import OrderItem from './components/OrderItem.vue'
 import MJSpinner from './components/MJSpinner.vue'
 import StepLocationPicker from './components/StepLocationPicker.vue'
 
@@ -37,14 +38,12 @@ Vue.component('mj-header', Header)
 Vue.component('mj-spinner', MJSpinner)
 Vue.component('mj-pickupitem', PickupItem)
 Vue.component('mj-senditem', SendItem)
+Vue.component('mj-orderitem', OrderItem)
 Vue.component('step-location', StepLocationPicker)
 
 function SwitchfullPath (fullPath) {
   let page = ''
   switch (fullPath) {
-    case '/pickup':
-      page = 1
-      break
     case '/send':
       page = 2
       break
@@ -64,24 +63,12 @@ router.beforeEach(function (to, from, next) {
     const local = window.localStorage
     const openid = local.getItem('mj_openid')
     const userid = local.getItem('mj_userId')
-    if (!openid || userid === '' || !userid) {
+    const token = local.getItem('mj_token')
+    if (!openid || userid === '' || !userid || !token) {
       const fullPath = to.fullPath
       const page = SwitchfullPath(fullPath)
       return next({
         path: '/init',
-        query: { page }
-      })
-    }
-  }
-  // mobile auth
-  if (to.matched.some(record => record.meta.requiresMobile)) {
-    const local = window.localStorage
-    const mobile = local.getItem('mj_mobile')
-    if (!mobile || mobile === '') {
-      const fullPath = to.fullPath
-      const page = SwitchfullPath(fullPath)
-      return next({
-        path: '/bindphone',
         query: { page }
       })
     }

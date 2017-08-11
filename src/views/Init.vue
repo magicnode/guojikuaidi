@@ -17,7 +17,6 @@ let appid = config.dev.appid
 let secret = config.dev.appsecret
 let redirectUri = 'http://171u9555b3.iask.in/'
 if (process.env.NODE_ENV !== 'development') {
-  console.log('this is pro app')
   appid = config.pro.appid
   secret = config.pro.appsecret
   redirectUri = 'http://guoji.didalive.net/redirect/'

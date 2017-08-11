@@ -62,17 +62,18 @@ export const actions = {
         }
       })
       const data = res.data
-      if (data.code === 200) {
-        let info = data.obj
-        if (!info.mobile) {
+      if (data.msg === '登陆成功') {
+        let user = data.user
+        if (!user.mobile) {
+          localStorage.setItem('mj_token', data.token)
           return {
             text: '用户未绑定手机号，将跳转绑定页面',
             width: '15rem',
             type: 'text'
           }
         }
-        dispatch('setUserId', {userId: info.id})
-        commit(types.SET_USERINFO, {mobile: info.mobile, headimgurl: info.headimgurl, nickname: info.nickname})
+        dispatch('setUserId', {userId: user.id})
+        commit(types.SET_USERINFO, {token: data.token, mobile: user.mobile, headimgurl: user.headimgurl, nickname: user.nickname})
         return {
           text: '获取用户信息成功',
           width: '15rem',
@@ -104,7 +105,6 @@ export const actions = {
           url
         }
       })
-      console.log('res', res)
       if (res.status === 200) {
         let data = res.data
         data = JSON.parse(data)
@@ -143,11 +143,13 @@ export const actions = {
         url: userApi.sendsms,
         params: {
           phone
+        },
+        headers: {
+          'token': localStorage.getItem('mj_token')
         }
       })
       const data = res.data
       const code = data.code
-      console.log('sms data', data)
       if (code === 200 || code === 201) {
         commit(types.SET_SMSCODE, {smscode: data.obj})
         return {
@@ -185,6 +187,9 @@ export const actions = {
           mobile,
           openid,
           IDcard
+        },
+        headers: {
+          'token': localStorage.getItem('mj_token')
         }
       })
       const data = res.data
@@ -221,9 +226,10 @@ export const mutations = {
   [types.SET_USERID] (state, { userId }) {
     state.userId = userId
   },
-  [types.SET_USERINFO] (state, { mobile = localStorage.mj_mobile, nickname = localStorage.mj_nickname,
+  [types.SET_USERINFO] (state, { token = localStorage.mj_token, mobile = localStorage.mj_mobile, nickname = localStorage.mj_nickname,
     headimgurl = localStorage.mj_headimgurl }) {
     localStorage.setItem('mj_mobile', mobile)
+    localStorage.setItem('mj_token', token)
     localStorage.setItem('mj_nickname', nickname)
     localStorage.setItem('mj_headimgurl', headimgurl)
   },

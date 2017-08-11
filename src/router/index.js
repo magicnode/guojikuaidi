@@ -21,24 +21,22 @@ export default new Router({
       name: 'UserCenter',
       component: require('@/views/UserCenter'),
       meta: {
-        requiresAuth: false,
-        requiresMobile: false
+        requiresAuth: true
       }
     }, {
       path: '/send',
       name: 'Send',
       component: require('@/views/Send'),
       meta: {
-        requiresAuth: false,
-        requiresMobile: false
+        intro: '寄件',
+        requiresAuth: false
       }
     }, {
       path: '/pickup',
       name: 'PickUp',
       component: require('@/views/PickUp'),
       meta: {
-        requiresAuth: false,
-        requiresMobile: false
+        requiresAuth: true
       }
     }, {
       path: '/pickuptest',
@@ -50,18 +48,25 @@ export default new Router({
     name: 'Address',
     component: require('@/views/Address'),
     meta: {
+      intro: '地址簿',
       requiresAuth: true
     }
   }, {
     path: '/address/add',
     name: 'AddAddress',
     component: require('@/views/AddAddress'),
-    meta: { requiresAuth: true }
+    meta: {
+      intro: '添加地址',
+      requiresAuth: true
+    }
   }, {
     path: '/address/edit',
     name: 'EditAddress',
     component: require('@/views/EditAddress'),
-    meta: { requiresAuth: true }
+    meta: {
+      intro: '编辑地址',
+      requiresAuth: true
+    }
   }, {
     path: '/pickup/detail',
     name: 'PickUpDetail',
@@ -129,6 +134,22 @@ export default new Router({
     component: require('@/views/ExpressRoute'),
     meta: {
       intro: '快递路由信息'
+    }
+  }, {
+    path: '/order/list',
+    name: 'OrderList',
+    component: require('@/views/OrderList'),
+    meta: {
+      intro: '订单列表',
+      requiresAuth: true
+    }
+  }, {
+    path: '/order/detail',
+    name: 'OrderDetail',
+    component: require('@/views/OrderDetail'),
+    meta: {
+      intro: '订单详情',
+      requiresAuth: true
     }
   }]
 })

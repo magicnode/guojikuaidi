@@ -93,6 +93,7 @@ export const actions = {
           nation, provinnce, city, county, detaliedinformation: detailedinformation, postcode, iphone, userid, endtime, start, recipients: linkman, idnumber, company, remark: remove
         }
       }
+      console.log('params', params)
       const res = await instance({
         method: 'post',
         url,

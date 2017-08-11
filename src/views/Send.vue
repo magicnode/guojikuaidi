@@ -3,7 +3,7 @@
     <div class="send-container">
       <div class="send-container-select go-sendlist">
         <group>
-          <cell title="寄件列表" link="/send/detail" is-link style="padding:1.2rem 11px;">
+          <cell title="寄件列表" link="/order/list" is-link style="padding:1.2rem 11px;">
             <img slot="icon" class="send-icon" style="display:block;margin-right:.8rem;" src="../assets/images/nav_ivo_che.png" />
           </cell>
         </group>
@@ -64,6 +64,8 @@
           </div>
           <selector direction="rtl" v-model="productionType" placeholder="选择产品类型"   title="产品类型" name="district" :options="productionTypeOption" @on-change="onChange">
           </selector>
+          <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="remove.length + 20" required>
+          </x-textarea>
         </group>
       </div>
 
@@ -122,6 +124,7 @@
 
       <div class="div-btn-sub"> 
         <button class="btn-sub" @click="submitSend">提交</button>
+        <button @click="wxpay">威信支付</button>
       </div>
     </div>
 
@@ -177,10 +180,6 @@
             <x-input title="产品单价" type="number" v-model="newpackage['price']" required></x-input>
             <x-input title="产品价值" type="number" v-model="newpackage['cost']" required></x-input>
             <x-input title="产品数量" type="number" v-model="newpackage['amount']" required></x-input>
-            <x-input title="海关编号" type="text" v-model="newpackage['CustomsNo']" required></x-input>
-            <x-input title="海关承重" type="number" v-model="newpackage['Customerbearing']" required></x-input>
-            <x-input title="产品单位" type="text" v-model="newpackage['unit']" required></x-input>
-            <x-input title="包裹备注" type="text" v-model="newpackage['reovme']" required></x-input>
           </group>
           <div class="package-dialog-form__confrim">
             <button type="" class="package-dialog-form__confrim--cancle" @click="packageShow = false">取消</button>
@@ -197,8 +196,9 @@
 <script>
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
-import { sundry as sundryApi, send as sendApi } from '@/api'
+import { sundry as sundryApi, send as sendApi, wx as wxApi } from '@/api'
 import axios from 'axios'
+import { format } from '../util/time'
 
 let instance = axios.create({
   timeout: 5000
@@ -207,7 +207,7 @@ let instance = axios.create({
 const localStorage = window.localStorage
 const mjToken = localStorage.getItem('mj_token')
 
-// const wx = window.wx
+const wx = window.wx
 
 export default {
   name: 'send',
@@ -222,19 +222,28 @@ export default {
     XDialog
   },
   async created () {
-    // wx.config({
-    //   appId: 'wxddd3ecf13e8fca82',
-    //   timestamp: 123456,
-    //   nonceStr: '',
-    //   signature: '',
-    //   jsApiList: [
-    //     'chooseImage',
-    //     'showAllNonBaseMenuItem',
-    //     'closeWindow',
-    //     'scanQRCode',
-    //     'chooseWXPay'
-    //   ]
-    // })
+    const wxconfig = await instance({
+      method: 'post',
+      url: wxApi.jssdk
+    })
+    const jssdk = JSON.parse(wxconfig.data.obj)
+    console.log('jssdk', jssdk)
+    wx.config({
+      debug: true,
+      appId: 'wxddd3ecf13e8fca82',
+      timestamp: jssdk.timestamp,
+      nonceStr: jssdk.nonceStr,
+      signature: jssdk.signature,
+      jsApiList: [
+        'chooseWXPay'
+      ]
+    })
+    wx.ready(function () {
+      console.log('wx jssdk 初始化成功')
+    })
+    wx.error(function (res) {
+      console.log('wx error res', res)
+    })
     this.$store.commit('SET_PAGE', {page: 'send'})
     // 获取地址
     this.sendAddress = JSON.parse(localStorage.getItem('mj_send_sendaddress')) || {
@@ -297,19 +306,21 @@ export default {
       len: 1,
       height: 1,
       volume: 1,
+      // 备注
+      remove: '',
       packageShow: false,
       productionType: undefined,
       productionTypeOption: [],
       newpackage: {
         name: '', // 中文名
         Englishname: '', // 英文名
-        Customerbearing: '', // 海关承重
-        CustomsNo: '', // 海关编号
         amount: '', // 数量
         price: '', // 价格
         cost: '', // 价值
-        unit: '', // 单位
-        reovme: '' // 备注
+        Customerbearing: '0', // 海关承重
+        CustomsNo: '0', // 海关编号
+        unit: '0', // 单位
+        reovme: '0' // 备注
       },
       packageTable: [],
       advance: 0,
@@ -383,13 +394,13 @@ export default {
       this.newpackage = {
         name: '', // 中文名
         Englishname: '', // 英文名
-        Customerbearing: '', // 海关承重
-        CustomsNo: '', // 海关编号
         amount: '', // 数量
         price: '', // 价格
         cost: '', // 价值
-        unit: '', // 单位
-        reovme: '' // 备注
+        CustomsNo: '0', // 海关编号
+        Customerbearing: '0', // 海关承重
+        unit: '0', // 单位
+        reovme: '0' // 备注
       }
       this.packageShow = false
     },
@@ -398,6 +409,35 @@ export default {
     },
     goPath (path) {
       this.$router.push({path})
+    },
+    async wxpay () {
+      const wxpay = await instance({
+        method: 'post',
+        url: wxApi.wxpay,
+        params: {
+          openid: localStorage.getItem('mj_openid')
+          // openid: 'osdH7v8UJRnWajOGBWKHEodcMWFo'
+        }
+      })
+      const wxpayCon = wxpay.data
+      console.log('wx con', wxpayCon)
+      const wxPay = {
+        appId: 'wxddd3ecf13e8fca82',
+        timestamp: wxpayCon.timeStamp,
+        nonceStr: wxpayCon.nonceStr,
+        package: wxpayCon.package,
+        signType: 'MD5',
+        paySign: wxpayCon.sign
+      }
+      console.log('wxPay', wxPay)
+      wx.chooseWXPay({
+        ...wxPay,
+        success: function (res) {
+          console.log('res', res)
+        },
+        cancle: function () {
+        }
+      })
     },
     async submitSend () {
       try {
@@ -422,13 +462,13 @@ export default {
           url: sendApi.create,
           params: {
             serialnumber: this.serialnumber,
-            type: '123',
+            type: '包裹',
             sku: '',
             state: 1,
             // 寄件地址id
             mailid: this.sendAddress['id'],
             // 下单时间
-            endtime: new Date(),
+            endtime: format('yyyy-MM-dd hh:mm:ss', new Date()),
             // 收件id
             arrivaid: this.pickupAddress['id'],
             userid: localStorage.getItem('mj_userId'),
@@ -437,17 +477,19 @@ export default {
             widthofitem: this.wide,
             objectheight: this.height,
             bearload: this.weight,
-            remove: '111',
+            remove: this.remove,
             headpackages
           },
           headers: {'token': mjToken}
         })
         this.$vux.loading.hide()
         if (result) {
+          const _this = this
           this.serialnumber = 'DHL' + new Date().getTime()
           this.showToast({text: '提交成功'})
-          // this.$router.push({path: '/send/detail', query: {type: 'waitpay'}})
-          return
+          return setTimeout(function () {
+            _this.$router.push({path: '/order/list', query: {type: 'all'}})
+          }, 1000)
         } else {
           this.serialnumber = 'DHL' + new Date().getTime()
           this.showToast({text: '提交失败', type: 'warn'})

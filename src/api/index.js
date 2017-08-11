@@ -1,68 +1,68 @@
 // 董浩伟
-// let url = 'http://192.168.0.225:8080/DHL/wx/'
+// let url = 'http://192.168.0.225:8080/DHL/'
 // 仝舟
-// let url = 'http://192.168.0.125:8066/wx/'
-// online app 云端服务
-let url = 'http://api.didalive.net/WeChatService/wx/'
+// let url = 'http://192.168.0.125:8066/'
+// online app 云端服务 Wechat
+let url = 'http://api.didalive.net/DHL/'
 
 if (process.env.NODE_ENV !== 'development') {
-  url = 'http://app.quandikeji.com/WeChatService/wx/'
+  url = 'http://api.didalive.net/DHL/'
 }
 
 export const pic = {
-  qr: url + 'pic',
-  pickupqr: url + 'signpic'
+  qr: url + 'wx/pic',
+  pickupqr: url + 'wx/signpic'
 }
 
 export const address = {
-  index: url + 'Mailingaddress/ShowMailingaddressuserid',
-  send: url + 'Mailingaddress/ShowMailingaddressuserid',
-  pickup: url + 'Consigneeaddress/ShowConsigneeaddressuserid',
-  addsend: url + 'Mailingaddress/InsertMailingaddress',
-  addpickup: url + 'Consigneeaddress/InsertConsigneeaddress',
-  updatesend: url + 'Mailingaddress/UpdateMailingaddress',
-  updatepickup: url + 'Consigneeaddress/UpdateConsigneeaddress',
-  delete: url + 'deleteAddress',
-  checked: url + 'checked',
-  default: url + 'GETADDRESSDEFAULT',
-  officelocation: url + 'FindStationInfo'
+  index: url + 'wx/Mailingaddress/ShowMailingaddressuserid',
+  send: url + 'wx/Mailingaddress/ShowMailingaddressuserid',
+  pickup: url + 'wx/Consigneeaddress/ShowConsigneeaddressuserid',
+  addsend: url + 'wx/Mailingaddress/InsertMailingaddress',
+  addpickup: url + 'wx/Consigneeaddress/InsertConsigneeaddress',
+  updatesend: url + 'wx/Mailingaddress/UpdateMailingaddress',
+  updatepickup: url + 'wx/Consigneeaddress/UpdateConsigneeaddress',
+  delete: url + 'wx/deleteAddress',
+  checked: url + 'wx/checked',
+  default: url + 'wx/GETADDRESSDEFAULT',
+  officelocation: url + 'wx/FindStationInfo'
 }
 
 export const geography = {
-  showcountry: url + 'Country/ShowCountry',
-  showprovince: url + 'Province/ShowProvinceid',
-  showcity: url + 'City/ShowCityid',
-  showcounty: url + 'County/ShowCountyid'
+  showcountry: url + 'wx/Country/ShowCountry',
+  showprovince: url + 'wx/Province/ShowProvinceid',
+  showcity: url + 'wx/City/ShowCityid',
+  showcounty: url + 'wx/County/ShowCountyid'
 }
 
 export const send = {
-  index: url + 'findSend',
-  create: url + 'OrderInfo/InsertOrderInfo',
-  cancle: url + 'end_send'
+  index: url + 'wx/findSend',
+  create: url + 'wx/OrderInfo/InsertOrderInfo',
+  cancle: url + 'wx/end_send'
 }
 
 export const brand = {
-  index: url + 'allbrand'
+  index: url + 'wx/allbrand'
 }
 
 export const site = {
-  location: url + 'COORDINATES'
+  location: url + 'wx/COORDINATES'
 }
 
 export const pickup = {
-  sign: url + 'TAKECOURIERSIGN',
-  wait: url + 'TAKECOURIER',
-  all: url + 'ALLDELIVERY'
+  sign: url + 'wx/TAKECOURIERSIGN',
+  wait: url + 'wx/TAKECOURIER',
+  all: url + 'wx/ALLDELIVERY'
 }
 
 export const user = {
   gettoken: function (code, params) {
-    return url + 'GetAccessToken?code=' + code + '&params=' + params
+    return url + 'wx/GetAccessToken?code=' + code + '&params=' + params
   },
-  sendsms: url + 'User/ShowranCode',
-  bindphone: url + 'User/AddUserPhone',
-  getuserinfo: url + 'UserInfo',
-  getwebopenid: url + 'UserOpenId'
+  sendsms: url + 'wx/User/ShowranCode',
+  bindphone: url + 'wx/User/AddUserPhone',
+  getuserinfo: url + 'login/wxLogin',
+  getwebopenid: 'http://app.quandikeji.com/WeChatService/UserOpenId'
 }
 
 export const wx = {
@@ -70,20 +70,26 @@ export const wx = {
     const url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + AppId + '&secret=' + secret + '&code=' + code + '&grant_type=authorization_code'
     return url
   },
-  webtoken: 'https://api.weixin.qq.com/sns/oauth2/access_token'
+  webtoken: 'https://api.weixin.qq.com/sns/oauth2/access_token',
+  jssdk: url + 'getWxConfig/',
+  wxpay: url + 'pay'
 }
 
 export const express = {
-  // url = url + 'brand=' + brand + '&orderSn=' + orderSn
+  // url = url + 'wx/brand=' + brand + '&orderSn=' + orderSn
   route: 'http://app.quandikeji.com:8088/quandiExpressSite1.4.0/Logistics/queryLogisticsInfoForJson'
 }
 
 // 杂项
 export const sundry = {
-  cargotype: url + 'Cargotype/ShowCargotype'
+  cargotype: url + 'wx/Cargotype/ShowCargotype'
 }
 
 // 价格查询
 export const price = {
-  order: url + 'Price/ShowPrice'
+  order: url + 'wx/Price/ShowPrice'
+}
+
+export const order = {
+  list: url + 'wx/OrderInfo/ShowOrderInfo'
 }

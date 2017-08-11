@@ -19,7 +19,7 @@
           class="senddetail-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
           <div class="senddetail-cell-detail" v-for="item in data" :key="item.id">
-            <mj-senditem :item="item"></mj-senditem>
+            <mj-orderitem :item="item"></mj-orderitem>
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
         </scroller>
@@ -28,12 +28,21 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
+import { order as orderApi } from '@/api'
+
+let instance = axios.create({
+  timeout: 5000
+})
+
+const localStorage = window.localStorage
+const mjToken = localStorage.getItem('mj_token')
 
 export default {
   name: 'senddetail',
   async created () {
     const {type} = this.$route.query
-    const localtype = window.localStorage.getItem('mj_senddetail_switch_type')
+    const localtype = localStorage.getItem('mj_senddetail_switch_type')
     this.show = type || localtype || 'all'
   },
   mounted () {
@@ -46,6 +55,50 @@ export default {
     }
   },
   methods: {
+    async getOrderList (starte = 1) {
+      try {
+        const orderlist = await instance({
+          method: 'post',
+          url: orderApi.list,
+          params: {
+            userid: localStorage.getItem('mj_userId'),
+            // userid: 3,
+            starte
+          },
+          headers: {'token': mjToken}
+        })
+        if (orderlist.status !== 200) {
+          return this.$vux.toast.show({
+            text: '获取寄件列表失败',
+            type: 'warn',
+            width: '18rem'
+          })
+        }
+        if (orderlist.data.code !== 200) {
+          return this.$vux.toast.show({
+            text: orderlist.data.mess,
+            type: 'warn',
+            width: '18rem'
+          })
+        }
+        let data = orderlist.data.obj
+        console.log('data', data)
+        if (data.length > 0) {
+          data.sort(function (a, b) {
+            return a.id < b.id
+          })
+        }
+        this.data = data
+        return
+      } catch (e) {
+        console.error(e)
+        return this.$vux.toast.show({
+          text: e.message,
+          type: 'warn',
+          width: '18rem'
+        })
+      }
+    },
     changeShow (type) {
       window.localStorage.setItem('mj_senddetail_switch_type', type)
       this.show = type
@@ -95,20 +148,14 @@ export default {
     refresh (done) {
       const _this = this
       setTimeout(async function () {
-        const result = await _this.setSend()
-        if (result.type !== 'success') {
-          _this.showToast(result)
-        }
+        _this.getOrderList()
         done(true)
       }, 1200)
     },
     infinite (done) {
       const _this = this
       setTimeout(async function () {
-        const result = await _this.setSend()
-        if (result.type !== 'success') {
-          _this.showToast(result)
-        }
+        _this.getOrderList()
         done(true)
       }, 1500)
     }

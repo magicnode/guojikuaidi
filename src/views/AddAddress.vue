@@ -114,7 +114,6 @@ export default {
       }
       const locationId = this.locationid
       const res = await this.addAddress({...locationId, detailedinformation: this.detailedinformation, postcode: this.postcode, iphone: this.iphone, linkman: this.linkman, company: this.company, remove: this.remove, type: this.type, idnumber: this.idnumber})
-      console.log('res', res)
       if (res.type !== 'success') {
         return this.$vux.toast.show(res)
       }
