@@ -59,8 +59,22 @@ function SwitchfullPath (fullPath) {
 
 router.beforeEach(function (to, from, next) {
   // login auth
+  const local = window.localStorage
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    const local = window.localStorage
+    if (process.env.NODE_ENV !== 'development') {
+      // 生产环境验证登录码是否过期
+      const expire = local.getItem('mj_expire') || JSON.stringify({'expire': '0'})
+      if (!expire || JSON.parse(expire)['expire'] <= (new Date().getTime())) {
+        local.clear()
+        const fullPath = to.fullPath
+        const page = SwitchfullPath(fullPath)
+        return next({
+          path: '/init',
+          query: { page }
+        })
+      }
+    }
+    // 时间戳未过期，进行下一步验证
     const openid = local.getItem('mj_openid')
     const userid = local.getItem('mj_userId')
     const token = local.getItem('mj_token')

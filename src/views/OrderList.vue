@@ -62,7 +62,6 @@ export default {
           url: orderApi.list,
           params: {
             userid: localStorage.getItem('mj_userId'),
-            // userid: 3,
             starte
           },
           headers: {'token': mjToken}
@@ -147,17 +146,52 @@ export default {
     },
     refresh (done) {
       const _this = this
+      const starte = localStorage.getItem('mj_order_type') ? localStorage.getItem('mj_order_type') : 6
       setTimeout(async function () {
-        _this.getOrderList()
+        _this.getOrderList(starte)
         done(true)
       }, 1200)
     },
     infinite (done) {
       const _this = this
+      const starte = localStorage.getItem('mj_order_type') ? localStorage.getItem('mj_order_type') : 6
       setTimeout(async function () {
-        _this.getOrderList()
+        _this.getOrderList(starte)
         done(true)
       }, 1500)
+    }
+  },
+  watch: {
+    show (val, oldval) {
+      switch (val) {
+        case 'all':
+          localStorage.setItem('mj_order_type', 6)
+          this.getOrderList(6)
+          break
+        case 'waitpay':
+          localStorage.setItem('mj_order_type', 1)
+          this.getOrderList(1)
+          break
+        case 'waitdelivery':
+          localStorage.setItem('mj_order_type', 2)
+          this.getOrderList(2)
+          break
+        case 'done':
+          localStorage.setItem('mj_order_type', 0)
+          this.getOrderList(0)
+          break
+        case 'cancle':
+          localStorage.setItem('mj_order_type', 5)
+          this.getOrderList(5)
+          break
+        case 'unusual':
+          localStorage.setItem('mj_order_type', 4)
+          this.getOrderList(4)
+          break
+        default:
+          localStorage.setItem('mj_order_type', 6)
+          this.getOrderList(6)
+      }
     }
   }
 }

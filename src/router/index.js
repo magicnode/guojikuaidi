@@ -29,7 +29,7 @@ export default new Router({
       component: require('@/views/Send'),
       meta: {
         intro: '寄件',
-        requiresAuth: false
+        requiresAuth: true
       }
     }, {
       path: '/pickup',

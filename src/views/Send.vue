@@ -124,7 +124,6 @@
 
       <div class="div-btn-sub"> 
         <button class="btn-sub" @click="submitSend">提交</button>
-        <button @click="wxpay">威信支付</button>
       </div>
     </div>
 
@@ -196,7 +195,7 @@
 <script>
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
-import { sundry as sundryApi, send as sendApi, wx as wxApi } from '@/api'
+import { sundry as sundryApi, send as sendApi, wx as wxApi, order as orderApi, price as priceApi } from '@/api'
 import axios from 'axios'
 import { format } from '../util/time'
 
@@ -224,22 +223,23 @@ export default {
   async created () {
     const wxconfig = await instance({
       method: 'post',
-      url: wxApi.jssdk
+      url: wxApi.jssdk,
+      params: {
+        url: 'http://guoji.didalive.net/wechat/'
+      }
     })
     const jssdk = JSON.parse(wxconfig.data.obj)
     console.log('jssdk', jssdk)
     wx.config({
-      debug: true,
+      debug: false,
       appId: 'wxddd3ecf13e8fca82',
       timestamp: jssdk.timestamp,
       nonceStr: jssdk.nonceStr,
       signature: jssdk.signature,
       jsApiList: [
+        'chooseImage',
         'chooseWXPay'
       ]
-    })
-    wx.ready(function () {
-      console.log('wx jssdk 初始化成功')
     })
     wx.error(function (res) {
       console.log('wx error res', res)
@@ -410,33 +410,55 @@ export default {
     goPath (path) {
       this.$router.push({path})
     },
-    async wxpay () {
+    async wxpay ({money, serialnumber}) {
       const wxpay = await instance({
         method: 'post',
         url: wxApi.wxpay,
         params: {
-          openid: localStorage.getItem('mj_openid')
-          // openid: 'osdH7v8UJRnWajOGBWKHEodcMWFo'
+          openid: localStorage.getItem('mj_openid'),
+          money: (money * 100),
+          serialnumber,
+          body: '国际快递包裹'
         }
       })
       const wxpayCon = wxpay.data
-      console.log('wx con', wxpayCon)
-      const wxPay = {
-        appId: 'wxddd3ecf13e8fca82',
-        timestamp: wxpayCon.timeStamp,
-        nonceStr: wxpayCon.nonceStr,
-        package: wxpayCon.package,
-        signType: 'MD5',
-        paySign: wxpayCon.sign
-      }
-      console.log('wxPay', wxPay)
-      wx.chooseWXPay({
-        ...wxPay,
-        success: function (res) {
-          console.log('res', res)
-        },
-        cancle: function () {
-        }
+      const _this = this
+      console.log('wx con from server', wxpayCon)
+      wx.ready(function () {
+        console.log('wx jssdk 初始化成功')
+        wx.chooseWXPay({
+          'timestamp': wxpayCon.timeStamp,
+          'nonceStr': wxpayCon.nonceStr,
+          'package': wxpayCon.package,
+          'signType': 'MD5',
+          'paySign': wxpayCon.paySign,
+          success: function (res) {
+            alert('支付成功！')
+            console.log('asd', orderApi)
+            instance({
+              method: 'post',
+              url: orderApi.updatenumber,
+              params: {
+                serialnumber,
+                starte: 2
+              }
+            }).then(orderres => {
+              console.log(orderres)
+              _this.showToast({text: '提交成功'})
+              return setTimeout(function () {
+                _this.$router.push({path: '/order/list', query: {type: 'all'}})
+              }, 1000)
+            }).catch(err => {
+              console.error(err)
+            })
+          },
+          fail: function (res) {
+          },
+          cancle: function () {
+          },
+          complete: function () {
+          }
+        })
       })
     },
     async submitSend () {
@@ -484,12 +506,13 @@ export default {
         })
         this.$vux.loading.hide()
         if (result) {
-          const _this = this
+          // this.showToast({text: '提交成功'})
+          console.log('res', result)
+          this.wxpay({money: this.advance, serialnumber: this.serialnumber})
           this.serialnumber = 'DHL' + new Date().getTime()
-          this.showToast({text: '提交成功'})
-          return setTimeout(function () {
-            _this.$router.push({path: '/order/list', query: {type: 'all'}})
-          }, 1000)
+          // return setTimeout(function () {
+          //   _this.$router.push({path: '/order/list', query: {type: 'all'}})
+          // }, 1000)
         } else {
           this.serialnumber = 'DHL' + new Date().getTime()
           this.showToast({text: '提交失败', type: 'warn'})
@@ -551,6 +574,31 @@ export default {
         return
       }
       this.volume = this.len * this.height * this.wide
+    },
+    async weight (val, oldval) {
+      const _this = this
+      if (val > 30) {
+        _this.$vux.toast.show({
+          text: '重量不能大于30kg',
+          width: '18rem',
+          type: 'warn'
+        })
+        _this.weight = oldval
+        return
+      }
+      const price = await instance({
+        method: 'post',
+        url: priceApi.order,
+        params: {
+          bearload: val,
+          producttypeid: 3
+        },
+        headers: {
+          'token': mjToken
+        }
+      })
+      let data = price.data.obj
+      this.advance = Number(data).toFixed(2)
     }
   },
   beforeDestroy () {

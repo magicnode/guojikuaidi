@@ -86,6 +86,17 @@ export default {
       'setOpenid',
       'setUserInfo'
     ]),
+    // 获取当前时间30分钟后时间戳, 并保存
+    getDate (val) {
+      let time = new Date()
+      time.setMinutes(time.getMinutes() + val, time.getSeconds(), 0)
+      const local = window.localStorage
+      const expireNew = {
+        'now': new Date().getTime(),
+        'expire': time.setMinutes(time.getMinutes() + val, time.getSeconds(), 0)
+      }
+      local.setItem('mj_expire', JSON.stringify(expireNew))
+    },
     async getUserInfoByOpenid ({openid}) {
       const userinfo = await this.setUserInfo({openid})
       if (userinfo.type === 'text') {
@@ -94,6 +105,7 @@ export default {
         return
       } else if (userinfo.type === 'success') {
         // 获取用户信息成功, 根据page跳转页面
+        this.getDate(30)
         this.$vux.toast.show({
           type: 'success',
           text: '登录成功',

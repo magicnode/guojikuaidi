@@ -1,25 +1,14 @@
 <template>
   <div class="sendqr">
     <div class="container">
-      <div class="sendqr-img">
-        <router-link :to="{path: '/express/route', query: {orderSn: data.order, brand: data.brandId}}" class="express-router__link" v-show="data.type !== 1">查看路由</router-link>
-        <div class="sendqr-img--wait" v-show="data.type === 1">
-          <img :src="qr" />
-          <p>寄件时，请向店员出示此二维码</p>
-        </div>
-        <div class="sendqr-img--sign" v-show="data.type !== 1">
-          <img src="../assets/images/new/rec_ico_rig.png" />
-          <p>快递已经寄出</p>
-        </div>
-      </div>
       <div class="sendqr-detail">
         <div class="sendqr-detail-box">
           <div class="sendqr-detail-box__icon">
             <span class="bgblue">寄</span>
           </div>
           <div class="sendqr-detail-box__detail">
-            <p>{{data.sendAddress.name + '   ' + data.sendAddress.mobile}}</p>
-            <p>{{data.sendAddress.province + data.sendAddress.district + data.sendAddress.address}}</p>
+            <p>{{data.listMailingaddress[0].linkman + '   ' + data.listMailingaddress[0].iphone}}</p>
+            <p>{{sendAddress + data.listMailingaddress[0].detailedinformation}}</p>
           </div>
         </div>
         <div class="sendqr-detail-box">
@@ -27,72 +16,105 @@
             <span class="bgyellow">收</span>
           </div>
           <div class="sendqr-detail-box__detail">
-            <p>{{data.receiptAddress.name + '   ' + data.receiptAddress.mobile}}</p>
-            <p>{{data.receiptAddress.province + data.receiptAddress.district + data.receiptAddress.address}}</p>
+            <p>{{data.listConsigneeaddress[0].recipients + '   ' + data.listConsigneeaddress[0].iphone}}</p>
+            <p>{{pickupAddress + data.listConsigneeaddress[0].detaliedinformation}}</p>
           </div>
         </div>
         <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">快递品牌</span>
+          <span class="sendqr-detail-box__title">备注</span>
           <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.brandId | brandtype}}</span>
+          <span class="sendqr-detail-box__content">{{data.remove}}</span>
         </div>
         <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">快递类型</span>
+          <span class="sendqr-detail-box__title">订单状态</span>
           <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.expresstype | pickupstate}}</span>
-        </div>
-        <div class="sendqr-detail-box" v-show="data.pay_type">
-          <span class="sendqr-detail-box__title">支付方式</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.pay_type | paytype}}</span>
-        </div>
-        <div class="sendqr-detail-box" v-show="data.price">
-          <span class="sendqr-detail-box__title">支付金额</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{'￥' +data.price}}</span>
+          <span class="sendqr-detail-box__content">{{data.starte | orderstatus}}</span>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import {pic as picApi} from '@/api'
+import { mapActions } from 'vuex'
+import axios from 'axios'
+import { order as orderApi } from '@/api'
+
+let instance = axios.create({
+  timeout: 5000
+})
+
+const localStorage = window.localStorage
+const mjToken = localStorage.getItem('mj_token')
 
 export default {
   name: 'orderdetail',
   async created () {
     let query = this.$route.query
-    let id = query.id || ''
-    this.qr = picApi.qr + '?orderSn=' + '' + '&userId=' + id
-    const result = await this.setSingleSend({id})
-    if (result.type !== 'success') {
-      this.$vux.toast.show(result)
-    }
+    let id = query.id || 1
+    await this.getOrderDetail(id)
+    const sendgeography = this.data['listMailingaddress'][0]
+    const sendAddress = await this.getGeography({countryid: sendgeography.nationid, provinceid: sendgeography.provinnce, cityid: sendgeography.city, countyid: sendgeography.county})
+    this.sendAddress = sendAddress.data
+    const pickupgeography = this.data['listConsigneeaddress'][0]
+    const pickupAddress = await this.getGeography({countryid: pickupgeography.nation, provinceid: pickupgeography.provinnce, cityid: pickupgeography.city, countyid: pickupgeography.county})
+    this.pickupAddress = pickupAddress.data
   },
   mounted () {
     window.document.title = '寄件明细'
   },
-  computed: {
-    ...mapGetters({
-      data: 'getQrSend'
-    })
-  },
   data () {
     return {
-      qr: '',
-      order: '',
+      data: {},
       item: {},
-      sendAddress: {},
-      pickupAddress: {}
+      sendAddress: '',
+      pickupAddress: ''
     }
   },
   methods: {
     ...mapActions([
-      'setSingleSend'
+      'getGeography'
     ]),
-    watchOffice (userId) {
-      this.$router.push({path: '/office/location', query: {userId}})
+    async getOrderDetail (id = 1) {
+      try {
+        const orderdetail = await instance({
+          method: 'post',
+          url: orderApi.detail,
+          params: {
+            OrderInfoid: id
+          },
+          headers: {'token': mjToken}
+        })
+        if (orderdetail.status !== 200) {
+          return this.$vux.toast.show({
+            text: '获取寄件详情失败',
+            type: 'warn',
+            width: '18rem'
+          })
+        }
+        if (orderdetail.data.code !== 200) {
+          return this.$vux.toast.show({
+            text: orderdetail.data.mess,
+            type: 'warn',
+            width: '18rem'
+          })
+        }
+        let data = orderdetail.data.obj
+        console.log('data', data)
+        if (data.length > 0) {
+          data.sort(function (a, b) {
+            return a.id < b.id
+          })
+        }
+        this.data = data[0]
+        return
+      } catch (e) {
+        console.error(e)
+        return this.$vux.toast.show({
+          text: e.message,
+          type: 'warn',
+          width: '18rem'
+        })
+      }
     }
   }
 }

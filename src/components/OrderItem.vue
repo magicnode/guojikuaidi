@@ -4,7 +4,8 @@
       <div class="senditem-box">
         <span class="senditem-box__office">
          <span class="senditem-box__office--info">
-          备注: {{item.remove}}
+          收件人: {{item.listConsigneeaddress[0].recipients}}
+          手机号:{{item.listConsigneeaddress[0] ? item.listConsigneeaddress[0].iphone : ''}}
          </span>
         </span>
       </div>
@@ -13,7 +14,7 @@
           收
         </div>
         <div class="senditem-box__address">
-          <p>{{item.receiptAddress ? item.receiptAddress.name : ''}}  {{item.receiptAddress ? item.receiptAddress.mobile : ''}}</p>
+          <p>{{item.listConsigneeaddress[0] ? item.listConsigneeaddress[0].detaliedinformation : ''}}</p>
           <p class="senditem-box__address--detail">{{item.receiptAddress ? item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address : ''}}</p>
         </div>
         <span class="senditem-box__state">{{item.starte | orderstatus}}</span>
@@ -21,7 +22,7 @@
       <div class="senditem-box flex" style="justify-content: space-between;">
         <p class="senditem-box__time">{{item.endtime}}</p>
         <div>
-          <button v-show="item.starte === 1" class="cancle-btn" @click="cancle(item)">取消订单</button>
+          <button v-show="item.starte === 7" class="cancle-btn" @click="cancle(item)">取消订单</button>
           <button class="gosend-btn" @click="goPath(item, 'wait')">详情</button>
         </div>
       </div>

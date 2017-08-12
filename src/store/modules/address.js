@@ -17,6 +17,13 @@ export const state = {
   }
 }
 
+function MathZ (val) {
+  if (val < 0) {
+    return 0
+  }
+  return val
+}
+
 // getters
 export const getters = {
   getAddress: state => state.data,
@@ -221,7 +228,7 @@ export const actions = {
         },
         headers: {'token': mjToken}
       })
-      const str = country.data.obj[countryid - 1]['name'] + province.data.obj[provinceid - 1]['name'] + city.data.obj[cityid - 1]['name'] + county.data.obj[countyid - 1]['name']
+      const str = country.data.obj[MathZ(countryid - 1)]['name'] + province.data.obj[MathZ(provinceid - 1)]['name'] + city.data.obj[MathZ(cityid - 1)]['name'] + county.data.obj[MathZ(countyid - 1)]['name']
       return {
         type: 'success',
         text: '获取成功',

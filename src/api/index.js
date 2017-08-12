@@ -1,9 +1,9 @@
 // 董浩伟
-// let url = 'http://192.168.0.225:8080/DHL/'
+let url = 'http://192.168.0.225:8080/DHL/'
 // 仝舟
 // let url = 'http://192.168.0.125:8066/'
 // online app 云端服务 Wechat
-let url = 'http://api.didalive.net/DHL/'
+// let url = 'http://api.didalive.net/DHL/'
 
 if (process.env.NODE_ENV !== 'development') {
   url = 'http://api.didalive.net/DHL/'
@@ -91,5 +91,8 @@ export const price = {
 }
 
 export const order = {
-  list: url + 'wx/OrderInfo/ShowOrderInfo'
+  list: url + 'wx/OrderInfo/ShowOrderInfo',
+  update: url + 'wx/OrderInfo/UpdateOrderInfostarte',
+  updatenumber: url + 'wx/OrderInfo/Updateserialnumberstarte',
+  detail: url + 'wx/OrderInfo/ShowOrderInfoid'
 }
