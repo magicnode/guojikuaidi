@@ -36,7 +36,6 @@ let instance = axios.create({
 })
 
 const localStorage = window.localStorage
-const mjToken = localStorage.getItem('mj_token')
 
 export default {
   name: 'senddetail',
@@ -64,7 +63,7 @@ export default {
             userid: localStorage.getItem('mj_userId'),
             starte
           },
-          headers: {'token': mjToken}
+          headers: {'token': localStorage.getItem('mj_token')}
         })
         if (orderlist.status !== 200) {
           return this.$vux.toast.show({
@@ -81,7 +80,6 @@ export default {
           })
         }
         let data = orderlist.data.obj
-        console.log('data', data)
         if (data.length > 0) {
           data.sort(function (a, b) {
             return a.id < b.id

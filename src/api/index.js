@@ -30,6 +30,7 @@ export const address = {
 
 export const geography = {
   showcountry: url + 'wx/Country/ShowCountry',
+  showcountrybyid: url + 'wx/Country/ShowCountryid',
   showprovince: url + 'wx/Province/ShowProvinceid',
   showcity: url + 'wx/City/ShowCityid',
   showcounty: url + 'wx/County/ShowCountyid'
@@ -82,12 +83,14 @@ export const express = {
 
 // 杂项
 export const sundry = {
-  cargotype: url + 'wx/Cargotype/ShowCargotype'
+  cargotype: url + 'wx/InternationalProductType/ShowInternationalProductType',
+  goods: url + 'wx/Cargotype/ShowCargotype'
 }
 
 // 价格查询
 export const price = {
-  order: url + 'wx/Price/ShowPrice'
+  order: url + 'wx/Price/ShowPrice',
+  pricelist: url + 'wx/Internationalprice/ShowInternationalprice'
 }
 
 export const order = {

@@ -3,14 +3,14 @@
     <div class="addaddress-container">
       <group>
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-        <x-input type="text" title="公司名" v-model="company" :max="20" placeholder="请填写您的公司名" required></x-input>
-        <x-input type="number" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编" required></x-input>
+        <x-input type="text" title="公司名" v-model="company" :max="20" placeholder="请填写您的公司名"></x-input>
+        <x-input type="number" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-input v-show="type === 2" type="text" title="证件" v-model="idnumber" :max="20" placeholder="请填写身份证号/护照号" required></x-input>
-        <x-input title="电话" v-model="iphone" placeholder="请输入手机号" required></x-input>
+        <x-input title="电话" v-model="iphone" type="number" placeholder="请输入手机号" required></x-input>
         <div @click="steppickershow = !steppickershow">
           <x-input disabled title="地区" placeholder="请选择国家、省市区" type="text" required v-model="location"></x-input>
         </div>
-        <x-textarea type="text" title="地址" :max="80" placeholder="请详细到门牌号 (限80字)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="22" required>
+        <x-textarea type="text" title="地址" :max="80" placeholder="请详细到门牌号(限80字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required>
         </x-textarea>
         <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22" required>
         </x-textarea>
@@ -18,7 +18,7 @@
        <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
        </group>
-       <step-location :steppickerShow="steppickershow" v-on:listenClose="closeStepLocation" v-on:listenConfrim="confirmStep">
+       <step-location :type="typecn" :steppickerShow="steppickershow" v-on:listenClose="closeStepLocation" v-on:listenConfrim="confirmStep">
        </step-location>
        <div class="addaddress-container-add">
          <p class="addaddress-container-add--btn" @click.stop="saveAddress">创建</p>
@@ -44,6 +44,7 @@ export default {
     const query = this.$route.query
     this.pagetype = query.pagetype || 'add'
     const type = query.type
+    this.typecn = type
     this.type = type === 'send' ? 1 : 2
     if (this.pagetype === 'edit') {
       this.id = query.id
@@ -58,6 +59,7 @@ export default {
   data () {
     return {
       type: 1,
+      typecn: 1,
       steppickershow: false,
       picker: false,
       pagetype: 'add',
@@ -72,7 +74,8 @@ export default {
       detailedinformation: '',
       remove: '',
       value: false,
-      addressVal: []
+      addressVal: [],
+      ajaxasync: false
     }
   },
   methods: {
@@ -112,8 +115,11 @@ export default {
         })
         return
       }
+      if (this.ajaxasync) return
+      this.ajaxasync = false
       const locationId = this.locationid
       const res = await this.addAddress({...locationId, detailedinformation: this.detailedinformation, postcode: this.postcode, iphone: this.iphone, linkman: this.linkman, company: this.company, remove: this.remove, type: this.type, idnumber: this.idnumber})
+      this.ajaxasync = true
       if (res.type !== 'success') {
         return this.$vux.toast.show(res)
       }

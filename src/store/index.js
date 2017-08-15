@@ -15,7 +15,7 @@ Vue.use(Vuex)
 
 // let local = window.localStorage
 let instance = axios.create({
-  timeout: 2000
+  timeout: 3000
 })
 
 const store = new Vuex.Store({

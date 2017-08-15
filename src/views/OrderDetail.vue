@@ -44,7 +44,6 @@ let instance = axios.create({
 })
 
 const localStorage = window.localStorage
-const mjToken = localStorage.getItem('mj_token')
 
 export default {
   name: 'orderdetail',
@@ -82,7 +81,7 @@ export default {
           params: {
             OrderInfoid: id
           },
-          headers: {'token': mjToken}
+          headers: {'token': localStorage.getItem('mj_token')}
         })
         if (orderdetail.status !== 200) {
           return this.$vux.toast.show({
