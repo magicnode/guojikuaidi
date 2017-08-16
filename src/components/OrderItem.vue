@@ -4,7 +4,7 @@
       <div class="senditem-box">
         <span class="senditem-box__office">
          <span class="senditem-box__office--info">
-          收件人: {{item.listConsigneeaddress[0].recipients}}
+          收件人: {{item.listConsigneeaddress[0].recipients}}&nbsp;&nbsp;
           手机号:{{item.listConsigneeaddress[0] ? item.listConsigneeaddress[0].iphone : ''}}
          </span>
         </span>
@@ -14,8 +14,9 @@
           收
         </div>
         <div class="senditem-box__address">
-          <p>{{item.listConsigneeaddress[0] ? item.listConsigneeaddress[0].detaliedinformation : ''}}</p>
-          <p class="senditem-box__address--detail">{{item.receiptAddress ? item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address : ''}}</p>
+          <p class="senditem-box__address--detail">{{item.guojia}}{{item.shengji}}{{item.shiji}}{{item.quxian}}</p>
+          <p class="senditem-box__address--detail">详细:&nbsp;{{item.listConsigneeaddress[0] ? item.listConsigneeaddress[0].detaliedinformation : ''}}</p>
+          <!-- <p class="senditem-box__address--detail">{{item.receiptAddress ? item.receiptAddress.province + item.receiptAddress.city + item.receiptAddress.district + item.receiptAddress.address : ''}}</p> -->
         </div>
         <span class="senditem-box__state">{{item.starte | orderstatus}}</span>
       </div>

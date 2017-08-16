@@ -1,7 +1,7 @@
 // 董浩伟
-let url = 'http://192.168.0.225:8080/DHL/'
+// let url = 'http://192.168.0.225:8080/DHL/'
 // 仝舟
-// let url = 'http://192.168.0.125:8066/'
+let url = 'http://192.168.0.125:8066/'
 // online app 云端服务 Wechat
 // let url = 'http://api.didalive.net/DHL/'
 
@@ -23,7 +23,8 @@ export const address = {
   updatesend: url + 'wx/Mailingaddress/UpdateMailingaddress',
   updatepickup: url + 'wx/Consigneeaddress/UpdateConsigneeaddress',
   delete: url + 'wx/deleteAddress',
-  checked: url + 'wx/checked',
+  sendchecked: url + 'wx/Mailingaddress/updateMailingaddressstart',
+  pickupchecked: url + 'wx/Consigneeaddress/updateConsigneeaddressdefault',
   default: url + 'wx/GETADDRESSDEFAULT',
   officelocation: url + 'wx/FindStationInfo'
 }
@@ -73,7 +74,8 @@ export const wx = {
   },
   webtoken: 'https://api.weixin.qq.com/sns/oauth2/access_token',
   jssdk: url + 'getWxConfig/',
-  wxpay: url + 'pay'
+  wxpay: url + 'pay',
+  update: url + 'dealPay'
 }
 
 export const express = {

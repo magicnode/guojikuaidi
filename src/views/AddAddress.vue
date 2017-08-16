@@ -116,10 +116,11 @@ export default {
         return
       }
       if (this.ajaxasync) return
-      this.ajaxasync = false
-      const locationId = this.locationid
-      const res = await this.addAddress({...locationId, detailedinformation: this.detailedinformation, postcode: this.postcode, iphone: this.iphone, linkman: this.linkman, company: this.company, remove: this.remove, type: this.type, idnumber: this.idnumber})
       this.ajaxasync = true
+      const locationId = this.locationid
+      const start = this.value ? 3 : 1
+      const res = await this.addAddress({...locationId, detailedinformation: this.detailedinformation, postcode: this.postcode, iphone: this.iphone, linkman: this.linkman, company: this.company, remove: this.remove, type: this.type, idnumber: this.idnumber, start})
+      this.ajaxasync = false
       if (res.type !== 'success') {
         return this.$vux.toast.show(res)
       }

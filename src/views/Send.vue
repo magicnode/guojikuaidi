@@ -64,6 +64,19 @@
           </div>
           <selector @click.stop="productTypeCheck" direction="rtl" v-model="productionType" placeholder="选择产品类型，请先选择收件地址"   title="产品类型" name="district" :options="productionTypeOption" @on-change="onChange">
           </selector>
+          <selector direction="rtl" v-model="isBack" placeholder="退件要承担逆向物流费用, 默认不选"   title="是否退件" name="district" :options="isBackOption">
+          </selector>
+          <cell>
+            <div slot="title">
+              <span>
+                是否退件 <span>?</span>
+              </span>
+            </div>
+            <div slot="value" style="color: #333;font-size:1.5rem;">
+              <input type="radio" name="vehicle" value="Bike" />需要&nbsp;
+              <input type="radio" name="vehicle" value="Car" />不需要
+            </div>
+          </cell>
           <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="remove.length + 20" required>
           </x-textarea>
         </group>
@@ -139,9 +152,9 @@
           </div>
           <div class="dialog-content--input volume">
            <input title="" type="number" v-model="len" placeholder="长度"></input>
-           <span>*</span>
+           <span>x</span>
            <input title="" type="number" show-clear="false" required v-model="wide" placeholder="宽度"></input>
-           <span>*</span>
+           <span>x</span>
            <input title="" type="number" required v-model="height" placeholder="高度"></input>
            <span>=</span>
            <input title="" disabled type="number" required v-model="volume" placeholder=""></input>            
@@ -151,7 +164,7 @@
           请准确填写重量或体积，以免耽误货物妥投
         </p>
         <div class="dialog-confirm-btn">
-          <button type="" @click.stop="dialogshow = false">确定</button>
+          <button type="" @click.stop="volumeConfirm">确定</button>
         </div>
       </x-dialog>
     </div>
@@ -182,9 +195,9 @@
   </div>
 </template>
 <script>
-import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
+import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
-import { send as sendApi, wx as wxApi, order as orderApi, price as priceApi, geography as geographyApi } from '@/api'
+import { send as sendApi, wx as wxApi, price as priceApi, geography as geographyApi } from '@/api'
 import axios from 'axios'
 import { format } from '../util/time'
 import request from '../util/request'
@@ -205,9 +218,11 @@ export default {
     XInput,
     XTextarea,
     Spinner,
-    XDialog
+    XDialog,
+    Cell
   },
   async created () {
+    this.$store.commit('SET_PAGE', {page: 'send'})
     const wxconfig = await instance({
       method: 'post',
       url: wxApi.jssdk,
@@ -231,7 +246,6 @@ export default {
     window.wx.error(function (res) {
       console.log('wx error res', res)
     })
-    this.$store.commit('SET_PAGE', {page: 'send'})
     // 获取地址
     this.sendAddress = JSON.parse(localStorage.getItem('mj_send_sendaddress')) || {
       linkman: '',
@@ -260,9 +274,6 @@ export default {
     //   return item
     // })
     // this.productionTypeOption = cargotypeData
-  },
-  async mounted () {
-    window.document.title = '寄件'
     // 获取价格集合
     const priceList = await request({
       method: 'post',
@@ -290,13 +301,20 @@ export default {
       }
     })
     newpriceList = newpriceList.map(function (elem) {
+      const value = {
+        producttypeid: elem.producttypeid,
+        id: elem.id
+      }
       let item = {
-        key: elem.producttypeid,
-        value: elem.producttypeid
+        value: elem.producttypeid,
+        key: JSON.stringify(value)
       }
       return item
     })
     this.productionTypeOption = newpriceList
+  },
+  async mounted () {
+    window.document.title = '寄件'
   },
   computed: {
     ...mapGetters({
@@ -323,15 +341,24 @@ export default {
       dialogshow: false,
       // 产品重量
       weight: 0,
-      wide: 1,
-      len: 1,
-      height: 1,
-      volume: 1,
+      wide: 0,
+      len: 0,
+      height: 0,
+      volume: 0,
       // 备注
       remove: '',
       packageShow: false,
       productionType: undefined,
       productionTypeOption: [],
+      isBack: 1,
+      // 1 不退件 2 退件
+      isBackOption: [{
+        key: 1,
+        value: '否'
+      }, {
+        key: 2,
+        value: '是'
+      }],
       newpackage: {
         name: '', // 中文名
         Englishname: 'asd', // 英文名
@@ -438,12 +465,15 @@ export default {
           openid: localStorage.getItem('mj_openid'),
           money: (money * 100),
           serialnumber,
-          body: '国际快递包裹'
+          body: '国际快递包裹',
+          payType: 0
         }
       })
       const wxpayCon = wxpay.data
       const _this = this
       console.log('wx con from server', wxpayCon)
+      const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
+      console.log('prepayId', prepayId)
       window.wx.ready(function () {
         console.log('wx jssdk 初始化成功')
         window.wx.chooseWXPay({
@@ -453,18 +483,17 @@ export default {
           'signType': 'MD5',
           'paySign': wxpayCon.paySign,
           success: function (res) {
-            alert('支付成功！')
-            console.log('asd', orderApi)
             instance({
               method: 'post',
-              url: orderApi.updatenumber,
+              url: wxApi.update,
               params: {
                 serialnumber,
-                starte: 2
+                prepayId,
+                isPay: 1
               }
-            }).then(orderres => {
-              console.log(orderres)
-              _this.showToast({text: '提交成功'})
+            })
+            .then(orderres => {
+              _this.showToast({text: '支付成功'})
               return setTimeout(function () {
                 _this.$router.push({path: '/order/list', query: {type: 'all'}})
               }, 1000)
@@ -545,6 +574,9 @@ export default {
             objectheight: this.height,
             bearload: this.weight,
             remove: this.remove,
+            internationalpriceid: this.producttypeidId,
+            // 是否退件参数
+            decline: this.isBack,
             headpackages
           },
           headers: {'token': localStorage.getItem('mj_token')}
@@ -577,11 +609,19 @@ export default {
       this.wide = 1
       this.dialogshow = false
     },
+    volumeConfirm () {
+      if (this.weight > 30) {
+        this.weight = 0
+      }
+      this.dialogshow = false
+    },
     /**
      * 产品类型改变时触发方法
      */
     onChange (val) {
-      this.producttypeid = val
+      const productVal = JSON.parse(val)
+      this.producttypeid = productVal['producttypeid']
+      this.producttypeidId = productVal['id']
       this.getPrice()
     },
     async getPrice () {
@@ -653,7 +693,6 @@ export default {
           width: '18rem',
           type: 'warn'
         })
-        _this.weight = oldval
         return
       }
       this.getPrice()

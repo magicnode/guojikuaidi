@@ -120,6 +120,7 @@ export default {
     change (value) {
     },
     close () {
+      this.step = 1
       this.$emit('listenClose', false)
     },
     getNameById (obj, id) {
@@ -145,6 +146,7 @@ export default {
           county: Number(this.countyVal)
         }
       }
+      this.step = 1
       this.$emit('listenConfrim', location)
       this.$emit('listenClose', false)
     }

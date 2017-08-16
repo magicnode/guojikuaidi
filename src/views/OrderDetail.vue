@@ -8,7 +8,8 @@
           </div>
           <div class="sendqr-detail-box__detail">
             <p>{{data.listMailingaddress[0].linkman + '   ' + data.listMailingaddress[0].iphone}}</p>
-            <p>{{sendAddress + data.listMailingaddress[0].detailedinformation}}</p>
+            <p>{{sendAddress}}</p>
+            <p>{{ data.listMailingaddress[0].detailedinformation}}</p>
           </div>
         </div>
         <div class="sendqr-detail-box">
@@ -17,7 +18,8 @@
           </div>
           <div class="sendqr-detail-box__detail">
             <p>{{data.listConsigneeaddress[0].recipients + '   ' + data.listConsigneeaddress[0].iphone}}</p>
-            <p>{{pickupAddress + data.listConsigneeaddress[0].detaliedinformation}}</p>
+            <p>{{pickupAddress}}</p>
+            <p>{{data.listConsigneeaddress[0].detaliedinformation}}</p>
           </div>
         </div>
         <div class="sendqr-detail-box">
