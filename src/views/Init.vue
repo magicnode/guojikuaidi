@@ -113,7 +113,7 @@ export default {
         })
         let {page} = this.$route.query
         const _this = this
-        switch (page) {
+        switch (Number(page)) {
           case 1:
             _this.$router.push({path: '/pickup'})
             break

@@ -274,15 +274,15 @@ export default {
     position: fixed;
     bottom: 0;
     padding: .6rem 1.5rem;
+    padding-bottom: 1rem;
     width: 90.4%;
     p {
       font-size: 1.6rem;
-      padding: .3rem .6rem;
       color: white;
       background: @red;
       border-radius: 5px;
       border: none;
-      padding: 1rem 0;
+      padding: 1.2rem 0;
     }
   }
   &-scroller {

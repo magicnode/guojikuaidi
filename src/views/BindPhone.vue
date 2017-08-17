@@ -10,7 +10,7 @@
          <img src="../assets/images/new/bin_ico_pho.png" alt="phone">
        </div>
        <div>
-         <input style="max-width: 10rem;" type="number" name="mobile" v-model="mobile" placeholder="输入手机号" required />
+         <input style="max-width: 10rem;" type="text" name="mobile" v-model="mobile" placeholder="输入手机号" required />
        </div>
        <div class="getcode">
          <button v-show="getting === false && (mobile.toString().length < 11) === true" type="" class="button btn-get-disable">获取验证码</button>
