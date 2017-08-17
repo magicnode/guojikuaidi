@@ -66,7 +66,7 @@
           </selector>
           <selector direction="rtl" v-model="isBack" placeholder="退件要承担逆向物流费用, 默认不选"   title="是否退件" name="district" :options="isBackOption">
           </selector>
-          <cell>
+<!--           <cell>
             <div slot="title">
               <span>
                 是否退件 <span>?</span>
@@ -76,7 +76,7 @@
               <input type="radio" name="vehicle" value="Bike" />需要&nbsp;
               <input type="radio" name="vehicle" value="Car" />不需要
             </div>
-          </cell>
+          </cell> -->
           <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="remove.length + 20" required>
           </x-textarea>
         </group>

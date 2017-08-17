@@ -6,7 +6,7 @@
         <x-input type="text" title="公司名" v-model="company" :max="20" placeholder="请填写您的公司名"></x-input>
         <x-input type="number" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-input v-show="type === 2" type="text" title="证件" v-model="idnumber" :max="20" placeholder="请填写身份证号/护照号" required></x-input>
-        <x-input title="电话" v-model="iphone" placeholder="请输入手机号" required></x-input>
+        <x-input title="电话" type="text" :max="20" v-model="iphone" placeholder="请输入手机号" required></x-input>
         <div @click="steppickershow = !steppickershow">
           <x-input disabled title="地区" placeholder="请选择国家、省市区" type="text" required v-model="location"></x-input>
         </div>
@@ -129,7 +129,7 @@ export default {
       this.locationid = val.val
     },
     checkMobile (num) {
-      const reg = /^1[1|3|4|5|7|8|9][0-9]\d{8}$/
+      const reg = /^1(3|4|5|7|8|9|6)\d{9}$/
       return reg.test(num)
     },
     change (value) {

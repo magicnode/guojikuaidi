@@ -91,7 +91,7 @@ export default {
       this.locationid = val.val
     },
     checkMobile (num) {
-      const reg = /^1[1|3|4|5|7|8|9][0-9]\d{8}$/
+      const reg = /^1(3|4|5|7|8|9|6)\d{9}$/
       return reg.test(num)
     },
     change (value) {

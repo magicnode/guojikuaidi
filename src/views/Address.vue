@@ -57,6 +57,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'address',
   created () {
+    window.scrollTo(0, 0)
     const {type, pick} = this.$route.query
     const localtype = window.localStorage.getItem('mj_address_page_switch_type')
     this.addressType = type || localtype || 'send'
@@ -274,13 +275,14 @@ export default {
     bottom: 0;
     padding: .6rem 1.5rem;
     width: 90.4%;
-    background: white;
     p {
       font-size: 1.6rem;
       padding: .3rem .6rem;
       color: white;
       background: @red;
-      border-radius: 3px;
+      border-radius: 5px;
+      border: none;
+      padding: 1rem 0;
     }
   }
   &-scroller {

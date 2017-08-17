@@ -40,6 +40,7 @@ const localStorage = window.localStorage
 export default {
   name: 'senddetail',
   async created () {
+    window.scrollTo(0, 0)
     const {type} = this.$route.query
     const localtype = localStorage.getItem('mj_senddetail_switch_type')
     this.show = type || localtype || 'all'
