@@ -18,7 +18,7 @@ export default {
       window.localStorage.setItem('mj_nickname', '呃嗯丶')
       window.localStorage.setItem('mj_openid', 'oCk9ywj1vT0B3ltw2m3dfE6FnHzI')
       window.localStorage.setItem('mj_mobile', '17317272575')
-      window.localStorage.setItem('mj_userId', '1')
+      window.localStorage.setItem('mj_userId', '18')
       window.localStorage.setItem('mj_token', 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MTgsIm9wZW5pZCI6Im9zZEg3dnc3NFBqS2w0eDhqdnhwbHJhQy10aUUifQ.LeKzLIibWbRdWHxPpYoRrqzDS0Uvl8YQzjhIcIAZtx0')
       // chen
       // window.localStorage.setItem('mj_mobile', '15800665186')

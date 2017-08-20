@@ -489,13 +489,14 @@ export default {
               params: {
                 serialnumber,
                 prepayId,
-                isPay: 1
+                isPay: 1,
+                payType: 0
               }
             })
             .then(orderres => {
               _this.showToast({text: '支付成功'})
               return setTimeout(function () {
-                _this.$router.push({path: '/order/list', query: {type: 'all'}})
+                _this.$router.push({path: '/orderdetail', query: {serialnumber}})
               }, 1000)
             }).catch(err => {
               console.error(err)
@@ -577,6 +578,7 @@ export default {
             internationalpriceid: this.producttypeidId,
             // 是否退件参数
             decline: this.isBack,
+            totalfee: this.advance * 100,
             headpackages
           },
           headers: {'token': localStorage.getItem('mj_token')}
@@ -610,8 +612,14 @@ export default {
       this.dialogshow = false
     },
     volumeConfirm () {
-      if (this.weight > 30) {
+      if (Number(this.weight) > 30 || Number(this.weight) <= 0) {
         this.weight = 0
+        this.$vux.toast.show({
+          text: '重量不能大于30kg不能为0',
+          width: '18rem',
+          type: 'warn'
+        })
+        return
       }
       this.dialogshow = false
     },

@@ -1,7 +1,7 @@
 // 董浩伟
 // let url = 'http://192.168.0.225:8080/DHL/'
 // 仝舟
-// let url = 'http://192.168.0.125:8066/'
+// let url = 'http://192.168.0.127:8066/'
 // online app 云端服务 Wechat
 let url = 'http://api.didalive.net/DHL/'
 
@@ -99,5 +99,13 @@ export const order = {
   list: url + 'wx/OrderInfo/ShowOrderInfo',
   update: url + 'wx/OrderInfo/UpdateOrderInfostarte',
   updatenumber: url + 'wx/OrderInfo/Updateserialnumberstarte',
-  detail: url + 'wx/OrderInfo/ShowOrderInfoid'
+  detail: url + 'wx/OrderInfo/ShowOrderInfoid',
+  detailbyserialnumber: url + 'wx/OrderInfo/getOrderBySerialnumber'
+}
+
+// 查询补价
+export const boot = {
+  detail: url + 'wx/boot/getBootInfoById',
+  // 根据单号查询最新补价信息String serialnumber
+  lastest: url + 'wx/boot/getLastBootStatus'
 }

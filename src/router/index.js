@@ -144,12 +144,20 @@ export default new Router({
       requiresAuth: true
     }
   }, {
-    path: '/order/detail',
+    path: '/orderdetail',
     name: 'OrderDetail',
     component: require('@/views/OrderDetail'),
     meta: {
       intro: '订单详情',
       requiresAuth: true
+    }
+  }, {
+    path: '/bootdeal',
+    name: 'BootDeal',
+    component: require('@/views/BootDeal'),
+    meta: {
+      intro: '补价处理页面',
+      requiresAuth: false
     }
   }]
 })

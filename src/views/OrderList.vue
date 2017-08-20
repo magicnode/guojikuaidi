@@ -32,7 +32,7 @@ import axios from 'axios'
 import { order as orderApi } from '@/api'
 
 let instance = axios.create({
-  timeout: 5000
+  timeout: 15000
 })
 
 const localStorage = window.localStorage
