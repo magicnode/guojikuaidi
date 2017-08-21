@@ -10,7 +10,7 @@
          <img src="../assets/images/new/bin_ico_pho.png" alt="phone">
        </div>
        <div>
-         <input style="max-width: 10rem;" type="text" name="mobile" v-model="mobile" placeholder="输入手机号" />
+         <input style="max-width: 10rem;" type="text" name="mobile" v-model="mobile" placeholder="输入手机号" required />
        </div>
        <div class="getcode">
          <button v-show="getting === false && (mobile.toString().length < 11) === true" type="" class="button btn-get-disable">获取验证码</button>
@@ -23,7 +23,7 @@
          <img src="../assets/images/new/bin_ico_ver.png" alt="phone">
        </div>
        <div>
-         <input style="max-width: 10rem;" id="inputCode" type="text" name="mobile" v-model="code" placeholder="输入验证码" />
+         <input style="max-width: 10rem;" id="inputCode" type="number" name="mobile" v-model="code" placeholder="输入验证码" required />
        </div>
        <div class="getcode">
          <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
@@ -36,8 +36,9 @@
        <div>
          <input style="max-width: 10rem;" id="inputShenfen" type="text" name="mobile" v-model="idcard" placeholder="输入身份证/护照" />
        </div>
-       <div class="getcode">
-         <button type="" class="" style="color: transparent;background:transparent;border:none;">获取验证码</button>
+       <div class="getidtype">
+          <selector direction="ltr" v-model="IDcardType" placeholder="选择证件类型" name="district" :options="IDcardOption">
+          </selector>
         </div>
      </div>
      <div class="check" style="padding-top: 4rem;">
@@ -47,11 +48,16 @@
   </div>
 </template>
 <script>
+import { XInput, Selector } from 'vux'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'login',
   created () {
+  },
+  components: {
+    XInput,
+    Selector
   },
   data () {
     return {
@@ -60,7 +66,16 @@ export default {
       code: '',
       idcard: '',
       getting: false,
-      time: 30
+      time: 30,
+      isSubmit: false,
+      IDcardType: '身份证',
+      IDcardOption: [{
+        key: '身份证',
+        value: '身份证'
+      }, {
+        key: '护照',
+        value: '护照'
+      }]
     }
   },
   mounted () {
@@ -234,6 +249,7 @@ export default {
       return
     },
     async submitPhone () {
+      if (this.isSubmit) return
       if (this.code !== this.smscode) {
         this.$vux.toast.show({
           text: '验证码不匹配',
@@ -258,12 +274,14 @@ export default {
         })
         return
       }
+      this.isSubmit = true
       const bindres = await this.bindUser({
         mobile: this.sendmobile,
         IDcard: this.idcard,
         openid: this.openid
       })
       this.$vux.toast.show(bindres)
+      this.isSubmit = false
       const _this = this
       if (bindres.type === 'success') {
         setTimeout(async function () {
@@ -335,6 +353,16 @@ export default {
 
 .getcode {
   width: 9rem;
+  select {
+    font-size: 13px!important;
+  }
+}
+
+.getidtype {
+  width: 9.9rem;
+  select {
+    font-size: 13px!important;
+  }
 }
 
 .bind {

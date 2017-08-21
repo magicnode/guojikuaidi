@@ -32,7 +32,7 @@ import axios from 'axios'
 import { order as orderApi } from '@/api'
 
 let instance = axios.create({
-  timeout: 5000
+  timeout: 15000
 })
 
 const localStorage = window.localStorage
@@ -40,6 +40,7 @@ const localStorage = window.localStorage
 export default {
   name: 'senddetail',
   async created () {
+    window.scrollTo(0, 0)
     const {type} = this.$route.query
     const localtype = localStorage.getItem('mj_senddetail_switch_type')
     this.show = type || localtype || 'all'
@@ -80,7 +81,6 @@ export default {
           })
         }
         let data = orderlist.data.obj
-        console.log('data', data)
         if (data.length > 0) {
           data.sort(function (a, b) {
             return a.id < b.id

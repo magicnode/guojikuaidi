@@ -8,7 +8,8 @@
           </div>
           <div class="sendqr-detail-box__detail">
             <p>{{data.listMailingaddress[0].linkman + '   ' + data.listMailingaddress[0].iphone}}</p>
-            <p>{{sendAddress + data.listMailingaddress[0].detailedinformation}}</p>
+            <p>{{sendAddress}}</p>
+            <p>{{ data.listMailingaddress[0].detailedinformation}}</p>
           </div>
         </div>
         <div class="sendqr-detail-box">
@@ -17,7 +18,8 @@
           </div>
           <div class="sendqr-detail-box__detail">
             <p>{{data.listConsigneeaddress[0].recipients + '   ' + data.listConsigneeaddress[0].iphone}}</p>
-            <p>{{pickupAddress + data.listConsigneeaddress[0].detaliedinformation}}</p>
+            <p>{{pickupAddress}}</p>
+            <p>{{data.listConsigneeaddress[0].detaliedinformation}}</p>
           </div>
         </div>
         <div class="sendqr-detail-box">
@@ -28,8 +30,28 @@
         <div class="sendqr-detail-box">
           <span class="sendqr-detail-box__title">订单状态</span>
           <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.starte | orderstatus}}</span>
+          <span class="sendqr-detail-box__content">
+            {{data.starte | orderstatus}}
+            <button class="pay" @click.stop="wxpay" v-show="data.starte === 1" to="/boot/history">立即付款</button>
+          </span>
         </div>
+        <div class="sendqr-detail-box">
+          <span class="sendqr-detail-box__title">预付总金额</span>
+          <span class="sendqr-detail-box__yin">:</span>
+          <span class="sendqr-detail-box__content">{{data.totalFee/100}}元</span>
+        </div>
+<!--         <div class="sendqr-detail-box">
+          <span class="sendqr-detail-box__title">待补价</span>
+          <span class="sendqr-detail-box__yin">:</span>
+          <span class="sendqr-detail-box__content">无</span>
+        </div> -->
+        <!-- <div class="sendqr-detail-box">
+          <span class="sendqr-detail-box__title">补价记录</span>
+          <span class="sendqr-detail-box__yin">:</span>
+          <span class="sendqr-detail-box__content">
+            <router-link to="/boot/history">点击查看</router-link>
+          </span>
+        </div> -->
       </div>
     </div>
   </div>
@@ -37,7 +59,8 @@
 <script>
 import { mapActions } from 'vuex'
 import axios from 'axios'
-import { order as orderApi } from '@/api'
+import request from '../util/request'
+import { order as orderApi, wx as wxApi, boot as bootApi } from '@/api'
 
 let instance = axios.create({
   timeout: 5000
@@ -48,9 +71,34 @@ const localStorage = window.localStorage
 export default {
   name: 'orderdetail',
   async created () {
+    // 初始化wxssdk
+    const wxconfig = await instance({
+      method: 'post',
+      url: wxApi.jssdk,
+      params: {
+        url: 'http://guoji.didalive.net/wechat/'
+      }
+    })
+    const jssdk = JSON.parse(wxconfig.data.obj)
+    console.log('jssdk', jssdk)
+    window.wx.config({
+      debug: false,
+      appId: 'wxddd3ecf13e8fca82',
+      timestamp: jssdk.timestamp,
+      nonceStr: jssdk.nonceStr,
+      signature: jssdk.signature,
+      jsApiList: [
+        'chooseImage',
+        'chooseWXPay'
+      ]
+    })
+    window.wx.error(function (res) {
+      console.log('wx error res', res)
+    })
     let query = this.$route.query
-    let id = query.id || 1
-    await this.getOrderDetail(id)
+    let serialnumber = query.serialnumber || 1
+    this.serialnumber = serialnumber
+    await this.getOrderDetail(serialnumber)
     const sendgeography = this.data['listMailingaddress'][0]
     const sendAddress = await this.getGeography({countryid: sendgeography.nationid, provinceid: sendgeography.provinnce, cityid: sendgeography.city, countyid: sendgeography.county})
     this.sendAddress = sendAddress.data
@@ -64,6 +112,7 @@ export default {
   data () {
     return {
       data: {},
+      serialnumber: '',
       item: {},
       sendAddress: '',
       pickupAddress: ''
@@ -73,13 +122,13 @@ export default {
     ...mapActions([
       'getGeography'
     ]),
-    async getOrderDetail (id = 1) {
+    async getOrderDetail (serialnumber = 1) {
       try {
         const orderdetail = await instance({
           method: 'post',
-          url: orderApi.detail,
+          url: orderApi.detailbyserialnumber,
           params: {
-            OrderInfoid: id
+            serialnumber
           },
           headers: {'token': localStorage.getItem('mj_token')}
         })
@@ -114,6 +163,69 @@ export default {
           width: '18rem'
         })
       }
+    },
+    async wxpay () {
+      const wxpay = await instance({
+        method: 'post',
+        url: wxApi.wxpay,
+        params: {
+          openid: localStorage.getItem('mj_openid'),
+          money: (this.data.totalFee),
+          serialnumber: this.serialnumber,
+          body: '国际快递包裹',
+          payType: 0
+        }
+      })
+      const wxpayCon = wxpay.data
+      const _this = this
+      console.log('wx con from server', wxpayCon)
+      const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
+      console.log('prepayId', prepayId)
+      window.wx.ready(function () {
+        console.log('wx jssdk 初始化成功')
+        window.wx.chooseWXPay({
+          'timestamp': wxpayCon.timeStamp,
+          'nonceStr': wxpayCon.nonceStr,
+          'package': wxpayCon.package,
+          'signType': 'MD5',
+          'paySign': wxpayCon.paySign,
+          success: function (res) {
+            instance({
+              method: 'post',
+              url: wxApi.update,
+              params: {
+                serialnumber: _this.serialnumber,
+                prepayId,
+                isPay: 1,
+                payType: 0
+              }
+            })
+            .then(orderres => {
+              _this.showToast({text: '支付成功'})
+              _this.data.starte = 2
+            }).catch(err => {
+              console.error(err)
+            })
+          },
+          fail: function (res) {
+          },
+          cancle: function () {
+          },
+          complete: function () {
+          }
+        })
+      })
+    },
+    async getLastBootStatus ({serialnumber}) {
+      const boot = await request({
+        method: 'post',
+        url: bootApi.lastest,
+        auth: true,
+        params: {
+          serialnumber
+        }
+      })
+      console.log('boot', boot)
     }
   }
 }
@@ -222,10 +334,25 @@ export default {
       }
       &__content {
         font-size: 1.6rem;
-        color: @dark-yellow;
+        color: @red;
         margin-left: 1rem;
         white-space: nowrap;
         overflow: hidden;
+        a {
+          font-size: 13px;
+          padding: 2px 5px;
+          border: 1px solid @red;
+          border-radius: 3px;
+          color: @red;
+        }
+        button.pay {
+          background: transparent;
+          font-size: 13px;
+          padding: 2px 5px;
+          border: 1px solid @red;
+          border-radius: 3px;
+          color: @red;
+        }
       }
     }
   }

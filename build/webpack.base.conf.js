@@ -27,7 +27,8 @@ let webpackConfig = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
-      'config': resolve('config')
+      'config': resolve('config'),
+      'GRequest': resolve('util/request')
     }
   },
   externals: [

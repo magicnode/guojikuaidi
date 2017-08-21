@@ -4,72 +4,52 @@ const fetch = (options) => {
   let {
     method = 'get',
     data,
-    fetchType,
+    params,
     url,
-    iftoken,
+    auth,
     token
   } = options
-
-  const cloneData = data
-
-  if (fetchType === 'JSONP') {
-    return new Promise((resolve, reject) => {
-      jsonp(url, {
-        param: `${qs.stringify(data)}&callback`,
-        name: `jsonp_${new Date().getTime()}`,
-        timeout: 4000,
-      }, (error, result) => {
-        if (error) {
-          reject(error)
-        }
-        resolve({ statusText: 'OK', status: 200, data: result })
-      })
-    })
-  } else if (fetchType === 'YQL') {
-    url = `http://query.yahooapis.com/v1/public/yql?q=select * from json where url='${options.url}?${encodeURIComponent(qs.stringify(options.data))}'&format=json`
-    data = null
-  }
 
   switch (method.toLowerCase()) {
     case 'get':
       return axios({
         url,
         method: 'get',
-        params: cloneData,
+        params: data,
         timeout: 5000,
-        headers: istoken ? {'token': token} : {}
+        headers: auth ? {'token': token} : {}
       })
     case 'delete':
       return axios.delete(url, {
-        data: cloneData,
+        data
       })
     case 'post':
       return axios({
         url,
         method: 'post',
-        params: cloneData,
+        data,
+        params,
         timeout: 5000,
-        headers: istoken ? {'token': token} : {}
+        headers: auth ? {'token': token} : {}
       })
     case 'put':
-      return axios.put(url, cloneData)
+      return axios.put(url, data)
     case 'patch':
-      return axios.patch(url, cloneData)
+      return axios.patch(url, data)
     default:
       return axios(options)
   }
 }
 
 export default function request (options) {
-  options.fetchType = 'CORS'
+  options.token = window.localStorage.getItem('mj_token')
   return fetch(options).then((response) => {
-    const { statusText, status } = response
+    const { status } = response
     let data = response.data
     return {
       success: true,
-      message: statusText,
       statusCode: status,
-      ...data,
+      ...data
     }
   }).catch((error) => {
     const { response } = error

@@ -42,14 +42,16 @@ let instance = axios.create({
   timeout: 3000
 })
 
-const mjToken = window.localStorage.getItem('mj_token')
-
 export default {
   name: 'steplocationpicker',
   props: {
     steppickerShow: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String,
+      default: 'send'
     }
   },
   components: {
@@ -76,7 +78,7 @@ export default {
       const res = await instance({
         method: 'post',
         url: geographyApi.showcountry,
-        headers: {'token': mjToken}
+        headers: {'token': window.localStorage.getItem('mj_token')}
       })
       if (res.status !== 200) {
         return this.$vux.toast.show({
@@ -91,12 +93,20 @@ export default {
           text: data.mess
         })
       }
-      this.countryData = data.obj.map(function (elem) {
+      let shift = 0
+      this.countryData = data.obj.map(function (elem, index) {
+        if (elem.name === '中国') {
+          console.log(1)
+          shift = index
+        }
         return {
           name: elem.name,
           value: elem.id
         }
       })
+      if (this.type === 'pickup') {
+        this.countryData.shift(shift)
+      }
     } catch (e) {
       console.error(e)
       return this.$vux.toast.show({
@@ -110,11 +120,25 @@ export default {
     change (value) {
     },
     close () {
+      this.step = 1
       this.$emit('listenClose', false)
     },
+    getNameById (obj, id) {
+      let newobj = ''
+      Object.keys(obj).forEach((elem, index) => {
+        if (obj[elem]['value'] === Number(id)) {
+          newobj = obj[elem]
+        }
+      })
+      return newobj['name']
+    },
     confirm () {
+      const country = this.getNameById(this.countryData, this.countryVal)
+      const province = this.getNameById(this.provinceData, this.provinceVal)
+      const city = this.getNameById(this.cityData, this.cityVal)
+      const county = this.getNameById(this.countyData, this.countyVal)
       const location = {
-        show: this.countryData[this.countryVal - 1]['name'] + this.provinceData[this.provinceVal - 1]['name'] + this.cityData[this.cityVal - 1]['name'] + this.countyData[this.countyVal - 1]['name'],
+        show: country + province + city + county,
         val: {
           nationid: Number(this.countryVal),
           provinnce: Number(this.provinceVal),
@@ -122,6 +146,7 @@ export default {
           county: Number(this.countyVal)
         }
       }
+      this.step = 1
       this.$emit('listenConfrim', location)
       this.$emit('listenClose', false)
     }
@@ -140,7 +165,7 @@ export default {
               params: {
                 countryid: Number(this.countryVal)
               },
-              headers: {'token': mjToken}
+              headers: {'token': window.localStorage.getItem('mj_token')}
             })
             if (res.status !== 200) {
               return this.$vux.toast.show({
@@ -178,7 +203,7 @@ export default {
               params: {
                 provinceid: Number(this.provinceVal)
               },
-              headers: {'token': mjToken}
+              headers: {'token': window.localStorage.getItem('mj_token')}
             })
             if (res.status !== 200) {
               return this.$vux.toast.show({
@@ -216,7 +241,7 @@ export default {
               params: {
                 cityid: Number(this.cityVal)
               },
-              headers: {'token': mjToken}
+              headers: {'token': window.localStorage.getItem('mj_token')}
             })
             if (res.status !== 200) {
               return this.$vux.toast.show({

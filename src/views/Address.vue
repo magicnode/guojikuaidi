@@ -15,7 +15,7 @@
           ref="my_scroller_address"
           class="address-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id" v-show="item.start === 1">
+          <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id" v-show="item.start !== 2&&item.start!==0">
               <div class="flex address-container-list__item--info" @click="selectAddress(item)">
                 <div>
                   <p>{{item.linkman}}{{item.recipients}} {{item.iphone}}</p>
@@ -23,22 +23,24 @@
                 </div>
               </div>
               <div class="flex address-container-list__item--func flex">
-                <span class="is-default" v-show="item.checked == 1">
-                  <img src="../assets/images/add_ico_che.png" alt="">
+                <span class="is-default" v-show="item.start == 3">
+                  <img src="../assets/images/add_ico_che.png" alt="默认地址">
                   <span>默认地址</span>
                 </span>
-                <span class="not-default" v-show="item.checked == 2" @click.stop="changeChecked(item.id, item.checked)">
+                <span class="not-default" v-show="item.start == 1" @click.stop="changeChecked(item.id, item.start, item.userid)">
                   <img src="../assets/images/add_ico_nor.png" alt="">
                   <span>设为默认</span>
                 </span>
-                <span class="edit" @click.stop="goPath('/address/edit', item, {type: addressType})">
-                  <img src="../assets/images/add_ico_cha.png" alt="">
-                  <span>编辑</span>
-                </span>
-                <span class="edit" @click.stop="deleteItem(item.id, addressType)">
-                  <img src="../assets/images/add_ico_del.png" alt="删除该地址">
-                  <span>删除</span>
-                </span>
+                <div>
+                  <span class="edit" @click.stop="goPath('/address/edit', item, {type: addressType})">
+                    <img src="../assets/images/add_ico_cha.png" alt="">
+                    <span>编辑</span>
+                  </span>
+                  <span class="edit" @click.stop="deleteItem(item.id, addressType)">
+                    <img src="../assets/images/add_ico_del.png" alt="删除该地址">
+                    <span>删除</span>
+                  </span>
+                </div>
               </div>
           </div>
         </scroller>
@@ -55,6 +57,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'address',
   created () {
+    window.scrollTo(0, 0)
     const {type, pick} = this.$route.query
     const localtype = window.localStorage.getItem('mj_address_page_switch_type')
     this.addressType = type || localtype || 'send'
@@ -138,8 +141,8 @@ export default {
         }
       })
     },
-    changeChecked (id, checked) {
-      if (checked === 1) {
+    changeChecked (id, checked, userid) {
+      if (checked === 3) {
         return
       }
       const _this = this
@@ -154,9 +157,7 @@ export default {
           console.log(_this)
         },
         onConfirm () {
-          _this.checkedAddress({id, addressType: type})
-          // 显示
-          _this.showToast()
+          _this.checkedAddress({id, status: 3, userid, addressType: type})
         }
       })
     },
@@ -238,7 +239,7 @@ export default {
         }
         &--func {
           font-size: 1.2rem;
-          justify-content: flex-end;
+          justify-content: space-between;
           .padding;
           .edit {
             padding: .1rem 1rem;
@@ -273,14 +274,15 @@ export default {
     position: fixed;
     bottom: 0;
     padding: .6rem 1.5rem;
+    padding-bottom: 1rem;
     width: 90.4%;
-    background: white;
     p {
       font-size: 1.6rem;
-      padding: .3rem .6rem;
       color: white;
       background: @red;
-      border-radius: 3px;
+      border-radius: 5px;
+      border: none;
+      padding: 1.2rem 0;
     }
   }
   &-scroller {

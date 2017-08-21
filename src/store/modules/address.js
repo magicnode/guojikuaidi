@@ -1,6 +1,8 @@
 import {address as addressApi, geography as geographyApi} from '@/api'
+import { getNameById } from '../../util/tools'
 import axios from 'axios'
 import window from 'window'
+import request from '../../util/request'
 
 import * as types from '../mutation-types'
 
@@ -15,12 +17,12 @@ export const state = {
   }
 }
 
-function MathZ (val) {
-  if (val < 0) {
-    return 0
-  }
-  return val
-}
+// function MathZ (val) {
+//   if (val < 0) {
+//     return 0
+//   }
+//   return val
+// }
 
 // getters
 export const getters = {
@@ -105,6 +107,7 @@ export const actions = {
         params,
         headers: {'token': local.getItem('mj_token')}
       })
+      console.log('add', res)
       if (res.status === 200) {
         dispatch('changeAddress')
         return {
@@ -157,39 +160,25 @@ export const actions = {
       }
     }
   },
-  checkedAddress ({commit, dispatch}, {id, addressType}) {
-    instance.get(addressApi.checked, {
-      params: {id, addressType, userId: local.getItem('mj_userId')}
-    })
-    .then((res) => {
-      console.log('res url', res.request.responseURL)
-      if (res.status === 200) {
-        dispatch('changeAddress')
-        let result = {
-          show: true,
-          type: 'success',
-          info: '修改默认地址成功'
-        }
-        commit(types.SET_ADDRESS_RES, {result})
-      } else {
-        let result = {
-          show: true,
-          type: 'warn',
-          info: '修改默认地址失败'
-        }
-        commit(types.SET_ADDRESS_RES, {result})
+  async checkedAddress ({commit, dispatch}, {id, status, userid, addressType}) {
+    let url = ''
+    if (addressType === 1) {
+      url = addressApi.sendchecked
+    } else {
+      url = addressApi.pickupchecked
+    }
+    const res = await request({
+      url,
+      method: 'post',
+      auth: true,
+      params: {
+        id,
+        status,
+        userid
       }
     })
-    .catch(err => {
-      console.error(err)
-      let result = {
-        show: true,
-        type: 'warn',
-        info: '修改默认地址失败',
-        width: '16rem'
-      }
-      commit(types.SET_ADDRESS_RES, {result})
-    })
+    dispatch('changeAddress')
+    return res
   },
   async getGeography ({commit}, {countryid, provinceid, cityid, countyid}) {
     try {
@@ -226,7 +215,7 @@ export const actions = {
         },
         headers: {'token': local.getItem('mj_token')}
       })
-      const str = country.data.obj[MathZ(countryid - 1)]['name'] + province.data.obj[MathZ(provinceid - 1)]['name'] + city.data.obj[MathZ(cityid - 1)]['name'] + county.data.obj[MathZ(countyid - 1)]['name']
+      const str = getNameById(country.data.obj, countryid) + getNameById(province.data.obj, provinceid) + getNameById(city.data.obj, cityid) + getNameById(county.data.obj, countyid)
       return {
         type: 'success',
         text: '获取成功',

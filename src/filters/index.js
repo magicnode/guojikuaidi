@@ -241,11 +241,21 @@ export const orderstatus = function (val) {
   // 状态 0 fpx完成 1下单，2付款完成，3中通完成，，4异常订单，5取消订单， 6全部完成
   const ordersta = {
     0: 'fpx完成',
-    1: '代付款',
+    1: '待付款',
     2: '待收货',
     3: '待收货',
     4: '异常',
     5: '已取消'
   }
   return ordersta[val]
+}
+
+export const bootstatus = function (val) {
+  // 状态 0 fpx完成 1下单，2付款完成，3中通完成，，4异常订单，5取消订单， 6全部完成
+  const statusGroup = {
+    0: '未补价',
+    1: '处理中',
+    2: '已完成'
+  }
+  return statusGroup[val]
 }

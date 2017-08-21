@@ -62,8 +62,21 @@
           <div @click="dialogshow = true">
            <cell  class="office" title="产品规格" is-link>{{'重量: ' + weight + ' kg，体积: ' + volume + ' cm³' || '点击编辑规格'}}</cell>
           </div>
-          <selector direction="rtl" v-model="productionType" placeholder="选择产品类型"   title="产品类型" name="district" :options="productionTypeOption" @on-change="onChange">
+          <selector @click.stop="productTypeCheck" direction="rtl" v-model="productionType" placeholder="选择产品类型，请先选择收件地址"   title="产品类型" name="district" :options="productionTypeOption" @on-change="onChange">
           </selector>
+          <selector direction="rtl" v-model="isBack" placeholder="退件要承担逆向物流费用, 默认不选"   title="是否退件" name="district" :options="isBackOption">
+          </selector>
+<!--           <cell>
+            <div slot="title">
+              <span>
+                是否退件 <span>?</span>
+              </span>
+            </div>
+            <div slot="value" style="color: #333;font-size:1.5rem;">
+              <input type="radio" name="vehicle" value="Bike" />需要&nbsp;
+              <input type="radio" name="vehicle" value="Car" />不需要
+            </div>
+          </cell> -->
           <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="remove.length + 20" required>
           </x-textarea>
         </group>
@@ -83,26 +96,17 @@
           <table>
             <thead>
               <tr>
-                <th>重量/kg</th>
                 <th>中文品名</th>
-                <th>英文品名</th>
                 <th>数量</th>
-                <th>单价</th>
-                <th>单位</th>
+                <th>单价/元</th>
+                <th>价值/元</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="item, index in packageTable" @touchstart="longTap(index, $event)">
                 <td>
-                  <input type="number" v-model="item['Customerbearing']">
-                </td>
-                <td>
                   <input type="text" v-model="item['name']">
                 </td>
-                <td>
-                  <input type="text" v-model="item['Englishname']">
-                </td>
-
                 <td>
                   <input type="text" v-model="item['amount']">
                 </td>
@@ -110,7 +114,7 @@
                   <input type="number" v-model="item['price']">
                 </td>
                 <td>
-                  <input type="text" v-model="item['unit']">
+                  <input type="text" v-model="item['cost']">
                 </td>
               </tr>
             </tbody>
@@ -148,20 +152,19 @@
           </div>
           <div class="dialog-content--input volume">
            <input title="" type="number" v-model="len" placeholder="长度"></input>
-           <span>*</span>
+           <span>x</span>
            <input title="" type="number" show-clear="false" required v-model="wide" placeholder="宽度"></input>
-           <span>*</span>
+           <span>x</span>
            <input title="" type="number" required v-model="height" placeholder="高度"></input>
            <span>=</span>
            <input title="" disabled type="number" required v-model="volume" placeholder=""></input>            
           </div>
         </div>
-
         <p class="dialog-tips">
           请准确填写重量或体积，以免耽误货物妥投
         </p>
         <div class="dialog-confirm-btn">
-          <button type="" @click.stop="dialogshow = false">确定</button>
+          <button type="" @click.stop="volumeConfirm">确定</button>
         </div>
       </x-dialog>
     </div>
@@ -174,7 +177,6 @@
         </div>
         <div class="package-dialog-form">
           <group>
-            <x-input title="英文品名" type="text" v-model="newpackage['Englishname']" required></x-input>
             <x-input title="中文品名" type="text" v-model="newpackage['name']" required></x-input>
             <x-input title="产品单价" type="number" v-model="newpackage['price']" required></x-input>
             <x-input title="产品价值" type="number" v-model="newpackage['cost']" required></x-input>
@@ -193,11 +195,12 @@
   </div>
 </template>
 <script>
-import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
+import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
-import { sundry as sundryApi, send as sendApi, wx as wxApi, order as orderApi, price as priceApi } from '@/api'
+import { send as sendApi, wx as wxApi, price as priceApi, geography as geographyApi } from '@/api'
 import axios from 'axios'
 import { format } from '../util/time'
+import request from '../util/request'
 
 let instance = axios.create({
   timeout: 5000
@@ -215,9 +218,11 @@ export default {
     XInput,
     XTextarea,
     Spinner,
-    XDialog
+    XDialog,
+    Cell
   },
   async created () {
+    this.$store.commit('SET_PAGE', {page: 'send'})
     const wxconfig = await instance({
       method: 'post',
       url: wxApi.jssdk,
@@ -227,9 +232,7 @@ export default {
     })
     const jssdk = JSON.parse(wxconfig.data.obj)
     console.log('jssdk', jssdk)
-    this.wx = window.wx
-    console.log('wx', this.wx)
-    this.wx.config({
+    window.wx.config({
       debug: false,
       appId: 'wxddd3ecf13e8fca82',
       timestamp: jssdk.timestamp,
@@ -240,10 +243,9 @@ export default {
         'chooseWXPay'
       ]
     })
-    this.wx.error(function (res) {
+    window.wx.error(function (res) {
       console.log('wx error res', res)
     })
-    this.$store.commit('SET_PAGE', {page: 'send'})
     // 获取地址
     this.sendAddress = JSON.parse(localStorage.getItem('mj_send_sendaddress')) || {
       linkman: '',
@@ -257,23 +259,61 @@ export default {
     }
     // 设置 serial number
     this.serialnumber = 'DHL' + new Date().getTime()
-    // 获取产品类型
-    const cargotype = await instance({
+    // 获取产品类型 旧版，先留着 以防以后有用
+    // const cargotype = await request({
+    //   method: 'post',
+    //   url: sundryApi.cargotype,
+    //   auth: true
+    // })
+    // let cargotypeData = cargotype.obj
+    // cargotypeData = cargotypeData.map(function (elem) {
+    //   let item = {
+    //     key: elem.id,
+    //     value: elem.name
+    //   }
+    //   return item
+    // })
+    // this.productionTypeOption = cargotypeData
+    // 获取价格集合
+    const priceList = await request({
       method: 'post',
-      url: sundryApi.cargotype,
-      headers: {'token': localStorage.getItem('mj_token')}
+      url: priceApi.pricelist,
+      auth: true
     })
-    let cargotypeData = cargotype.data.obj
-    cargotypeData = cargotypeData.map(function (elem) {
+    this.priceList = priceList.obj
+    // 根据id获取国家名
+    const pickupId = this.pickupAddress['nation']
+    const country = await request({
+      method: 'post',
+      url: geographyApi.showcountrybyid,
+      auth: true,
+      params: {
+        id: pickupId
+      }
+    })
+    const countryName = country['obj'][0]['name']
+    this.DestCtry = countryName
+    // 根据国家名过滤 价格集合
+    let newpriceList = []
+    this.priceList.forEach(function (elem, index) {
+      if (elem['destCtry'] === countryName) {
+        newpriceList.push(elem)
+      }
+    })
+    newpriceList = newpriceList.map(function (elem) {
+      const value = {
+        producttypeid: elem.producttypeid,
+        id: elem.id
+      }
       let item = {
-        key: elem.id,
-        value: elem.name
+        value: elem.producttypeid,
+        key: JSON.stringify(value)
       }
       return item
     })
-    this.productionTypeOption = cargotypeData
+    this.productionTypeOption = newpriceList
   },
-  mounted () {
+  async mounted () {
     window.document.title = '寄件'
   },
   computed: {
@@ -302,18 +342,27 @@ export default {
       dialogshow: false,
       // 产品重量
       weight: 0,
-      wide: 1,
-      len: 1,
-      height: 1,
-      volume: 1,
+      wide: 0,
+      len: 0,
+      height: 0,
+      volume: 0,
       // 备注
       remove: '',
       packageShow: false,
       productionType: undefined,
       productionTypeOption: [],
+      isBack: 1,
+      // 1 不退件 2 退件
+      isBackOption: [{
+        key: 1,
+        value: '否'
+      }, {
+        key: 2,
+        value: '是'
+      }],
       newpackage: {
         name: '', // 中文名
-        Englishname: '', // 英文名
+        Englishname: 'asd', // 英文名
         amount: '', // 数量
         price: '', // 价格
         cost: '', // 价值
@@ -325,7 +374,9 @@ export default {
       packageTable: [],
       advance: 0,
       sendAddress: {},
-      pickupAddress: {}
+      pickupAddress: {},
+      priceList: [],
+      DestCtry: '加拿大'
     }
   },
   methods: {
@@ -393,7 +444,7 @@ export default {
       this.packageTable.push(this.newpackage)
       this.newpackage = {
         name: '', // 中文名
-        Englishname: '', // 英文名
+        Englishname: 'asd', // 英文名
         amount: '', // 数量
         price: '', // 价格
         cost: '', // 价值
@@ -403,9 +454,6 @@ export default {
         reovme: '0' // 备注
       }
       this.packageShow = false
-    },
-    onChange (val) {
-      console.log('val', val)
     },
     goPath (path) {
       this.$router.push({path})
@@ -418,35 +466,38 @@ export default {
           openid: localStorage.getItem('mj_openid'),
           money: (money * 100),
           serialnumber,
-          body: '国际快递包裹'
+          body: '国际快递包裹',
+          payType: 0
         }
       })
       const wxpayCon = wxpay.data
       const _this = this
       console.log('wx con from server', wxpayCon)
-      this.wx.ready(function () {
+      const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
+      console.log('prepayId', prepayId)
+      window.wx.ready(function () {
         console.log('wx jssdk 初始化成功')
-        this.wx.chooseWXPay({
+        window.wx.chooseWXPay({
           'timestamp': wxpayCon.timeStamp,
           'nonceStr': wxpayCon.nonceStr,
           'package': wxpayCon.package,
           'signType': 'MD5',
           'paySign': wxpayCon.paySign,
           success: function (res) {
-            alert('支付成功！')
-            console.log('asd', orderApi)
             instance({
               method: 'post',
-              url: orderApi.updatenumber,
+              url: wxApi.update,
               params: {
                 serialnumber,
-                starte: 2
+                prepayId,
+                isPay: 1,
+                payType: 0
               }
-            }).then(orderres => {
-              console.log(orderres)
-              _this.showToast({text: '提交成功'})
+            })
+            .then(orderres => {
+              _this.showToast({text: '支付成功'})
               return setTimeout(function () {
-                _this.$router.push({path: '/order/list', query: {type: 'all'}})
+                _this.$router.push({path: '/orderdetail', query: {serialnumber}})
               }, 1000)
             }).catch(err => {
               console.error(err)
@@ -465,10 +516,35 @@ export default {
       try {
         if (this.loading) return
         // 提交寄件
-        // 包裹长度要在1~3之间
-        if (!(this.packageTable.length >= 1 && this.packageTable.length <= 3)) {
+        // 包裹长度要在小于3，可以为空
+        if (!(this.packageTable.length <= 3)) {
           this.$vux.toast.show({
-            text: '包裹最多3个最少1个',
+            text: '包裹最多3个',
+            width: '18rem',
+            type: 'warn'
+          })
+          return
+        }
+        if (!this.weight) {
+          this.$vux.toast.show({
+            text: '重量不能为空',
+            width: '18rem',
+            type: 'warn'
+          })
+          this.dialogshow = true
+          return
+        }
+        if (!this.sendAddress['id']) {
+          this.$vux.toast.show({
+            text: '请选择寄件地址',
+            width: '18rem',
+            type: 'warn'
+          })
+          return
+        }
+        if (!this.pickupAddress['id']) {
+          this.$vux.toast.show({
+            text: '请选择收件地址',
             width: '18rem',
             type: 'warn'
           })
@@ -500,6 +576,10 @@ export default {
             objectheight: this.height,
             bearload: this.weight,
             remove: this.remove,
+            internationalpriceid: this.producttypeidId,
+            // 是否退件参数
+            decline: this.isBack,
+            totalfee: this.advance * 100,
             headpackages
           },
           headers: {'token': localStorage.getItem('mj_token')}
@@ -531,6 +611,45 @@ export default {
       this.height = 1
       this.wide = 1
       this.dialogshow = false
+    },
+    volumeConfirm () {
+      if (Number(this.weight) > 30 || Number(this.weight) <= 0) {
+        this.weight = 0
+        this.$vux.toast.show({
+          text: '重量不能大于30kg不能为0',
+          width: '18rem',
+          type: 'warn'
+        })
+        return
+      }
+      this.dialogshow = false
+    },
+    /**
+     * 产品类型改变时触发方法
+     */
+    onChange (val) {
+      const productVal = JSON.parse(val)
+      this.producttypeid = productVal['producttypeid']
+      this.producttypeidId = productVal['id']
+      this.getPrice()
+    },
+    async getPrice () {
+      const price = await request({
+        method: 'post',
+        url: priceApi.order,
+        auth: true,
+        params: {
+          bearload: this.weight,
+          producttypeid: this.producttypeid,
+          cargotype: 2,
+          destCtry: this.DestCtry
+        },
+        headers: {
+          'token': localStorage.getItem('mj_token')
+        }
+      })
+      let data = price.obj
+      this.advance = Number(data).toFixed(2)
     }
   },
   watch: {
@@ -583,22 +702,9 @@ export default {
           width: '18rem',
           type: 'warn'
         })
-        _this.weight = oldval
         return
       }
-      const price = await instance({
-        method: 'post',
-        url: priceApi.order,
-        params: {
-          bearload: val,
-          producttypeid: 3
-        },
-        headers: {
-          'token': localStorage.getItem('mj_token')
-        }
-      })
-      let data = price.data.obj
-      this.advance = Number(data).toFixed(2)
+      this.getPrice()
     }
   },
   beforeDestroy () {
@@ -649,6 +755,9 @@ export default {
       font-size: 1.5rem;
     }
     &--input {
+      input {
+        text-align: center;
+      }
     }
     &--input.volume {
       padding-top: 1.17rem;
