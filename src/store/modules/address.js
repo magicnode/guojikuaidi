@@ -9,8 +9,6 @@ let instance = axios.create({
   timeout: 3000
 })
 
-const mjToken = local.getItem('mj_token')
-
 export const state = {
   data: {},
   query: {
@@ -41,7 +39,7 @@ export const actions = {
           userid: local.getItem('mj_userId')
         },
         headers: {
-          'token': mjToken
+          'token': local.getItem('mj_token')
         }
       })
       const pickup = await instance({
@@ -50,7 +48,7 @@ export const actions = {
         params: {
           userid: local.getItem('mj_userId')
         },
-        headers: {'token': mjToken}
+        headers: {'token': local.getItem('mj_token')}
       })
       if (send.status === 200 && pickup.status === 200) {
         let sendData = send.data.obj.sort(function (a, b) {
@@ -105,7 +103,7 @@ export const actions = {
         method: 'post',
         url,
         params,
-        headers: {'token': mjToken}
+        headers: {'token': local.getItem('mj_token')}
       })
       if (res.status === 200) {
         dispatch('changeAddress')
@@ -140,7 +138,7 @@ export const actions = {
           id,
           status
         },
-        headers: {'token': mjToken}
+        headers: {'token': local.getItem('mj_token')}
       })
       if (res.status === 200) {
         dispatch('changeAddress')
@@ -202,7 +200,7 @@ export const actions = {
       const country = await instance({
         method: 'post',
         url: geographyApi.showcountry,
-        headers: {'token': mjToken}
+        headers: {'token': local.getItem('mj_token')}
       })
       const province = await instance({
         method: 'post',
@@ -210,7 +208,7 @@ export const actions = {
         params: {
           countryid
         },
-        headers: {'token': mjToken}
+        headers: {'token': local.getItem('mj_token')}
       })
       const city = await instance({
         method: 'post',
@@ -218,7 +216,7 @@ export const actions = {
         params: {
           provinceid
         },
-        headers: {'token': mjToken}
+        headers: {'token': local.getItem('mj_token')}
       })
       const county = await instance({
         method: 'post',
@@ -226,7 +224,7 @@ export const actions = {
         params: {
           cityid
         },
-        headers: {'token': mjToken}
+        headers: {'token': local.getItem('mj_token')}
       })
       const str = country.data.obj[MathZ(countryid - 1)]['name'] + province.data.obj[MathZ(provinceid - 1)]['name'] + city.data.obj[MathZ(cityid - 1)]['name'] + county.data.obj[MathZ(countyid - 1)]['name']
       return {

@@ -204,9 +204,6 @@ let instance = axios.create({
 })
 
 const localStorage = window.localStorage
-const mjToken = localStorage.getItem('mj_token')
-
-const wx = window.wx
 
 export default {
   name: 'send',
@@ -230,7 +227,9 @@ export default {
     })
     const jssdk = JSON.parse(wxconfig.data.obj)
     console.log('jssdk', jssdk)
-    wx.config({
+    this.wx = window.wx
+    console.log('wx', this.wx)
+    this.wx.config({
       debug: false,
       appId: 'wxddd3ecf13e8fca82',
       timestamp: jssdk.timestamp,
@@ -241,7 +240,7 @@ export default {
         'chooseWXPay'
       ]
     })
-    wx.error(function (res) {
+    this.wx.error(function (res) {
       console.log('wx error res', res)
     })
     this.$store.commit('SET_PAGE', {page: 'send'})
@@ -262,7 +261,7 @@ export default {
     const cargotype = await instance({
       method: 'post',
       url: sundryApi.cargotype,
-      headers: {'token': mjToken}
+      headers: {'token': localStorage.getItem('mj_token')}
     })
     let cargotypeData = cargotype.data.obj
     cargotypeData = cargotypeData.map(function (elem) {
@@ -290,6 +289,7 @@ export default {
   },
   data () {
     return {
+      wx: {},
       max: 200,
       businesshall: '',
       goodslabel: '',
@@ -424,9 +424,9 @@ export default {
       const wxpayCon = wxpay.data
       const _this = this
       console.log('wx con from server', wxpayCon)
-      wx.ready(function () {
+      this.wx.ready(function () {
         console.log('wx jssdk 初始化成功')
-        wx.chooseWXPay({
+        this.wx.chooseWXPay({
           'timestamp': wxpayCon.timeStamp,
           'nonceStr': wxpayCon.nonceStr,
           'package': wxpayCon.package,
@@ -502,7 +502,7 @@ export default {
             remove: this.remove,
             headpackages
           },
-          headers: {'token': mjToken}
+          headers: {'token': localStorage.getItem('mj_token')}
         })
         this.$vux.loading.hide()
         if (result) {
@@ -594,7 +594,7 @@ export default {
           producttypeid: 3
         },
         headers: {
-          'token': mjToken
+          'token': localStorage.getItem('mj_token')
         }
       })
       let data = price.data.obj
