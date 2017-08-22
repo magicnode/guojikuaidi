@@ -41,7 +41,7 @@
 </template>
 <script>
 import axios from 'axios'
-import request from '../util/request'
+import request from '../utils/request'
 import { wx as wxApi, boot as bootApi } from '@/api'
 
 let instance = axios.create({

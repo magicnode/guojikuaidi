@@ -73,8 +73,10 @@
               </span>
             </div>
             <div slot="value" style="color: #333;font-size:1.5rem;">
-              <input type="radio" name="vehicle" value="Bike" />需要&nbsp;
-              <input type="radio" name="vehicle" value="Car" />不需要
+              <select name="">
+                <option value="">否</option>
+                <option value="">是</option>
+              </select>
             </div>
           </cell> -->
           <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="remove.length + 20" required>
@@ -179,8 +181,8 @@
           <group>
             <x-input title="中文品名" type="text" v-model="newpackage['name']" required></x-input>
             <x-input title="产品单价" type="number" v-model="newpackage['price']" required></x-input>
-            <x-input title="产品价值" type="number" v-model="newpackage['cost']" required></x-input>
             <x-input title="产品数量" type="number" v-model="newpackage['amount']" required></x-input>
+            <x-input title="总价值" type="number" v-model="newpackage['price'] * newpackage['amount']" required></x-input>
           </group>
           <div class="package-dialog-form__confrim">
             <button type="" class="package-dialog-form__confrim--cancle" @click="packageShow = false">取消</button>
@@ -199,8 +201,9 @@ import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as 
 import { mapGetters, mapActions } from 'vuex'
 import { send as sendApi, wx as wxApi, price as priceApi, geography as geographyApi } from '@/api'
 import axios from 'axios'
-import { format } from '../util/time'
-import request from '../util/request'
+// import { storage } from '../utils'
+import { format } from '../utils/time'
+import request from '../utils/request'
 
 let instance = axios.create({
   timeout: 5000
@@ -259,21 +262,6 @@ export default {
     }
     // 设置 serial number
     this.serialnumber = 'DHL' + new Date().getTime()
-    // 获取产品类型 旧版，先留着 以防以后有用
-    // const cargotype = await request({
-    //   method: 'post',
-    //   url: sundryApi.cargotype,
-    //   auth: true
-    // })
-    // let cargotypeData = cargotype.obj
-    // cargotypeData = cargotypeData.map(function (elem) {
-    //   let item = {
-    //     key: elem.id,
-    //     value: elem.name
-    //   }
-    //   return item
-    // })
-    // this.productionTypeOption = cargotypeData
     // 获取价格集合
     const priceList = await request({
       method: 'post',
@@ -415,7 +403,7 @@ export default {
       let complete = []
       console.log('asd', this.newpackage)
       Object.keys(_this.newpackage).forEach(function (key) {
-        if (!_this.newpackage[key]) {
+        if (!_this.newpackage[key] && key !== 'cost') {
           complete.push(false)
         } else {
           complete.push(true)
@@ -431,6 +419,7 @@ export default {
         return
       }
       this.newpackage['serialnumber'] = this.serialnumber
+      this.newpackage['cost'] = this.newpackage['price'] * this.newpackage['amount']
       // 超出3个包裹，不允许再加
       if (this.packageTable.length >= 3) {
         this.$vux.toast.show({

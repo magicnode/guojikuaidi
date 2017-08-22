@@ -4,9 +4,9 @@
       <group>
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <!-- <x-input type="text" title="公司名" v-model="company" :max="20" placeholder="请填写您的公司名"></x-input> -->
-        <x-input type="number" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
+        <x-input type="text" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
 <!--         <x-input v-show="type === 2" type="text" title="证件" v-model="idnumber" :max="20" placeholder="请填写身份证号/护照号" required></x-input> -->
-        <x-input title="电话" v-model="iphone" type="number" placeholder="请输入手机号" required></x-input>
+        <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
         <div @click="steppickershow = !steppickershow">
           <x-input disabled title="地区" placeholder="请选择国家、省市区" type="text" required v-model="location"></x-input>
         </div>
@@ -29,6 +29,7 @@
 <script>
 import { XInput, XSwitch, XTextarea, XAddress, Picker, Radio } from 'vux'
 import { mapActions } from 'vuex'
+import { tools } from '../utils'
 
 export default {
   name: 'addaddress',
@@ -98,7 +99,6 @@ export default {
       console.log('new Value', value)
     },
     async saveAddress () {
-      // const checked = this.value ? 1 : 2
       if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
@@ -107,7 +107,15 @@ export default {
         })
         return
       }
-      if (!this.checkMobile(this.iphone)) {
+      if (!tools.checkPostcode(this.postcode)) {
+        this.$vux.toast.show({
+          text: '邮编格式不对，请重新填写',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      }
+      if (!tools.checkMobile(this.iphone)) {
         this.$vux.toast.show({
           text: '手机号格式不对，请重新填写',
           type: 'warn',

@@ -32,7 +32,7 @@
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">
             {{data.starte | orderstatus}}
-            <button class="pay" @click.stop="wxpay" v-show="data.starte === 1" to="/boot/history">立即付款</button>
+            <button class="pay" @click.stop="wxpay" v-show="data.starte === 1">立即付款</button>
           </span>
         </div>
         <div class="sendqr-detail-box">
@@ -40,12 +40,15 @@
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">{{data.totalFee/100}}元</span>
         </div>
-<!--         <div class="sendqr-detail-box">
+        <div class="sendqr-detail-box">
           <span class="sendqr-detail-box__title">待补价</span>
           <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">无</span>
-        </div> -->
-        <!-- <div class="sendqr-detail-box">
+          <span class="sendqr-detail-box__content">
+            {{bootStatus['val'] === 0 ? '无' : '有'}}
+            <button class="pay" @click.stop="goBootDetail({id: bootStatus['id']})" v-show="bootStatus['val'] === 1">立即补价</button>
+          </span>
+        </div>
+<!--         <div class="sendqr-detail-box">
           <span class="sendqr-detail-box__title">补价记录</span>
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">
@@ -59,8 +62,7 @@
 <script>
 import { mapActions } from 'vuex'
 import axios from 'axios'
-import request from '../util/request'
-import { order as orderApi, wx as wxApi, boot as bootApi } from '@/api'
+import { order as orderApi, wx as wxApi } from '@/api'
 
 let instance = axios.create({
   timeout: 5000
@@ -70,6 +72,19 @@ const localStorage = window.localStorage
 
 export default {
   name: 'orderdetail',
+  data () {
+    return {
+      data: {},
+      serialnumber: '',
+      item: {},
+      sendAddress: '',
+      pickupAddress: '',
+      bootStatus: {
+        val: 0,
+        id: 0
+      }
+    }
+  },
   async created () {
     // 初始化wxssdk
     const wxconfig = await instance({
@@ -105,22 +120,35 @@ export default {
     const pickupgeography = this.data['listConsigneeaddress'][0]
     const pickupAddress = await this.getGeography({countryid: pickupgeography.nation, provinceid: pickupgeography.provinnce, cityid: pickupgeography.city, countyid: pickupgeography.county})
     this.pickupAddress = pickupAddress.data
+    // 获取订单补价信息, 并从中筛选出最新的补价，判断是否有为 1 或 2 状态的boot，并保存他的id
+    const boot = await this.getBoot({ serialnumber })
+    if (boot.code === 200) {
+      const bootData = boot.obj
+      let bootStatus = {
+        val: 0, // 0表示不需要补价， 1相反
+        id: 0
+      }
+      for (let item in bootData) {
+        let status = bootData[item].status
+        if (status !== 2) {
+          bootStatus = {
+            val: 1,
+            id: bootData[item].id
+          }
+          break
+        }
+      }
+      this.bootStatus = bootStatus
+      console.log('bootStatus', bootStatus)
+    }
   },
   mounted () {
     window.document.title = '寄件明细'
   },
-  data () {
-    return {
-      data: {},
-      serialnumber: '',
-      item: {},
-      sendAddress: '',
-      pickupAddress: ''
-    }
-  },
   methods: {
     ...mapActions([
-      'getGeography'
+      'getGeography',
+      'getBoot'
     ]),
     async getOrderDetail (serialnumber = 1) {
       try {
@@ -216,16 +244,9 @@ export default {
         })
       })
     },
-    async getLastBootStatus ({serialnumber}) {
-      const boot = await request({
-        method: 'post',
-        url: bootApi.lastest,
-        auth: true,
-        params: {
-          serialnumber
-        }
-      })
-      console.log('boot', boot)
+    goBootDetail ({id}) {
+      this.$router.push({path: 'bootdeal', query: {id}})
+      return
     }
   }
 }

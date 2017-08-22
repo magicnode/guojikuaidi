@@ -107,5 +107,5 @@ export const order = {
 export const boot = {
   detail: url + 'wx/boot/getBootInfoById',
   // 根据单号查询最新补价信息String serialnumber
-  lastest: url + 'wx/boot/getLastBootStatus'
+  query: url + 'wx/boot/getBootInfo'
 }

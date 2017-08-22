@@ -1,8 +1,9 @@
 import {address as addressApi, geography as geographyApi} from '@/api'
-import { getNameById } from '../../util/tools'
+import { getNameById } from '../../utils/tools'
 import axios from 'axios'
 import window from 'window'
-import request from '../../util/request'
+import { storage } from '../../utils'
+import request from '../../utils/request'
 
 import * as types from '../mutation-types'
 
@@ -16,13 +17,6 @@ export const state = {
   query: {
   }
 }
-
-// function MathZ (val) {
-//   if (val < 0) {
-//     return 0
-//   }
-//   return val
-// }
 
 // getters
 export const getters = {
@@ -230,6 +224,16 @@ export const actions = {
         width: '18rem'
       }
     }
+  },
+  /**
+   * [寄件页面的选中地址检测，如果选中的被编辑或者删除，寄件页面选中的地址要进行相应改变]
+   * @param  {[type]} options.id          [description]
+   * @param  {[type]} options.addressType [description]
+   * @return {[type]}                     [description]
+   */
+  sendAddressCheck ({ commit }, {id, addressType}) {
+    storage({key: 'send_pickupaddress'})
+    storage({key: 'send_sendaddress'})
   }
 }
 

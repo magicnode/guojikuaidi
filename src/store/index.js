@@ -2,13 +2,13 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 // import window from 'window'
-
 import * as user from './modules/user'
 import * as send from './modules/send'
 import * as pickup from './modules/pickup'
 import * as address from './modules/address'
 import * as userpackage from './modules/package'
 import * as express from './modules/express'
+import * as boot from './modules/boot'
 import {brand as brandApi} from '@/api'
 
 Vue.use(Vuex)
@@ -25,7 +25,8 @@ const store = new Vuex.Store({
     pickup,
     address,
     userpackage,
-    express
+    express,
+    boot
   },
   state: {
     title: '妙寄',
