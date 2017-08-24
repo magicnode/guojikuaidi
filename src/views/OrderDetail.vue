@@ -36,7 +36,7 @@
           </span>
         </div>
         <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">预付总金额</span>
+          <span class="sendqr-detail-box__title">预付金额</span>
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">{{data.totalFee/100}}元</span>
         </div>
@@ -82,7 +82,8 @@ export default {
       bootStatus: {
         val: 0,
         id: 0
-      }
+      },
+      payloading: false
     }
   },
   async created () {
@@ -193,6 +194,8 @@ export default {
       }
     },
     async wxpay () {
+      if (this.payloading) return
+      this.payloading = true
       const wxpay = await instance({
         method: 'post',
         url: wxApi.wxpay,
@@ -240,6 +243,7 @@ export default {
           cancle: function () {
           },
           complete: function () {
+            this.payloading = false
           }
         })
       })

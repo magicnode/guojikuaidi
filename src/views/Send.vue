@@ -25,7 +25,7 @@
             </div>
           </div>
           <p class="address-detail-info">
-           {{sendAddress['detailedinformation']}}
+           {{sendAddress['nationname']}}{{sendAddress['provincename']}}{{sendAddress['cityname']}}{{sendAddress['countyname']}}{{sendAddress['detailedinformation']}}
           </p>
         </div>
         <div class="send-container-address__link">
@@ -48,7 +48,9 @@
               </span>
             </div>
           </div>
-          <p class="address-detail-info">{{pickupAddress['detaliedinformation']}}</p>
+          <p class="address-detail-info">
+             {{pickupAddress['nationname']}}{{pickupAddress['provincename']}}{{pickupAddress['cityname']}}{{pickupAddress['countyname']}}{{pickupAddress['detailedinformation']}}
+          </p>
         </div>
         <div class="send-container-address__link">
           <router-link to="/address?type=pickup&pick=1">
@@ -60,25 +62,10 @@
       <div class="send-container-select" >
         <group label-width="6rem" label-align="left">
           <div @click="dialogshow = true">
-           <cell  class="office" title="产品规格" is-link>{{'重量: ' + weight + ' kg，体积: ' + volume + ' cm³' || '点击编辑规格'}}</cell>
+           <cell  class="office" title="产品规格" is-link>{{showProductSpecs}}</cell>
           </div>
-          <selector @click.stop="productTypeCheck" direction="rtl" v-model="productionType" placeholder="选择产品类型，请先选择收件地址"   title="产品类型" name="district" :options="productionTypeOption" @on-change="onChange">
-          </selector>
-          <selector direction="rtl" v-model="isBack" placeholder="退件要承担逆向物流费用, 默认不选"   title="是否退件" name="district" :options="isBackOption">
-          </selector>
-<!--           <cell>
-            <div slot="title">
-              <span>
-                是否退件 <span>?</span>
-              </span>
-            </div>
-            <div slot="value" style="color: #333;font-size:1.5rem;">
-              <select name="">
-                <option value="">否</option>
-                <option value="">是</option>
-              </select>
-            </div>
-          </cell> -->
+          <selector direction="rtl" v-model="productionType" placeholder="选择产品类型，请先选择收件地址"   title="产品类型" name="district" :options="productionTypeOption" @on-change="onChange"></selector>
+          <selector direction="rtl" v-model="isBack" placeholder="退件要承担逆向物流费用, 默认不选"   title="是否退件" name="district" :options="isBackOption"></selector>
           <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="remove.length + 20" required>
           </x-textarea>
         </group>
@@ -124,7 +111,7 @@
         </div>
 
         <div class="send-container-package__money">
-          预付运费：￥ <span>{{advance}}</span>
+          预付运费：￥ <span>{{advance === 'NaN' ? '请先选择产品类型' : advance}}</span>
         </div>
       </div>
 
@@ -150,7 +137,7 @@
         </div>
         <div class="dialog-content">
           <div class="dialog-content--weight">
-            产品体积(cm³)
+            产品体积重
           </div>
           <div class="dialog-content--input volume">
            <input title="" type="number" v-model="len" placeholder="长度"></input>
@@ -182,7 +169,6 @@
             <x-input title="中文品名" type="text" v-model="newpackage['name']" required></x-input>
             <x-input title="产品单价" type="number" v-model="newpackage['price']" required></x-input>
             <x-input title="产品数量" type="number" v-model="newpackage['amount']" required></x-input>
-            <x-input title="总价值" type="number" v-model="newpackage['price'] * newpackage['amount']" required></x-input>
           </group>
           <div class="package-dialog-form__confrim">
             <button type="" class="package-dialog-form__confrim--cancle" @click="packageShow = false">取消</button>
@@ -200,8 +186,9 @@
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
 import { send as sendApi, wx as wxApi, price as priceApi, geography as geographyApi } from '@/api'
+import * as addressService from '@/services/address'
 import axios from 'axios'
-// import { storage } from '../utils'
+import { storage } from '../utils'
 import { format } from '../utils/time'
 import request from '../utils/request'
 
@@ -224,97 +211,6 @@ export default {
     XDialog,
     Cell
   },
-  async created () {
-    this.$store.commit('SET_PAGE', {page: 'send'})
-    const wxconfig = await instance({
-      method: 'post',
-      url: wxApi.jssdk,
-      params: {
-        url: 'http://guoji.didalive.net/wechat/'
-      }
-    })
-    const jssdk = JSON.parse(wxconfig.data.obj)
-    console.log('jssdk', jssdk)
-    window.wx.config({
-      debug: false,
-      appId: 'wxddd3ecf13e8fca82',
-      timestamp: jssdk.timestamp,
-      nonceStr: jssdk.nonceStr,
-      signature: jssdk.signature,
-      jsApiList: [
-        'chooseImage',
-        'chooseWXPay'
-      ]
-    })
-    window.wx.error(function (res) {
-      console.log('wx error res', res)
-    })
-    // 获取地址
-    this.sendAddress = JSON.parse(localStorage.getItem('mj_send_sendaddress')) || {
-      linkman: '',
-      iphone: '',
-      detailedinformation: ''
-    }
-    this.pickupAddress = JSON.parse(localStorage.getItem('mj_send_pickupaddress')) || {
-      recipients: '',
-      iphone: '',
-      detaliedinformation: ''
-    }
-    // 设置 serial number
-    this.serialnumber = 'DHL' + new Date().getTime()
-    // 获取价格集合
-    const priceList = await request({
-      method: 'post',
-      url: priceApi.pricelist,
-      auth: true
-    })
-    this.priceList = priceList.obj
-    // 根据id获取国家名
-    const pickupId = this.pickupAddress['nation']
-    const country = await request({
-      method: 'post',
-      url: geographyApi.showcountrybyid,
-      auth: true,
-      params: {
-        id: pickupId
-      }
-    })
-    const countryName = country['obj'][0]['name']
-    this.DestCtry = countryName
-    // 根据国家名过滤 价格集合
-    let newpriceList = []
-    this.priceList.forEach(function (elem, index) {
-      if (elem['destCtry'] === countryName) {
-        newpriceList.push(elem)
-      }
-    })
-    newpriceList = newpriceList.map(function (elem) {
-      const value = {
-        producttypeid: elem.producttypeid,
-        id: elem.id
-      }
-      let item = {
-        value: elem.producttypeid,
-        key: JSON.stringify(value)
-      }
-      return item
-    })
-    this.productionTypeOption = newpriceList
-  },
-  async mounted () {
-    window.document.title = '寄件'
-  },
-  computed: {
-    ...mapGetters({
-      brand: 'getAllBrand',
-      address: 'getAddress',
-      sendadd: 'getSendAdd',
-      result: 'getSendResult',
-      openid: 'getOpenId',
-      user: 'getUserInfo',
-      userid: 'getUserId'
-    })
-  },
   data () {
     return {
       wx: {},
@@ -329,16 +225,19 @@ export default {
       loading: false,
       dialogshow: false,
       // 产品重量
-      weight: 0,
-      wide: 0,
-      len: 0,
-      height: 0,
-      volume: 0,
+      weight: null,
+      wide: null,
+      len: null,
+      height: null,
+      volume: null,
       // 备注
       remove: '',
       packageShow: false,
       productionType: undefined,
       productionTypeOption: [],
+      cargotype: '',
+      cargotypeType: undefined,
+      cargotypeOption: [],
       isBack: 1,
       // 1 不退件 2 退件
       isBackOption: [{
@@ -365,6 +264,129 @@ export default {
       pickupAddress: {},
       priceList: [],
       DestCtry: '加拿大'
+    }
+  },
+  async created () {
+    // 1. 创建时将SET_PAGE创建为send
+    this.$store.commit('SET_PAGE', {page: 'send'})
+    // 2. 初始化wx jssdk
+    const wxconfig = await instance({
+      method: 'post',
+      url: wxApi.jssdk,
+      params: {
+        url: 'http://guoji.didalive.net/wechat/'
+      }
+    })
+    const jssdk = JSON.parse(wxconfig.data.obj)
+    window.wx.config({
+      debug: false,
+      appId: 'wxddd3ecf13e8fca82',
+      timestamp: jssdk.timestamp,
+      nonceStr: jssdk.nonceStr,
+      signature: jssdk.signature,
+      jsApiList: [
+        'chooseImage',
+        'chooseWXPay'
+      ]
+    })
+    window.wx.error(function (res) {
+      console.log('wx error res', res)
+    })
+    // 3. 获取地址
+    const sendLocal = JSON.parse(localStorage.getItem('mj_send_sendaddress'))
+    const SendAddress = await addressService.sendquery({Mailingaddressid: sendLocal.id})
+    this.sendAddress = SendAddress.obj[0] || {
+      linkman: '',
+      iphone: '',
+      detailedinformation: ''
+    }
+    const pickupLocal = JSON.parse(localStorage.getItem('mj_send_pickupaddress'))
+    const PickupAddress = await addressService.pickupquery({id: pickupLocal.id})
+    this.pickupAddress = PickupAddress.obj[0] || {
+      recipients: '',
+      iphone: '',
+      detaliedinformation: ''
+    }
+    // 4. 从localStorage中获取存储的用户习惯信息
+    let sendInfo = storage({
+      key: 'send_info'
+    })
+    sendInfo = JSON.parse(sendInfo)
+    this.weight = sendInfo['weight']
+    this.len = sendInfo['len']
+    this.height = sendInfo['height']
+    this.wide = sendInfo['wide']
+    this.volume = sendInfo['volume']
+    this.remark = sendInfo['remark']
+    this.remove = sendInfo['remark']
+    this.packageTable = sendInfo['packageTable']
+    // 5. 设置 serial number
+    this.serialnumber = 'MZ' + new Date().getTime()
+    // 6. 获取价格集合
+    const priceList = await request({
+      method: 'post',
+      url: priceApi.pricelist,
+      auth: true
+    })
+    this.priceList = priceList.obj
+    // 7. 根据id获取国家名
+    const pickupId = this.pickupAddress['nationid']
+    const country = await request({
+      method: 'post',
+      url: geographyApi.showcountrybyid,
+      auth: true,
+      params: {
+        id: pickupId
+      }
+    })
+    const countryName = country['obj'][0]['name']
+    this.DestCtry = countryName
+    // 8. 根据国家名过滤价格集合并赋值给this.productionTypeOption
+    let newpriceList = []
+    this.priceList.forEach(function (elem, index) {
+      if (elem['destCtry'] === countryName) {
+        newpriceList.push(elem)
+      }
+    })
+    let productionTypeOption = []
+    productionTypeOption = newpriceList.map(function (elem) {
+      const value = {
+        cargotype: elem.cargotype,
+        producttypeid: elem.producttypeid,
+        id: elem.id
+      }
+      let item = {
+        value: '包裹类型:' + elem.cargotype + ', 产品类型:' + elem.producttypeid,
+        key: JSON.stringify(value)
+      }
+      return item
+    })
+    this.productionTypeOption = productionTypeOption
+    this.productionType = sendInfo['productionType']
+  },
+  async mounted () {
+    window.document.title = '寄件'
+  },
+  computed: {
+    ...mapGetters({
+      brand: 'getAllBrand',
+      address: 'getAddress',
+      sendadd: 'getSendAdd',
+      result: 'getSendResult',
+      openid: 'getOpenId',
+      user: 'getUserInfo',
+      userid: 'getUserId'
+    }),
+    showprice () {
+      return 0
+    },
+    showProductSpecs () {
+      if (Number(this.weight) === 0 || !this.weight || Number(this.volume) === 0 || !this.volume) {
+        return '请填入重量和体积'
+      }
+      let weight = this.weight
+      let volume = this.volume
+      return `重量${weight}kg，体积重${volume}`
     }
   },
   methods: {
@@ -401,7 +423,6 @@ export default {
     addPackge () {
       const _this = this
       let complete = []
-      console.log('asd', this.newpackage)
       Object.keys(_this.newpackage).forEach(function (key) {
         if (!_this.newpackage[key] && key !== 'cost') {
           complete.push(false)
@@ -539,11 +560,18 @@ export default {
           })
           return
         }
+        if (!this.advance || this.advance < 0 || this.advance === 'NaN') {
+          this.$vux.toast.show({
+            text: '价格不能为空或0!',
+            width: '18rem',
+            type: 'warn'
+          })
+          return
+        }
         this.$vux.loading.show({
           text: '正在提交'
         })
         let headpackages = JSON.stringify(this.packageTable)
-        console.log('headpackages', headpackages)
         const result = await instance({
           method: 'post',
           url: sendApi.create,
@@ -575,15 +603,13 @@ export default {
         })
         this.$vux.loading.hide()
         if (result) {
-          // this.showToast({text: '提交成功'})
           console.log('res', result)
+          // 订单创建成功后，所有信息需要清空
           this.wxpay({money: this.advance, serialnumber: this.serialnumber})
-          this.serialnumber = 'DHL' + new Date().getTime()
-          // return setTimeout(function () {
-          //   _this.$router.push({path: '/order/list', query: {type: 'all'}})
-          // }, 1000)
+          this.clearForm()
+          this.serialnumber = 'MZ' + new Date().getTime()
         } else {
-          this.serialnumber = 'DHL' + new Date().getTime()
+          this.serialnumber = 'MZ' + new Date().getTime()
           this.showToast({text: '提交失败', type: 'warn'})
           return
         }
@@ -594,18 +620,47 @@ export default {
         return
       }
     },
+    clearForm () {
+      this.packageTable = []
+      this.remove = ''
+      this.productionType = undefined
+      this.weight = null
+      this.len = null
+      this.height = null
+      this.wide = null
+      this.isBack = false
+    },
     dialogClose () {
-      this.weight = 0
-      this.len = 1
-      this.height = 1
-      this.wide = 1
+      if (Number(this.weight) > 30 || Number(this.weight) <= 0) {
+        this.weight = null
+        this.$vux.toast.show({
+          text: '重量不能大于30kg不能为0',
+          width: '18rem',
+          type: 'warn'
+        })
+      }
+      if (Number(this.volume) <= 0 || !this.volume) {
+        this.$vux.toast.show({
+          text: '体积不能为0',
+          width: '18rem',
+          type: 'warn'
+        })
+      }
       this.dialogshow = false
     },
     volumeConfirm () {
       if (Number(this.weight) > 30 || Number(this.weight) <= 0) {
-        this.weight = 0
+        this.weight = null
         this.$vux.toast.show({
           text: '重量不能大于30kg不能为0',
+          width: '18rem',
+          type: 'warn'
+        })
+        return
+      }
+      if (Number(this.volume) <= 0 || !this.volume) {
+        this.$vux.toast.show({
+          text: '体积不能为0',
           width: '18rem',
           type: 'warn'
         })
@@ -620,17 +675,19 @@ export default {
       const productVal = JSON.parse(val)
       this.producttypeid = productVal['producttypeid']
       this.producttypeidId = productVal['id']
+      this.cargotype = productVal['cargotype']
       this.getPrice()
     },
     async getPrice () {
+      let bearload = this.volume > this.weight ? this.volume : this.weight
       const price = await request({
         method: 'post',
         url: priceApi.order,
         auth: true,
         params: {
-          bearload: this.weight,
+          bearload,
           producttypeid: this.producttypeid,
-          cargotype: 2,
+          cargotype: this.cargotype,
           destCtry: this.DestCtry
         },
         headers: {
@@ -655,7 +712,7 @@ export default {
         _this.len = oldval
         return
       }
-      this.volume = this.len * this.height * this.wide
+      this.volume = this.len * this.height * this.wide / 5000
     },
     height (val, oldval) {
       const _this = this
@@ -668,7 +725,7 @@ export default {
         _this.height = oldval
         return
       }
-      this.volume = this.len * this.height * this.wide
+      this.volume = this.len * this.height * this.wide / 5000
     },
     wide (val, oldval) {
       const _this = this
@@ -681,22 +738,54 @@ export default {
         _this.wide = oldval
         return
       }
-      this.volume = this.len * this.height * this.wide
+      this.volume = this.len * this.height * this.wide / 5000
     },
     async weight (val, oldval) {
       const _this = this
+      if (!val) {
+        return
+      }
       if (val > 30) {
         _this.$vux.toast.show({
           text: '重量不能大于30kg',
           width: '18rem',
           type: 'warn'
         })
+        _this.weight = null
         return
       }
+      if (val <= 0) {
+        _this.$vux.toast.show({
+          text: '重量不能小于等于0kg',
+          width: '18rem',
+          type: 'warn'
+        })
+        _this.weight = null
+        return
+      }
+      this.getPrice()
+    },
+    async volume (val, oldval) {
       this.getPrice()
     }
   },
   beforeDestroy () {
+    // 离开页面时保存产品规格，包裹信息和备注信息
+    const sendInfo = {
+      weight: this.weight,
+      len: this.len,
+      height: this.height,
+      wide: this.wide,
+      volume: this.volume,
+      remark: this.remove,
+      packageTable: this.packageTable,
+      productionType: this.productionType
+    }
+    storage({
+      key: 'send_info',
+      val: JSON.stringify(sendInfo),
+      type: 'set'
+    })
     // 离开本页面时，要移除footer class中的hide
     const footer = window.document.getElementsByTagName('footer')[0]
     if (!footer) return

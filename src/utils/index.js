@@ -122,8 +122,7 @@ const pageParams = function (params) {
  * @return {String} res     [localStorage.getItem(key)时返回的值]
  */
 const storage = function ({key, val, prefix = true, type = 'get'}) {
-  let typeCheck = type === 'get'
-  if (prefix && typeCheck) {
+  if (prefix) {
     key = localPrefix + key
   }
   let res = ''
@@ -143,7 +142,7 @@ const storage = function ({key, val, prefix = true, type = 'get'}) {
     default:
       break
   }
-  if (typeCheck) {
+  if (type === 'get') {
     return res
   }
 }

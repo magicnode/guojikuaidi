@@ -3,6 +3,7 @@
     <canvas id="Mycanvas" width="541" height="780" style="opacity: .5"></canvas>
     <div class="bind-container">
      <div class="logo">
+       <img src="../assets/images/logo.png" alt="logo">
        <h1 v-once>国际快递</h1>
      </div>
      <div class="input mobile">
@@ -34,7 +35,7 @@
          <img src="../assets/images/bin_ico_car.png" alt="phone">
        </div>
        <div>
-         <input style="max-width: 10rem;" id="inputShenfen" type="text" name="mobile" v-model="idcard" placeholder="输入身份证/护照" />
+         <input style="max-width: 10rem;" id="inputShenfen" type="text" name="mobile" v-model="idcard" :placeholder="idcardHolder" />
        </div>
        <div class="getidtype">
           <selector direction="ltr" v-model="IDcardType" placeholder="选择证件类型" name="district" :options="IDcardOption">
@@ -183,7 +184,10 @@ export default {
     ...mapGetters({
       'openid': 'getOpenId',
       'smscode': 'getSmsCode'
-    })
+    }),
+    idcardHolder () {
+      return this.IDcardType === '身份证' ? '输入身份证' : '输入护照'
+    }
   },
   methods: {
     ...mapActions([
@@ -266,18 +270,30 @@ export default {
         })
         return
       }
-      if (!this.idcard) {
+      const idcardReg1 = /(^\d{15}$)|(^\d{17}([0-9]|X)$)/
+      const idcardReg2 = /(^\d{15}$)|(^\d{17}([0-9]|x)$)/
+      const passportReg1 = /^[a-zA-Z0-9]{3,21}$/
+      const passportReg2 = /^(P\d{7})|(G\d{8})$/
+      if (this.IDcardType === '身份证' && !idcardReg1.test(this.idcard) && !idcardReg2.test(this.idcard)) {
         this.$vux.toast.show({
-          text: '请填入证件号',
+          text: '请填入正确的身份证号码',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      } else if (this.IDcardType === '护照' && !passportReg1.test(this.idcard) && !passportReg2.test(this.idcard)) {
+        this.$vux.toast.show({
+          text: '请填入正确的护照号',
           type: 'warn',
           width: '18rem'
         })
         return
       }
+      // console.log('asas', this.IDcardType === '身份证' ? this.idcard.toUpperCase() : this.idcard)
       this.isSubmit = true
       const bindres = await this.bindUser({
         mobile: this.sendmobile,
-        IDcard: this.idcard,
+        IDcard: this.IDcardType === '身份证' ? this.idcard.toUpperCase() : this.idcard,
         openid: this.openid
       })
       this.$vux.toast.show(bindres)

@@ -1,1 +1,1 @@
-export const localPrefix = 'guojipc_'
+export const localPrefix = 'mj_'

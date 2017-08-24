@@ -26,7 +26,9 @@ export const address = {
   sendchecked: url + 'wx/Mailingaddress/updateMailingaddressstart',
   pickupchecked: url + 'wx/Consigneeaddress/updateConsigneeaddressdefault',
   default: url + 'wx/GETADDRESSDEFAULT',
-  officelocation: url + 'wx/FindStationInfo'
+  officelocation: url + 'wx/FindStationInfo',
+  senddetail: url + 'wx/Mailingaddress/ShowMailingaddressid',
+  pickupdetail: url + 'wx/Consigneeaddress/ShowConsigneeaddressid'
 }
 
 export const geography = {

@@ -94,14 +94,12 @@ export const actions = {
           nation, provinnce, city, county, detaliedinformation: detailedinformation, postcode, iphone, userid, endtime, start, recipients: linkman, idnumber, company, remark: remove
         }
       }
-      console.log('params', params)
       const res = await instance({
         method: 'post',
         url,
         params,
         headers: {'token': local.getItem('mj_token')}
       })
-      console.log('add', res)
       if (res.status === 200) {
         dispatch('changeAddress')
         return {
@@ -231,9 +229,15 @@ export const actions = {
    * @param  {[type]} options.addressType [description]
    * @return {[type]}                     [description]
    */
-  sendAddressCheck ({ commit }, {id, addressType}) {
-    storage({key: 'send_pickupaddress'})
-    storage({key: 'send_sendaddress'})
+  addressCheck ({ commit }, {id, addressType}) {
+    let params = {
+      key: addressType === 'send' ? 'send_sendaddress' : 'send_pickupaddress',
+      val: JSON.stringify({
+        id
+      }),
+      type: 'set'
+    }
+    storage(params)
   }
 }
 

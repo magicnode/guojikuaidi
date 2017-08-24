@@ -96,8 +96,6 @@ export default {
     },
     selectAddress (item) {
       if (!this.pick) {
-        // let query = Object.assign(item, {pagetype: 'edit'})
-        // this.$router.push({path: '/address/edit', query})
         return
       }
       if (this.addressType === 'send') {

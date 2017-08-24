@@ -21,7 +21,7 @@ export const getNameById = function (obj, id) {
  * @return {[Boolean]}      [description]
  */
 export const checkMobile = function (num, type) {
-  const regFor = /^\+?\d{2,4}-?\d{10,11}$/
+  const regFor = /^\+?\d{1,6}-?\d{8,15}$/
   const regCN = /^1(3|4|5|7|8|9|6)\d{9}$/
   return regFor.test(num) || regCN.test(num)
 }
@@ -38,4 +38,15 @@ export const checkPostcode = function (num) {
 export const checkSpechars = function (str) {
   const pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？]")
   return pattern.test(str)
+}
+
+/**
+ * [获取路径参数]
+ * @param {[String]} name [description]
+ */
+export function GetQueryString (name) {
+  const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)')
+  const params = window.location.search.substr(1).match(reg)
+  if (params !== null) return params[2]
+  return null
 }
