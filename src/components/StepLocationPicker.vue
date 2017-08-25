@@ -96,7 +96,6 @@ export default {
       let shift = 0
       this.countryData = data.obj.map(function (elem, index) {
         if (elem.name === '中国') {
-          console.log(1)
           shift = index
         }
         return {
@@ -153,9 +152,6 @@ export default {
   },
   watch: {
     async step (val, oldval) {
-      if (val === 2) {
-        console.log(11)
-      }
       switch (val) {
         case 2:
           try {

@@ -152,7 +152,6 @@ export default {
         // 组件除show外的属性
         title: '确定将这一地址设置为默认地址吗?',
         onCancel () {
-          console.log(_this)
         },
         onConfirm () {
           _this.checkedAddress({id, status: 3, userid, addressType: type})

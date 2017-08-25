@@ -97,7 +97,7 @@
                   <input type="text" v-model="item['name']">
                 </td>
                 <td>
-                  <input type="text" v-model="item['amount']">
+                  <input type="number" v-model="item['amount']">
                 </td>
                 <td>
                   <input type="number" v-model="item['price']">
@@ -182,21 +182,16 @@
     </div>
   </div>
 </template>
+
 <script>
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
 import { send as sendApi, wx as wxApi, price as priceApi, geography as geographyApi } from '@/api'
 import * as addressService from '@/services/address'
-import axios from 'axios'
-import { storage } from '../utils'
-import { format } from '../utils/time'
+import { storage, time } from '../utils'
 import request from '../utils/request'
 
-let instance = axios.create({
-  timeout: 5000
-})
-
-const localStorage = window.localStorage
+const { format } = time
 
 export default {
   name: 'send',
@@ -210,6 +205,9 @@ export default {
     Spinner,
     XDialog,
     Cell
+  },
+  async mounted () {
+    window.document.title = '寄件'
   },
   data () {
     return {
@@ -270,14 +268,14 @@ export default {
     // 1. 创建时将SET_PAGE创建为send
     this.$store.commit('SET_PAGE', {page: 'send'})
     // 2. 初始化wx jssdk
-    const wxconfig = await instance({
+    const wxconfig = await request({
       method: 'post',
       url: wxApi.jssdk,
       params: {
         url: 'http://guoji.didalive.net/wechat/'
       }
     })
-    const jssdk = JSON.parse(wxconfig.data.obj)
+    const jssdk = JSON.parse(wxconfig.obj)
     window.wx.config({
       debug: false,
       appId: 'wxddd3ecf13e8fca82',
@@ -293,19 +291,23 @@ export default {
       console.log('wx error res', res)
     })
     // 3. 获取地址
-    const sendLocal = JSON.parse(localStorage.getItem('mj_send_sendaddress'))
-    const SendAddress = await addressService.sendquery({Mailingaddressid: sendLocal.id})
-    this.sendAddress = SendAddress.obj[0] || {
-      linkman: '',
-      iphone: '',
-      detailedinformation: ''
+    const sendLocal = JSON.parse(storage({key: 'send_sendaddress'}))
+    if (sendLocal) {
+      const SendAddress = await addressService.sendquery({Mailingaddressid: sendLocal.id})
+      this.sendAddress = SendAddress.obj[0] || {
+        linkman: '',
+        iphone: '',
+        detailedinformation: ''
+      }
     }
-    const pickupLocal = JSON.parse(localStorage.getItem('mj_send_pickupaddress'))
-    const PickupAddress = await addressService.pickupquery({id: pickupLocal.id})
-    this.pickupAddress = PickupAddress.obj[0] || {
-      recipients: '',
-      iphone: '',
-      detaliedinformation: ''
+    const pickupLocal = JSON.parse(storage({key: 'send_pickupaddress'}))
+    if (pickupLocal) {
+      const PickupAddress = await addressService.pickupquery({id: pickupLocal.id})
+      this.pickupAddress = PickupAddress.obj[0] || {
+        recipients: '',
+        iphone: '',
+        detaliedinformation: ''
+      }
     }
     // 4. 从localStorage中获取存储的用户习惯信息
     let sendInfo = storage({
@@ -364,9 +366,6 @@ export default {
     this.productionTypeOption = productionTypeOption
     this.productionType = sendInfo['productionType']
   },
-  async mounted () {
-    window.document.title = '寄件'
-  },
   computed: {
     ...mapGetters({
       brand: 'getAllBrand',
@@ -401,7 +400,6 @@ export default {
         _this.$vux.confirm.show({
           title: '确定删除这一行数据吗?',
           onCancel () {
-            console.log('cancle')
           },
           onConfirm () {
             _this.packageTable.splice(index, 1)
@@ -469,22 +467,24 @@ export default {
       this.$router.push({path})
     },
     async wxpay ({money, serialnumber}) {
-      const wxpay = await instance({
+      const wxpay = await request({
         method: 'post',
         url: wxApi.wxpay,
         params: {
-          openid: localStorage.getItem('mj_openid'),
+          openid: storage({key: 'openid'}),
           money: (money * 100),
           serialnumber,
           body: '国际快递包裹',
           payType: 0
         }
       })
-      const wxpayCon = wxpay.data
+      if (!wxpay.success) {
+        _this.showToast({text: '提交失败', type: 'warn'})
+        return
+      }
+      const wxpayCon = wxpay
       const _this = this
-      console.log('wx con from server', wxpayCon)
       const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
-      console.log('prepayId', prepayId)
       window.wx.ready(function () {
         console.log('wx jssdk 初始化成功')
         window.wx.chooseWXPay({
@@ -494,7 +494,7 @@ export default {
           'signType': 'MD5',
           'paySign': wxpayCon.paySign,
           success: function (res) {
-            instance({
+            request({
               method: 'post',
               url: wxApi.update,
               params: {
@@ -511,6 +511,7 @@ export default {
               }, 1000)
             }).catch(err => {
               console.error(err)
+              _this.showToast({text: '提交失败', type: 'warn'})
             })
           },
           fail: function (res) {
@@ -522,6 +523,10 @@ export default {
         })
       })
     },
+    /**
+     * [submitSend 创建订单，成功后调用微信支付接口]
+     * @return {[type]} [description]
+     */
     async submitSend () {
       try {
         if (this.loading) return
@@ -560,7 +565,8 @@ export default {
           })
           return
         }
-        if (!this.advance || this.advance < 0 || this.advance === 'NaN') {
+        const advance = Number(this.advance)
+        if (!advance || advance < 0 || advance === 'NaN') {
           this.$vux.toast.show({
             text: '价格不能为空或0!',
             width: '18rem',
@@ -568,11 +574,12 @@ export default {
           })
           return
         }
+        this.loading = true
         this.$vux.loading.show({
           text: '正在提交'
         })
         let headpackages = JSON.stringify(this.packageTable)
-        const result = await instance({
+        const result = await request({
           method: 'post',
           url: sendApi.create,
           params: {
@@ -586,7 +593,7 @@ export default {
             endtime: format('yyyy-MM-dd hh:mm:ss', new Date()),
             // 收件id
             arrivaid: this.pickupAddress['id'],
-            userid: localStorage.getItem('mj_userId'),
+            userid: storage({key: 'userId'}),
             starte: 1,
             extent: this.len,
             widthofitem: this.wide,
@@ -596,23 +603,21 @@ export default {
             internationalpriceid: this.producttypeidId,
             // 是否退件参数
             decline: this.isBack,
-            totalfee: this.advance * 100,
+            totalfee: advance * 100,
             headpackages
-          },
-          headers: {'token': localStorage.getItem('mj_token')}
+          }
         })
         this.$vux.loading.hide()
-        if (result) {
-          console.log('res', result)
+        this.loading = false
+        if (result.success) {
           // 订单创建成功后，所有信息需要清空
           this.wxpay({money: this.advance, serialnumber: this.serialnumber})
           this.clearForm()
-          this.serialnumber = 'MZ' + new Date().getTime()
         } else {
-          this.serialnumber = 'MZ' + new Date().getTime()
           this.showToast({text: '提交失败', type: 'warn'})
-          return
         }
+        this.serialnumber = 'MZ' + new Date().getTime()
+        return
       } catch (e) {
         console.error(e)
         this.$vux.loading.hide()
@@ -678,29 +683,40 @@ export default {
       this.cargotype = productVal['cargotype']
       this.getPrice()
     },
+    /**
+     * [getPrice 获取预付费用]
+     * @return {[type]} [description]
+     */
     async getPrice () {
-      let bearload = this.volume > this.weight ? this.volume : this.weight
-      const price = await request({
-        method: 'post',
-        url: priceApi.order,
-        auth: true,
-        params: {
-          bearload,
-          producttypeid: this.producttypeid,
-          cargotype: this.cargotype,
-          destCtry: this.DestCtry
-        },
-        headers: {
-          'token': localStorage.getItem('mj_token')
+      try {
+        if (!this.producttypeid && !this.cargotype) {
+          this.advance = '请先选择产品类型'
+          return
         }
-      })
-      let data = price.obj
-      this.advance = Number(data).toFixed(2)
+        let bearload = this.volume > this.weight ? this.volume : this.weight
+        const price = await request({
+          method: 'post',
+          url: priceApi.order,
+          auth: true,
+          params: {
+            bearload,
+            producttypeid: this.producttypeid,
+            cargotype: this.cargotype,
+            destCtry: this.DestCtry
+          }
+        })
+        if (price.success) {
+          let data = price.obj
+          this.advance = Number(data).toFixed(2)
+          return
+        }
+        this.advance = '获取费用失败'
+      } catch (err) {
+        console.error(err)
+      }
     }
   },
   watch: {
-    productionType () {
-    },
     len (val, oldval) {
       const _this = this
       if (val > 120) {
@@ -770,7 +786,7 @@ export default {
     }
   },
   beforeDestroy () {
-    // 离开页面时保存产品规格，包裹信息和备注信息
+    // 离开页面时在localStorage中保存产品规格，包裹信息和备注信息
     const sendInfo = {
       weight: this.weight,
       len: this.len,
@@ -786,10 +802,6 @@ export default {
       val: JSON.stringify(sendInfo),
       type: 'set'
     })
-    // 离开本页面时，要移除footer class中的hide
-    const footer = window.document.getElementsByTagName('footer')[0]
-    if (!footer) return
-    footer.className = footer.className.replace(/hide/g, '')
   }
 }
 </script>

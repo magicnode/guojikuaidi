@@ -61,7 +61,7 @@ export default function request (options) {
       msg = data.message || statusText
     } else {
       statusCode = 600
-      msg = error.message || 'Network Error'
+      msg = error.message || '网络错误'
     }
     return { success: false, statusCode, message: msg }
   })

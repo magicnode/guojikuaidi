@@ -1,20 +1,4 @@
 /**
- * [从json中获取与传入条件相等的元素]
- * @param  {[Object]} obj [传入的json]
- * @param  {[String]} id  [需要的条件]
- * @return {[String]}     [description]
- */
-export const getNameById = function (obj, id) {
-  let newobj = ''
-  Object.keys(obj).forEach((elem, index) => {
-    if (obj[elem]['id'] === Number(id)) {
-      newobj = obj[elem]
-    }
-  })
-  return newobj['name']
-}
-
-/**
  * [js正则验证手机号 15位数字+'+'+'-']
  * @param  {[String]} num  [传入的手机号]
  * @param  {[String]} type [预留字段，以后区分国内和国外手机号，不传则同时验证]
@@ -38,15 +22,4 @@ export const checkPostcode = function (num) {
 export const checkSpechars = function (str) {
   const pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？]")
   return pattern.test(str)
-}
-
-/**
- * [获取路径参数]
- * @param {[String]} name [description]
- */
-export function GetQueryString (name) {
-  const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)')
-  const params = window.location.search.substr(1).match(reg)
-  if (params !== null) return params[2]
-  return null
 }

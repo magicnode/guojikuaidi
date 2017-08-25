@@ -1,6 +1,6 @@
-import * as time from './time'
-import * as tools from './tools'
 import lodash from 'lodash'
+import * as time from './time'
+import * as reg from './reg'
 import { localPrefix } from './config'
 
 const localStorage = window.localStorage
@@ -41,6 +41,7 @@ Date.format = function (format) {
 }
 
 /**
+ * [获取路径参数]
  * @param   {String}
  * @return  {String}
  */
@@ -99,21 +100,6 @@ const arrayToTree = (array, id = 'id', pid = 'pid', children = 'children') => {
 }
 
 /**
- * 对网络请求的params做处理，针对分页
- * @param   {params} Object
- * @return  {params} Object
- */
-const pageParams = function (params) {
-  params = params || {
-    page: 1,
-    rows: 10
-  }
-  params.page = params.page || 1
-  params.rows = params.pageSize || 10
-  return params
-}
-
-/**
  * [对localStorage操作进行封装]
  * @param  {String}  key    [存储的字段名字]
  * @param  {String}  val    [存储的字段值]
@@ -121,7 +107,7 @@ const pageParams = function (params) {
  * @param  {String}  type   [localStorage的操作方式 get、set、remove、clear]
  * @return {String} res     [localStorage.getItem(key)时返回的值]
  */
-const storage = function ({key, val, prefix = true, type = 'get'}) {
+const storage = function ({key = '', val = '', prefix = true, type = 'get'}) {
   if (prefix) {
     key = localPrefix + key
   }
@@ -147,12 +133,28 @@ const storage = function ({key, val, prefix = true, type = 'get'}) {
   }
 }
 
+/**
+ * [从json中获取与传入条件相等的元素]
+ * @param  {[Object]} obj [传入的json]
+ * @param  {[String]} id  [需要的条件]
+ * @return {[String]}     [description]
+ */
+const getNameById = function (obj, id) {
+  let newobj = ''
+  Object.keys(obj).forEach((elem, index) => {
+    if (obj[elem]['id'] === Number(id)) {
+      newobj = obj[elem]
+    }
+  })
+  return newobj['name']
+}
+
 export {
   queryURL,
   queryArray,
   arrayToTree,
-  pageParams,
+  getNameById,
+  storage,
   time,
-  tools,
-  storage
+  reg
 }

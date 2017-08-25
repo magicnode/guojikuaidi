@@ -20,9 +20,6 @@ export default {
       window.localStorage.setItem('mj_mobile', '17602180495')
       window.localStorage.setItem('mj_userId', '18')
       window.localStorage.setItem('mj_token', 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MTgsIm9wZW5pZCI6Im9zZEg3dnc3NFBqS2w0eDhqdnhwbHJhQy10aUUifQ.LeKzLIibWbRdWHxPpYoRrqzDS0Uvl8YQzjhIcIAZtx0')
-      // chen
-      // window.localStorage.setItem('mj_mobile', '15800665186')
-      // window.localStorage.setItem('mj_userId', '12')
       return
     }
   },

@@ -1,9 +1,6 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <transition name="pic">
-      <img class="loading-img" v-show="isJump" :src="jumpSrc" alt="">
-    </transition>
     <loading v-model="isLoading"></loading>
   </div>
 </template>
@@ -12,7 +9,9 @@
 import config from 'config'
 import { Loading } from 'vux'
 import { mapState, mapActions, mapGetters } from 'vuex'
+import { storage } from '@/utils'
 
+// 微信公众号appid等配置
 let appid = config.dev.appid
 let secret = config.dev.appsecret
 let redirectUri = 'http://guoji.didalive.net/redirect/'
@@ -31,9 +30,7 @@ export default {
       time: '1500',
       text: '正在为您跳转，请稍候'
     })
-    let localStorage = window.localStorage
-    const code = localStorage.getItem('mj_code')
-    const openid = localStorage.getItem('mj_openid')
+    const code = storage({key: 'code'})
     if (code) {
       // 通过code获取openid
       const openidres = await this.setOpenid({appid, code, secret})
@@ -43,16 +40,17 @@ export default {
           text: '获取openid失败，请从公众号重新点击进入',
           width: '20rem'
         })
-        window.localStorage.removeItem('mj_code')
+        storage({key: 'code', type: 'remove'})
         return this.$router.push({path: '/nouser'})
       }
       // 通过openid获取用户信息
       let openid = openidres.openid
-      window.localStorage.removeItem('mj_code')
+      storage({key: 'code', type: 'remove'})
       await this.getUserInfoByOpenid({openid})
       return
     }
     // 从localstorage中获取openid
+    const openid = storage({key: 'openid'})
     if (openid) {
       // 通过openid从数据库中查询用户数据
       await this.getUserInfoByOpenid({openid})
@@ -73,9 +71,7 @@ export default {
   },
   computed: {
     ...mapState({
-      isLoading: state => state.isLoading,
-      isJump: state => state.isJump,
-      jumpSrc: state => state.jumpSrc
+      isLoading: state => state.isLoading
     }),
     ...mapGetters({
       'openid': 'getOpenId'
@@ -88,12 +84,11 @@ export default {
     ]),
     getDate (val = 120) {
       let time = new Date()
-      const local = window.localStorage
       const expireNew = {
         'now': new Date().getTime(),
         'expire': time.setMinutes(time.getMinutes() + val, time.getSeconds(), 0)
       }
-      local.setItem('mj_expire', JSON.stringify(expireNew))
+      storage({key: 'expire', val: JSON.stringify(expireNew), type: 'set'})
     },
     async getUserInfoByOpenid ({openid}) {
       const userinfo = await this.setUserInfo({openid})
@@ -128,7 +123,7 @@ export default {
         }
         return
       } else {
-        window.localStorage.removeItem('mj_openid')
+        storage({key: 'openid', type: 'remove'})
         return this.$router.push({path: '/nouser'})
       }
     }

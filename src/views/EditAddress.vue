@@ -28,7 +28,7 @@
 <script>
 import { XInput, XSwitch, XTextarea, XAddress, Picker, Radio } from 'vux'
 import { mapActions } from 'vuex'
-import { tools } from '../utils'
+import { reg as regUtil } from '../utils'
 
 export default {
   name: 'editaddress',
@@ -129,7 +129,6 @@ export default {
       this.locationid = val.val
     },
     change (value) {
-      console.log('new Value', value)
     },
     async editAddress () {
       if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
@@ -140,7 +139,7 @@ export default {
         })
         return
       }
-      if (!tools.checkPostcode(this.postcode)) {
+      if (!regUtil.checkPostcode(this.postcode)) {
         this.$vux.toast.show({
           text: '邮编格式不对，请重新填写',
           type: 'warn',
@@ -148,7 +147,7 @@ export default {
         })
         return
       }
-      if (!tools.checkMobile(this.iphone)) {
+      if (!regUtil.checkMobile(this.iphone)) {
         this.$vux.toast.show({
           text: '手机号格式不对，请重新填写',
           type: 'warn',
@@ -178,24 +177,7 @@ export default {
       this.$vux.toast.show(res)
       this.$vux.loading.hide()
       this.$router.go(-1)
-    },
-    fixBtn () {
-      const Btn = window.document.getElementsByClassName('addaddress-container-add')[0]
-      const classname = Btn.className
-      setTimeout(function () {
-        Btn.className = classname.replace(/fixed-fill/g, '')
-        Btn.className += ' fixed-fill'
-      }, 500)
-    },
-    removeFixBtn () {
-      const Btn = window.document.getElementsByClassName('addaddress-container-add')[0]
-      const classname = Btn.className
-      setTimeout(function () {
-        Btn.className = classname.replace(/fixed-fill/g, '')
-      }, 500)
     }
-  },
-  watch: {
   }
 }
 </script>
@@ -235,23 +217,6 @@ export default {
         color: white;
         background: @red;
         border-radius: 6px;
-      }
-    }
-    .g-radio {
-      padding: 1rem;
-      padding-right: 0;
-      &:before {
-        content: " ";
-        margin-bottom: .7rem;
-        display: block;
-        width: 100%;
-        height: 1px;
-        border-top: 1px solid #D9D9D9;
-        color: #D9D9D9;
-        -webkit-transform-origin: 0 0;
-        transform-origin: 0 0;
-        -webkit-transform: scaleY(0.5);
-        transform: scaleY(0.5);
       }
     }
   }

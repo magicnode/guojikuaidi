@@ -104,7 +104,6 @@ export default {
       }
     })
     const jssdk = JSON.parse(wxconfig.data.obj)
-    console.log('jssdk', jssdk)
     window.wx.config({
       debug: false,
       appId: 'wxddd3ecf13e8fca82',

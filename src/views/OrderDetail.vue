@@ -96,7 +96,6 @@ export default {
       }
     })
     const jssdk = JSON.parse(wxconfig.data.obj)
-    console.log('jssdk', jssdk)
     window.wx.config({
       debug: false,
       appId: 'wxddd3ecf13e8fca82',
@@ -140,7 +139,6 @@ export default {
         }
       }
       this.bootStatus = bootStatus
-      console.log('bootStatus', bootStatus)
     }
   },
   mounted () {
@@ -176,7 +174,6 @@ export default {
           })
         }
         let data = orderdetail.data.obj
-        console.log('data', data)
         if (data.length > 0) {
           data.sort(function (a, b) {
             return a.id < b.id
@@ -209,9 +206,7 @@ export default {
       })
       const wxpayCon = wxpay.data
       const _this = this
-      console.log('wx con from server', wxpayCon)
       const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
-      console.log('prepayId', prepayId)
       window.wx.ready(function () {
         console.log('wx jssdk 初始化成功')
         window.wx.chooseWXPay({

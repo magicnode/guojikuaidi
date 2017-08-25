@@ -1,8 +1,7 @@
 import {address as addressApi, geography as geographyApi} from '@/api'
-import { getNameById } from '../../utils/tools'
 import axios from 'axios'
 import window from 'window'
-import { storage } from '../../utils'
+import { storage, getNameById } from '../../utils'
 import request from '../../utils/request'
 
 import * as types from '../mutation-types'

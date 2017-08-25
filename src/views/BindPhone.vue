@@ -289,7 +289,6 @@ export default {
         })
         return
       }
-      // console.log('asas', this.IDcardType === '身份证' ? this.idcard.toUpperCase() : this.idcard)
       this.isSubmit = true
       const bindres = await this.bindUser({
         mobile: this.sendmobile,

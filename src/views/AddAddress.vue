@@ -3,9 +3,7 @@
     <div class="addaddress-container">
       <group>
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-        <!-- <x-input type="text" title="公司名" v-model="company" :max="20" placeholder="请填写您的公司名"></x-input> -->
         <x-input type="text" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
-<!--         <x-input v-show="type === 2" type="text" title="证件" v-model="idnumber" :max="20" placeholder="请填写身份证号/护照号" required></x-input> -->
         <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
         <div @click="steppickershow = !steppickershow">
           <x-input disabled title="地区" placeholder="请选择国家、省市区" type="text" required v-model="location"></x-input>
@@ -29,7 +27,7 @@
 <script>
 import { XInput, XSwitch, XTextarea, XAddress, Picker, Radio } from 'vux'
 import { mapActions } from 'vuex'
-import { tools } from '../utils'
+import { reg as regUtil } from '../utils'
 
 export default {
   name: 'addaddress',
@@ -40,6 +38,9 @@ export default {
     Radio,
     XTextarea,
     Picker
+  },
+  mounted () {
+    window.document.title = '添加地址'
   },
   created () {
     const query = this.$route.query
@@ -53,9 +54,6 @@ export default {
       this.iphone = query.iphone
       this.detailedinformation = query.detaliedinformation
     }
-  },
-  mounted () {
-    window.document.title = '添加地址'
   },
   data () {
     return {
@@ -91,12 +89,7 @@ export default {
       this.location = val.show
       this.locationid = val.val
     },
-    checkMobile (num) {
-      const reg = /^1(3|4|5|7|8|9|6)\d{9}$/
-      return reg.test(num)
-    },
     change (value) {
-      console.log('new Value', value)
     },
     async saveAddress () {
       if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
@@ -107,7 +100,7 @@ export default {
         })
         return
       }
-      if (!tools.checkPostcode(this.postcode)) {
+      if (!regUtil.checkPostcode(this.postcode)) {
         this.$vux.toast.show({
           text: '邮编格式不对，请重新填写',
           type: 'warn',
@@ -115,7 +108,7 @@ export default {
         })
         return
       }
-      if (!tools.checkMobile(this.iphone)) {
+      if (!regUtil.checkMobile(this.iphone)) {
         this.$vux.toast.show({
           text: '手机号格式不对，请重新填写',
           type: 'warn',
@@ -134,24 +127,7 @@ export default {
       }
       this.$vux.toast.show(res)
       this.$router.go(-1)
-    },
-    fixBtn () {
-      const Btn = window.document.getElementsByClassName('addaddress-container-add')[0]
-      const classname = Btn.className
-      setTimeout(function () {
-        Btn.className = classname.replace(/fixed-fill/g, '')
-        Btn.className += ' fixed-fill'
-      }, 500)
-    },
-    removeFixBtn () {
-      const Btn = window.document.getElementsByClassName('addaddress-container-add')[0]
-      const classname = Btn.className
-      setTimeout(function () {
-        Btn.className = classname.replace(/fixed-fill/g, '')
-      }, 500)
     }
-  },
-  watch: {
   }
 }
 </script>
@@ -186,23 +162,6 @@ export default {
         color: white;
         background: @red;
         border-radius: 6px;
-      }
-    }
-    .g-radio {
-      padding: 1rem;
-      padding-right: 0;
-      &:before {
-        content: " ";
-        margin-bottom: .7rem;
-        display: block;
-        width: 100%;
-        height: 1px;
-        border-top: 1px solid #D9D9D9;
-        color: #D9D9D9;
-        -webkit-transform-origin: 0 0;
-        transform-origin: 0 0;
-        -webkit-transform: scaleY(0.5);
-        transform: scaleY(0.5);
       }
     }
   }
