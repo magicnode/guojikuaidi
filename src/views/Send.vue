@@ -582,6 +582,7 @@ export default {
         const result = await request({
           method: 'post',
           url: sendApi.create,
+          auth: true,
           params: {
             serialnumber: this.serialnumber,
             type: '包裹',
