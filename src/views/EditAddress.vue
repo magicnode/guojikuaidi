@@ -3,7 +3,6 @@
     <div class="editaddress-container">
       <group>
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-        <!-- <x-input type="text" title="公司名" v-model="company" :max="20" placeholder="请填写您的公司名"></x-input> -->
         <x-input type="text" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-input v-show="type === 2" type="text" title="证件" v-model="idnumber" :max="20" placeholder="请填写身份证号/护照号" required></x-input>
         <x-input title="电话" type="text" :max="20" v-model="iphone" placeholder="请输入手机号" required></x-input>

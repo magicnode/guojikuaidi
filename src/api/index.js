@@ -81,7 +81,6 @@ export const wx = {
 }
 
 export const express = {
-  // url = url + 'wx/brand=' + brand + '&orderSn=' + orderSn
   route: 'http://app.quandikeji.com:8088/quandiExpressSite1.4.0/Logistics/queryLogisticsInfoForJson'
 }
 

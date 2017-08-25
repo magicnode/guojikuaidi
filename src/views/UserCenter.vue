@@ -13,9 +13,6 @@
         <span class="arrow-left"></span>
       </div>
     </div>
-    <div class="refresh hide">
-      <button :class="{'roate-change': isReresh}" class="btn-sub" @click="loginout"></button>
-    </div>
     <div v-transfer-dom>
       <x-dialog v-model="dialogshow" class="dialog-demo" hide-on-blur>
         <div class="customer-service flex">
@@ -73,21 +70,21 @@ export default {
       usershow: false,
       isShow: false,
       orderfunc: [{
-        src: require('../assets/images/new/min_ico_add.png'),
+        src: require('../assets/images/min_ico_add.png'),
         name: '地址管理',
         path: '/address',
         show: true
       }, {
-        src: require('../assets/images/new/min_ico_pac.png'),
+        src: require('../assets/images/min_ico_pac.png'),
         name: '我的包裹',
         path: '/order/list',
         show: true
       }, {
-        src: require('../assets/images/new/min_ico_rea.png'),
+        src: require('../assets/images/min_ico_rea.png'),
         name: '实名认证',
         show: false
       }, {
-        src: require('../assets/images/new/min_ico_cus.png'),
+        src: require('../assets/images/min_ico_cus.png'),
         name: '客服中心',
         func: 'showDialog',
         show: true
@@ -117,22 +114,6 @@ export default {
     },
     showDialog () {
       this.dialogshow = true
-    },
-    loginout () {
-      const _this = this
-      this.$vux.confirm.show({
-        title: '确定刷新状态吗?',
-        onCancel () {
-          console.log('no loginout')
-        },
-        onConfirm () {
-          window.localStorage.clear()
-          _this.isReresh = true
-          setTimeout(function () {
-            _this.$router.push({path: '/init', query: {page: 3}})
-          }, 1100)
-        }
-      })
     }
   }
 }
@@ -187,25 +168,6 @@ export default {
 .flex {
   display: flex;
   align-items: center;
-}
-
-.refresh {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  .btn-sub {
-    color: white;
-    border: none;
-    padding: .1rem .2rem;
-    font-size: 1.5rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    background: url('../assets/images/new/refresh.png') no-repeat;
-    background-size: 100% 100%;
-    border: none;
-    border-radius: 5px;
-    transition: all 1s;
-  }
 }
 
 .roate-change {
@@ -307,7 +269,7 @@ export default {
       .arrow-left {
         flex: 1;
         height: 1.3rem;
-        background: url('../assets/images/new/sen_ico_arr.png') no-repeat;
+        background: url('../assets/images/sen_ico_arr.png') no-repeat;
         background-size: 0.9rem 1.3rem;
         background-position-x: 80%;
       }

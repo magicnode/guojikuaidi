@@ -11,7 +11,6 @@ import App from './App'
 import AxiosPlugin from './plugins/axios'
 import * as filters from './filters'
 import Header from './components/Header.vue'
-import PickupItem from './components/PickupItem.vue'
 import SendItem from './components/SendItem.vue'
 import OrderItem from './components/OrderItem.vue'
 import MJSpinner from './components/MJSpinner.vue'
@@ -36,7 +35,6 @@ Vue.component('tab', Tab)
 Vue.component('tabItem', TabItem)
 Vue.component('mj-header', Header)
 Vue.component('mj-spinner', MJSpinner)
-Vue.component('mj-pickupitem', PickupItem)
 Vue.component('mj-senditem', SendItem)
 Vue.component('mj-orderitem', OrderItem)
 Vue.component('step-location', StepLocationPicker)

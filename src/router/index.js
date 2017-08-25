@@ -6,7 +6,6 @@ import Container from '@/views/Container'
 Vue.use(Router)
 
 export default new Router({
-  // mode: 'history',
   base: __dirname,
   routes: [{
     path: '/',
@@ -31,17 +30,6 @@ export default new Router({
         intro: '寄件',
         requiresAuth: true
       }
-    }, {
-      path: '/pickup',
-      name: 'PickUp',
-      component: require('@/views/PickUp'),
-      meta: {
-        requiresAuth: true
-      }
-    }, {
-      path: '/pickuptest',
-      name: 'PickUpTest',
-      component: require('@/views/PickUpTest')
     }]
   }, {
     path: '/address',
@@ -68,35 +56,6 @@ export default new Router({
       requiresAuth: true
     }
   }, {
-    path: '/pickup/detail',
-    name: 'PickUpDetail',
-    component: require('@/views/PickUpDetail'),
-    meta: { requiresAuth: true }
-  }, {
-    path: '/send/detail',
-    name: 'SendDetail',
-    component: require('@/views/SendDetail')
-  }, {
-    path: '/send/qr',
-    name: 'SendQr',
-    component: require('@/views/SendQr')
-  }, {
-    path: '/send/end',
-    name: 'SendEnd',
-    component: require('@/views/SendEnd')
-  }, {
-    path: '/smslogin',
-    name: 'SmsLogin',
-    component: require('@/views/SmsLogin')
-  }, {
-    path: '/hallmap',
-    name: 'HallMap',
-    component: require('@/views/HallMap')
-  }, {
-    path: '/login',
-    name: 'Login',
-    component: require('@/views/Login')
-  }, {
     path: '/bindphone',
     name: 'BindPhone',
     component: require('@/views/BindPhone')
@@ -105,29 +64,13 @@ export default new Router({
     name: 'Redirect',
     component: require('@/views/Redirect')
   }, {
-    path: '/test',
-    name: 'Test',
-    component: require('@/views/Test')
-  }, {
     path: '/init',
     name: 'Init',
     component: require('@/views/Init')
   }, {
-    path: '/office/location',
-    name: 'OfficeLocation',
-    component: require('@/views/OfficeLocation')
-  }, {
     path: '/nouser',
     name: 'NoUser',
     component: require('@/views/NoUser')
-  }, {
-    path: '/user/package',
-    name: 'UserPackage',
-    component: require('@/views/UserPackage')
-  }, {
-    path: '/customer/service',
-    name: 'CustomerService',
-    component: require('@/views/CustomerService')
   }, {
     path: '/express/route',
     name: 'ExpressRoute',

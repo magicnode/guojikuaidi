@@ -15,7 +15,7 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 
 let appid = config.dev.appid
 let secret = config.dev.appsecret
-let redirectUri = 'http://171u9555b3.iask.in/'
+let redirectUri = 'http://guoji.didalive.net/redirect/'
 if (process.env.NODE_ENV !== 'development') {
   appid = config.pro.appid
   secret = config.pro.appsecret
@@ -86,10 +86,8 @@ export default {
       'setOpenid',
       'setUserInfo'
     ]),
-    // 获取当前时间30分钟后时间戳, 并保存
-    getDate (val) {
+    getDate (val = 120) {
       let time = new Date()
-      time.setMinutes(time.getMinutes() + val, time.getSeconds(), 0)
       const local = window.localStorage
       const expireNew = {
         'now': new Date().getTime(),
@@ -105,7 +103,8 @@ export default {
         return
       } else if (userinfo.type === 'success') {
         // 获取用户信息成功, 根据page跳转页面
-        this.getDate(30)
+        // 获取当前时间120分钟后时间戳, 并保存
+        this.getDate(120)
         this.$vux.toast.show({
           type: 'success',
           text: '登录成功',

@@ -17,9 +17,9 @@
 
 <script>
 import {mapGetters} from 'vuex'
-import sendPng from '../assets/images/new/nav_sen_nor.png'
+import sendPng from '../assets/images/nav_sen_nor.png'
 import acsendPng from '../assets/images/nav_ivo_che.png'
-import minePng from '../assets/images/new/nav_min_nor.png'
+import minePng from '../assets/images/nav_min_nor.png'
 import acminePng from '../assets/images/nav_min_che.png'
 
 export default {

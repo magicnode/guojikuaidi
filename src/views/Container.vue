@@ -132,4 +132,18 @@ export default {
   }
 }
 
+.editaddress {
+  .weui-switch:checked, .weui-switch-cp__input:checked ~ .weui-switch-cp__box {
+    border-color: @red;
+    background-color: @red;
+  }  
+}
+
+.addaddress {
+  .weui-switch:checked, .weui-switch-cp__input:checked ~ .weui-switch-cp__box {
+    border-color: @red;
+    background-color: @red;
+  }  
+}
+
 </style>

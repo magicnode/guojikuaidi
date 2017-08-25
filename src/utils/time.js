@@ -8,6 +8,12 @@ export const formatdate = function (date = new Date()) {
   return year + '/' + month + '/' + day
 }
 
+/**
+ * [format description]
+ * @param  {[String]} fmt  [输出的日期格式 'yyyy-MM-dd hh:mm:ss']
+ * @param  {[Date]} date [new Date()]
+ * @return {[String]}      [格式化后的时间]
+ */
 export const format = function (fmt, date) {
   let o = {
     'M+': date.getMonth() + 1,
@@ -31,7 +37,7 @@ export const format = function (fmt, date) {
 
 export const formatedatestamp = function (timpstamp) {
   if (!timpstamp) {
-    return ''
+    return '未知时间'
   }
   let date = new Date(Number(timpstamp))
   const year = date.getFullYear()
@@ -61,4 +67,14 @@ export const getDate = function (date) {
   const redate = newdate.getDate()
   const month = newdate.getMonth() + 1
   return year + '-' + month + '-' + redate
+}
+
+/**
+ * [setDateByMinutes 根据传入的值获取，据当前时间过后一定分钟的时间戳]
+ * @param  {Number} val [分钟数]
+ * @return {[Number]}     [时间戳]
+ */
+export const setDateByMinutes = function (val = 120) {
+  let time = new Date()
+  return time.setMinutes(time.getMinutes() + Number(val), time.getSeconds(), 0)
 }

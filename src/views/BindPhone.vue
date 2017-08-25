@@ -8,7 +8,7 @@
      </div>
      <div class="input mobile">
        <div>
-         <img src="../assets/images/new/bin_ico_pho.png" alt="phone">
+         <img src="../assets/images/bin_ico_pho.png" alt="phone">
        </div>
        <div>
          <input style="max-width: 10rem;" type="text" name="mobile" v-model="mobile" placeholder="输入手机号" required />
@@ -21,7 +21,7 @@
      </div>
      <div class="input mobile" @click="foucsOnCode">
        <div>
-         <img src="../assets/images/new/bin_ico_ver.png" alt="phone">
+         <img src="../assets/images/bin_ico_ver.png" alt="phone">
        </div>
        <div>
          <input style="max-width: 10rem;" id="inputCode" type="number" name="mobile" v-model="code" placeholder="输入验证码" required />
